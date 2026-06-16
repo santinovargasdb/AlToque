@@ -1,0 +1,5 @@
+<svg width="180" height="40" viewBox="0 0 180 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="4" width="32" height="32" rx="8" fill="#2563EB"/>
+  <path d="M18 10l-7 11h5l-1 9 7-12h-5l1-8z" fill="#F97316" stroke="#FFFFFF" stroke-width="0.5"/>
+  <text x="42" y="27" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="20" font-weight="700" fill="#0F172A">AlToque</text>
+</svg>
