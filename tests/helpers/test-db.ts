@@ -38,6 +38,8 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       `
     drop table if exists job_dispatch cascade;
     drop table if exists jobs cascade;
+    drop table if exists notifications cascade;
+    drop table if exists push_subscriptions cascade;
     drop type if exists job_type cascade;
     drop type if exists job_status cascade;
     drop type if exists payment_method cascade;
