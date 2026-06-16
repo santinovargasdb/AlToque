@@ -69,6 +69,12 @@ $$;
 
 grant usage on schema public to supabase_auth_admin;
 grant execute on function public.custom_access_token_hook to supabase_auth_admin;
+-- El hook NO es SECURITY DEFINER: corre como supabase_auth_admin, así que
+-- necesita SELECT sobre profiles + una policy RLS que se lo permita.
+grant select on table public.profiles to supabase_auth_admin;
+drop policy if exists auth_admin_read_profiles on public.profiles;
+create policy auth_admin_read_profiles on public.profiles
+  for select to supabase_auth_admin using (true);
 
 -- 3) Mantener updated_at al día en profiles.
 create or replace function public.touch_updated_at()
