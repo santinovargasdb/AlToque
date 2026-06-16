@@ -47,7 +47,7 @@ create or replace function find_nearby_providers(
                    pp.service_radius_km * 1000)
   order by distance_km asc
   limit p_limit;
-$$ language sql stable;
+$$ language sql stable set search_path = public;
 
 -- ── Variante URGENTE: además exige is_online = true ──
 create or replace function find_nearby_online_providers(
@@ -72,7 +72,7 @@ create or replace function find_nearby_online_providers(
                    pp.service_radius_km * 1000)
   order by distance_km asc
   limit p_limit;
-$$ language sql stable;
+$$ language sql stable set search_path = public;
 
 -- ════════════════════════════════════════════════════════════
 -- Helpers de rol (el `role` viaja como custom claim en el JWT)
@@ -82,11 +82,11 @@ create or replace function auth_role() returns text as $$
     nullif(current_setting('request.jwt.claims', true)::jsonb ->> 'user_role', ''),
     (select role::text from profiles where id = auth.uid())
   );
-$$ language sql stable;
+$$ language sql stable set search_path = public;
 
 create or replace function is_admin() returns boolean as $$
   select auth_role() = 'admin';
-$$ language sql stable;
+$$ language sql stable set search_path = public;
 
 -- ════════════════════════════════════════════════════════════
 -- Row Level Security — habilitar en TODAS las tablas

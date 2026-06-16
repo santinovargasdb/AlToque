@@ -39,12 +39,16 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- Hardening: la función de trigger no debe ser invocable vía API REST.
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
 -- 2) Custom Access Token Hook: inyecta `user_role` en el JWT.
 --    Activarlo en Supabase → Authentication → Hooks → Custom Access Token.
 create or replace function public.custom_access_token_hook(event jsonb)
 returns jsonb
 language plpgsql
 stable
+set search_path = public
 as $$
 declare
   claims jsonb;
@@ -68,7 +72,7 @@ grant execute on function public.custom_access_token_hook to supabase_auth_admin
 
 -- 3) Mantener updated_at al día en profiles.
 create or replace function public.touch_updated_at()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql set search_path = public as $$
 begin
   new.updated_at := now();
   return new;
