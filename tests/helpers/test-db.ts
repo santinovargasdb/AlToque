@@ -88,6 +88,9 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       completed_at timestamptz
     );
 
+    create unique index uq_jobs_mp_payment_id
+      on jobs (mp_payment_id) where mp_payment_id is not null;
+
     create table job_dispatch (
       id uuid primary key default gen_random_uuid(),
       job_id uuid not null references jobs(id) on delete cascade,

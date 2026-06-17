@@ -210,6 +210,14 @@ create policy notif_self_rw on notifications
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- ════════════════════════════════════════════════════════════
+-- Pagos (Step 9): idempotencia del webhook por mp_payment_id.
+-- Único parcial: muchos jobs tienen mp_payment_id NULL (cash / sin pagar).
+-- ════════════════════════════════════════════════════════════
+create unique index if not exists uq_jobs_mp_payment_id
+  on jobs (mp_payment_id)
+  where mp_payment_id is not null;
+
+-- ════════════════════════════════════════════════════════════
 -- Realtime: publicar cambios de jobs, job_dispatch y messages
 -- (feed del profesional, timeline del cliente, chat).
 -- ════════════════════════════════════════════════════════════
