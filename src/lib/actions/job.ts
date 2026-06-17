@@ -14,6 +14,7 @@ import {
   calculateCommission,
 } from "@/lib/mercadopago/commission";
 import { createJobPreference } from "@/lib/mercadopago/preference";
+import { refundJobPayment } from "@/lib/mercadopago/refund";
 import type { ActionResult } from "./provider";
 
 const URGENT_BROADCAST_LIMIT = 10;
@@ -198,6 +199,9 @@ export async function updateJobStatus(params: {
       clientId: jobs.clientId,
       providerId: jobs.providerId,
       status: jobs.status,
+      paymentMethod: jobs.paymentMethod,
+      paymentStatus: jobs.paymentStatus,
+      mpPaymentId: jobs.mpPaymentId,
     })
     .from(jobs)
     .where(eq(jobs.id, params.jobId))
@@ -224,6 +228,12 @@ export async function updateJobStatus(params: {
     if (!isProvider || job.status !== "accepted") {
       return { ok: false, error: "El pedido debe estar aceptado." };
     }
+    if (job.paymentMethod !== "cash" && job.paymentStatus !== "held") {
+      return {
+        ok: false,
+        error: "Esperá a que el cliente complete el pago para iniciar.",
+      };
+    }
     await db
       .update(jobs)
       .set({ status: "in_progress", updatedAt: now })
@@ -232,10 +242,25 @@ export async function updateJobStatus(params: {
     if (!["requested", "accepted", "in_progress"].includes(job.status)) {
       return { ok: false, error: "El pedido ya no se puede cancelar." };
     }
+    // Reintegro si el dinero estaba retenido. Si MP falla, NO cancelamos
+    // (no dejamos el dinero "perdido" en estado) y devolvemos error.
+    let paymentStatus = job.paymentStatus;
+    if (job.paymentStatus === "held" && job.mpPaymentId) {
+      try {
+        await refundJobPayment(job.mpPaymentId);
+        paymentStatus = "refunded";
+      } catch {
+        return {
+          ok: false,
+          error: "No pudimos reintegrar el pago. Intentá de nuevo en un momento.",
+        };
+      }
+    }
     await db
       .update(jobs)
       .set({
         status: "cancelled",
+        paymentStatus,
         cancelReason: params.reason ?? null,
         updatedAt: now,
       })

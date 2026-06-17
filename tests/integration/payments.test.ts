@@ -109,4 +109,46 @@ describe.skipIf(!hasTestDb)("pagos MP (integración)", () => {
     expect(row!.payment_status).toBe("held");
     expect(row!.mp_payment_id).toBe("pay_1");
   });
+
+  it("bloquea iniciar (in_progress) un pedido prepago sin pago retenido", async () => {
+    const { updateJobStatus } = await import("@/lib/actions/job");
+    const [job] = await sql<{ id: string }[]>`
+      insert into jobs
+        (client_id, provider_id, category_id, type, status, title, payment_method, payment_status, commission_rate)
+      values
+        (${CLIENT}, ${PROVIDER_A}, 'urgent', 'accepted', 'Test', 'transfer', 'pending', '0.120')
+      returning id`;
+    currentSession = { user: { id: PROVIDER_A }, role: "provider" };
+
+    const blocked = await updateJobStatus({ jobId: job!.id, status: "in_progress" });
+    expect(blocked.ok).toBe(false);
+
+    await sql`update jobs set payment_status='held', mp_payment_id='pay_x' where id=${job!.id}`;
+    const ok = await updateJobStatus({ jobId: job!.id, status: "in_progress" });
+    expect(ok.ok).toBe(true);
+
+    const [row] = await sql<{ status: string }[]>`select status from jobs where id=${job!.id}`;
+    expect(row!.status).toBe("in_progress");
+  });
+
+  it("cancelar un pedido con pago retenido dispara reintegro y queda refunded", async () => {
+    const { updateJobStatus } = await import("@/lib/actions/job");
+    refundJobPayment.mockResolvedValue(undefined);
+    const [job] = await sql<{ id: string }[]>`
+      insert into jobs
+        (client_id, provider_id, category_id, type, status, title, payment_method, payment_status, mp_payment_id, commission_rate)
+      values
+        (${CLIENT}, ${PROVIDER_A}, 'scheduled', 'accepted', 'Test', 'transfer', 'held', 'pay_9', '0.120')
+      returning id`;
+    currentSession = { user: { id: CLIENT }, role: "client" };
+
+    const res = await updateJobStatus({ jobId: job!.id, status: "cancelled" });
+    expect(res.ok).toBe(true);
+    expect(refundJobPayment).toHaveBeenCalledWith("pay_9");
+
+    const [row] = await sql<{ status: string; payment_status: string }[]>`
+      select status, payment_status from jobs where id=${job!.id}`;
+    expect(row!.status).toBe("cancelled");
+    expect(row!.payment_status).toBe("refunded");
+  });
 });
