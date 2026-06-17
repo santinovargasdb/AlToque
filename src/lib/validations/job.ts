@@ -30,10 +30,18 @@ export const createJobSchema = z
     scheduledAt: z.coerce.date().optional(),
     paymentMethod: z.enum(["cash", "transfer", "card"]),
     providerId: z.string().uuid().optional(),
+    priceEstimate: z.coerce.number().positive().max(100_000_000).optional(),
   })
   .refine(
     (d) => d.type !== "scheduled" || !!d.scheduledAt,
     { message: "Elegí fecha y hora para un trabajo agendado", path: ["scheduledAt"] },
+  )
+  .refine(
+    (d) => d.paymentMethod === "cash" || (d.priceEstimate ?? 0) > 0,
+    {
+      message: "Ingresá un precio estimado para pagar por la app",
+      path: ["priceEstimate"],
+    },
   );
 
 export type CreateJobInput = z.infer<typeof createJobSchema>;
