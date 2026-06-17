@@ -8,15 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatARS } from "@/lib/utils";
 import { updateJobStatus, completeJob } from "@/lib/actions/job";
-import type { JobStatus } from "@/types";
+import type { JobStatus, PaymentMethod, PaymentStatus } from "@/types";
 
 /** Acciones del profesional sobre un pedido según su estado. */
 export function ProviderJobActions({
   jobId,
   status,
+  paymentMethod,
+  paymentStatus,
 }: {
   jobId: string;
   status: JobStatus;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
 }) {
   const [pending, startTransition] = useTransition();
   const [price, setPrice] = useState("");
@@ -78,6 +82,14 @@ export function ProviderJobActions({
   }
 
   if (status === "accepted") {
+    const awaitingPayment = paymentMethod !== "cash" && paymentStatus !== "held";
+    if (awaitingPayment) {
+      return (
+        <p className="rounded-xl border border-warning/30 bg-warning/5 p-4 text-center text-sm font-medium text-warning">
+          Esperando pago del cliente. Vas a poder iniciar cuando el pago esté confirmado.
+        </p>
+      );
+    }
     return (
       <Button className="w-full" onClick={() => move("in_progress")} disabled={pending}>
         {pending ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}

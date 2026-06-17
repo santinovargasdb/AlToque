@@ -22,7 +22,12 @@ export default async function ProviderJobPage({
       job={job}
       counterpart={{ label: "Cliente", name: job.clientName }}
     >
-      <ProviderJobActions jobId={job.id} status={job.status} />
+      <ProviderJobActions
+        jobId={job.id}
+        status={job.status}
+        paymentMethod={job.paymentMethod}
+        paymentStatus={job.paymentStatus}
+      />
     </JobDetailView>
   );
 }
