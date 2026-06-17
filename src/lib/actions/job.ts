@@ -13,18 +13,21 @@ import {
   DEFAULT_COMMISSION_RATE,
   calculateCommission,
 } from "@/lib/mercadopago/commission";
+import { createJobPreference } from "@/lib/mercadopago/preference";
 import type { ActionResult } from "./provider";
 
 const URGENT_BROADCAST_LIMIT = 10;
 
 export type CreateJobResult =
-  | { ok: true; jobId: string }
+  | { ok: true; jobId: string; redirectUrl?: string }
   | { ok: false; error: string };
 
 /**
- * Crea un pedido (agendado o urgente). En Step 6 cubrimos el flujo agendado
- * con proveedor asignado. El despacho urgente (job_dispatch + realtime) se
- * agrega en el Step 7.
+ * Crea un pedido (agendado o urgente). Pago:
+ *  - cash → no toca MP (paymentStatus 'none').
+ *  - transfer/card → crea preferencia de Checkout Pro (escrow a la cuenta de
+ *    AlToque), deja paymentStatus 'pending' y devuelve `redirectUrl` (init_point)
+ *    para que el cliente pague. El webhook lo pasa a 'held'.
  */
 export async function createJob(input: unknown): Promise<CreateJobResult> {
   const session = await getSession();
@@ -45,20 +48,21 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
   if (lat == null || lng == null) {
     const geo = await geocodeAddress(data.addressText);
     if (!geo) {
-      return {
-        ok: false,
-        error: "No pudimos ubicar la dirección del trabajo.",
-      };
+      return { ok: false, error: "No pudimos ubicar la dirección del trabajo." };
     }
     lat = geo.lat;
     lng = geo.lng;
   }
 
   const commissionRate = DEFAULT_COMMISSION_RATE.toFixed(3);
+  const isPrepaid = data.paymentMethod !== "cash";
+  const initialPaymentStatus = isPrepaid ? "pending" : "none";
   const isBroadcast = data.type === "urgent" && !data.providerId;
 
-  // ── Flujo URGENTE sin proveedor: broadcast a los online cercanos ──
+  let jobId: string;
+
   if (isBroadcast) {
+    // ── Flujo URGENTE sin proveedor: broadcast a los online cercanos ──
     const nearby = await findNearbyProviders({
       categoryId: data.categoryId,
       lat,
@@ -74,7 +78,7 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
       };
     }
 
-    const jobId = await db.transaction(async (tx) => {
+    jobId = await db.transaction(async (tx) => {
       const [row] = await tx
         .insert(jobs)
         .values({
@@ -87,6 +91,8 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
           photos: data.photos,
           addressText: data.addressText,
           paymentMethod: data.paymentMethod,
+          priceEstimate: data.priceEstimate?.toFixed(2),
+          paymentStatus: initialPaymentStatus,
           commissionRate,
         })
         .returning({ id: jobs.id });
@@ -105,42 +111,70 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
       return id;
     });
 
+    // Broadcast inmediato (el pago va en paralelo).
     await dispatchNewUrgentJob({
       jobId,
       title: data.title,
       providerIds: nearby.map((n) => n.provider_id),
     });
-
-    revalidatePath("/pedidos");
-    return { ok: true, jobId };
+  } else {
+    // ── Flujo agendado / directo a un proveedor ──
+    jobId = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .insert(jobs)
+        .values({
+          clientId: session.user.id,
+          providerId: data.providerId ?? null,
+          categoryId: data.categoryId,
+          type: data.type,
+          status: "requested",
+          title: data.title,
+          description: data.description,
+          photos: data.photos,
+          addressText: data.addressText,
+          scheduledAt: data.scheduledAt,
+          paymentMethod: data.paymentMethod,
+          priceEstimate: data.priceEstimate?.toFixed(2),
+          paymentStatus: initialPaymentStatus,
+          commissionRate,
+        })
+        .returning({ id: jobs.id });
+      const id = row!.id;
+      await tx.execute(
+        sql`update jobs set location = st_setsrid(st_makepoint(${lng}, ${lat}), 4326) where id = ${id}`,
+      );
+      return id;
+    });
   }
 
-  // ── Flujo agendado / directo a un proveedor ──
-  const jobId = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .insert(jobs)
-      .values({
-        clientId: session.user.id,
-        providerId: data.providerId ?? null,
-        categoryId: data.categoryId,
-        type: data.type,
-        status: "requested",
+  // ── Cola de pago (transfer/card): preferencia de Checkout Pro ──
+  if (isPrepaid) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    try {
+      const { preferenceId, initPoint } = await createJobPreference({
+        jobId,
         title: data.title,
-        description: data.description,
-        photos: data.photos,
-        addressText: data.addressText,
-        scheduledAt: data.scheduledAt,
-        paymentMethod: data.paymentMethod,
-        commissionRate,
-      })
-      .returning({ id: jobs.id });
-
-    const id = row!.id;
-    await tx.execute(
-      sql`update jobs set location = st_setsrid(st_makepoint(${lng}, ${lat}), 4326) where id = ${id}`,
-    );
-    return id;
-  });
+        amount: data.priceEstimate!,
+        appUrl,
+      });
+      await db
+        .update(jobs)
+        .set({ mpPreferenceId: preferenceId })
+        .where(eq(jobs.id, jobId));
+      revalidatePath("/pedidos");
+      revalidatePath("/pro/pedidos");
+      return { ok: true, jobId, redirectUrl: initPoint };
+    } catch {
+      await db
+        .update(jobs)
+        .set({ status: "cancelled", updatedAt: new Date() })
+        .where(eq(jobs.id, jobId));
+      return {
+        ok: false,
+        error: "No pudimos iniciar el pago. Probá de nuevo.",
+      };
+    }
+  }
 
   revalidatePath("/pedidos");
   revalidatePath("/pro/pedidos");
