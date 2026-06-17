@@ -12,8 +12,18 @@ import { markPaymentHeld } from "@/lib/mercadopago/payments";
  */
 export async function POST(request: NextRequest) {
   const url = new URL(request.url);
-  const dataId = url.searchParams.get("data.id");
-  const type = url.searchParams.get("type") ?? url.searchParams.get("topic");
+  let dataId = url.searchParams.get("data.id");
+  let type = url.searchParams.get("type") ?? url.searchParams.get("topic");
+
+  // MP suele mandar `data.id`/`type` en la query, pero según el evento puede
+  // venir sólo en el body JSON ({ type, data: { id } }). Caemos al body.
+  if (!dataId || !type) {
+    const body = (await request.json().catch(() => null)) as
+      | { data?: { id?: string | number }; type?: string }
+      | null;
+    dataId = dataId ?? (body?.data?.id != null ? String(body.data.id) : null);
+    type = type ?? body?.type ?? null;
+  }
 
   if (
     !isValidWebhookSignature({

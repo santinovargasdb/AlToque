@@ -41,14 +41,24 @@ export async function GET(request: NextRequest) {
             and job_id in (select id from jobs where status = 'expired')`,
     );
 
-    // Reintegrar los que estaban pagados (held) pero nadie completó.
+    // Reintegrar los que estaban pagados (held) pero nadie completó. Cada
+    // reintegro va en su propio try/catch: un fallo de MP no corta el lote;
+    // el job queda 'expired' con payment_status 'held' (conservador) para
+    // reintentar a mano.
     for (const j of expired) {
       if (j.payment_status === "held" && j.mp_payment_id) {
-        await refundJobPayment(j.mp_payment_id);
-        await db
-          .update(jobs)
-          .set({ paymentStatus: "refunded", updatedAt: new Date() })
-          .where(eq(jobs.id, j.id));
+        try {
+          await refundJobPayment(j.mp_payment_id);
+          await db
+            .update(jobs)
+            .set({ paymentStatus: "refunded", updatedAt: new Date() })
+            .where(eq(jobs.id, j.id));
+        } catch (err) {
+          console.error(
+            `expire-jobs: fallo el reintegro del job ${j.id} (pago ${j.mp_payment_id})`,
+            err,
+          );
+        }
       }
     }
   }
