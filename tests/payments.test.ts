@@ -1,6 +1,22 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createJobSchema } from "@/lib/validations/job";
 import { buildJobPreferenceBody } from "@/lib/mercadopago/preference";
+import { isValidWebhookSignature } from "@/lib/mercadopago/webhook";
+import {
+  InvalidWebhookSignatureError,
+  SignatureFailureReason,
+} from "mercadopago";
+
+const mp = vi.hoisted(() => ({ validate: vi.fn() }));
+vi.mock("mercadopago", async (orig) => {
+  const actual = await orig<typeof import("mercadopago")>();
+  class FakeInvalid extends Error {}
+  return {
+    ...actual,
+    WebhookSignatureValidator: { validate: mp.validate },
+    InvalidWebhookSignatureError: FakeInvalid,
+  };
+});
 
 const base = {
   categoryId: "11111111-1111-1111-1111-111111111111",
@@ -63,4 +79,34 @@ describe("buildJobPreferenceBody", () => {
     expect(body.auto_return).toBe("approved");
   });
 });
+
+describe("isValidWebhookSignature", () => {
+  const input = { xSignature: "ts=1,v1=abc", xRequestId: "req-1", dataId: "123" };
+
+  beforeEach(() => {
+    mp.validate.mockReset();
+    process.env.MP_WEBHOOK_SECRET = "secret";
+  });
+
+  it("devuelve true cuando el validador no lanza", () => {
+    mp.validate.mockReturnValue(undefined);
+    expect(isValidWebhookSignature(input)).toBe(true);
+  });
+
+  it("devuelve false ante firma inválida", () => {
+    mp.validate.mockImplementation(() => {
+      throw new InvalidWebhookSignatureError(
+        SignatureFailureReason.SignatureMismatch,
+      );
+    });
+    expect(isValidWebhookSignature(input)).toBe(false);
+  });
+
+  it("devuelve false si falta el secreto", () => {
+    delete process.env.MP_WEBHOOK_SECRET;
+    expect(isValidWebhookSignature(input)).toBe(false);
+    expect(mp.validate).not.toHaveBeenCalled();
+  });
+});
+
 
