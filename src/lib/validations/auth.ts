@@ -68,11 +68,41 @@ export const passwordSchema = z
     }
   });
 
+/**
+ * Teléfono de contacto OBLIGATORIO: en un marketplace de oficios la
+ * coordinación depende de él. Google/OAuth no lo provee, por eso el
+ * onboarding de /completar-perfil lo exige a los usuarios que entran así.
+ */
+export const phoneSchema = z
+  .string({ required_error: "Ingresá tu teléfono" })
+  .trim()
+  .min(6, "Ingresá tu teléfono")
+  .max(25, "El teléfono es demasiado largo")
+  .regex(
+    /^[\d\s+()-]+$/,
+    "El teléfono solo puede tener números, +, - y espacios",
+  );
+
 /** Ruta interna segura (evita open redirect: debe empezar con "/" y no con "//"). */
 const internalPathSchema = z
   .string()
   .regex(/^\/(?!\/)/, "Ruta inválida")
   .max(500);
+
+/**
+ * Input de `completeProfile` (onboarding post-OAuth/OTP): los datos mínimos
+ * que Google no puede aportar y que la app necesita para operar.
+ */
+export const completeProfileSchema = z.object({
+  fullName: z
+    .string({ required_error: "Ingresá tu nombre" })
+    .trim()
+    .min(2, "Ingresá tu nombre y apellido")
+    .max(120, "El nombre es demasiado largo"),
+  phone: phoneSchema,
+});
+
+export type CompleteProfileInput = z.infer<typeof completeProfileSchema>;
 
 /**
  * Query params que acepta `/auth/callback` (OTP, recovery y OAuth/Google).
@@ -101,13 +131,7 @@ export const signUpSchema = z
       .trim()
       .min(2, "Ingresá tu nombre y apellido")
       .max(120, "El nombre es demasiado largo"),
-    phone: z
-      .string()
-      .trim()
-      .max(25, "El teléfono es demasiado largo")
-      .regex(/^[\d\s+()-]*$/, "El teléfono solo puede tener números, +, - y espacios")
-      .optional()
-      .or(z.literal("")),
+    phone: phoneSchema,
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string({ required_error: "Repetí la contraseña" }),

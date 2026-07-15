@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PasswordFields } from "./password-fields";
 import { updatePassword } from "@/lib/actions/auth";
+import { logAuthError } from "@/lib/auth-log";
 import {
   updatePasswordSchema,
   PASSWORD_RULES,
@@ -32,6 +33,7 @@ export function ResetPasswordForm() {
     startTransition(async () => {
       const res = await updatePassword(parsed.data);
       if (!res.ok) {
+        logAuthError("recovery:update-password", res.error);
         toast.error(res.error);
         return;
       }

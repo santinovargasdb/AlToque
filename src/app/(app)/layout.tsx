@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Home, Search, MessageSquare, User } from "lucide-react";
+import { requireCompleteProfile } from "@/lib/auth";
 
 // Shell mobile-first del cliente con bottom nav (Sección 6 del blueprint).
 const NAV = [
@@ -9,11 +10,15 @@ const NAV = [
   { href: "/perfil", label: "Perfil", icon: User },
 ];
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Gate de onboarding: sin nombre/teléfono no se entra al dashboard
+  // (los registros vía Google/OTP pueden llegar sin esos datos).
+  await requireCompleteProfile();
+
   return (
     <div className="flex min-h-dvh flex-col bg-background pb-16">
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">

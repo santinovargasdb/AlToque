@@ -7,6 +7,8 @@ import {
   providerCategories,
 } from "@/lib/db/schema";
 import { ProviderProfileForm } from "@/components/pro/provider-profile-form";
+import { GoogleAccountLink } from "@/components/auth/google-account-link";
+import { SetPasswordButton } from "@/components/auth/set-password-button";
 
 export default async function ProPerfilPage() {
   const { user } = await requireRole("provider");
@@ -58,6 +60,14 @@ export default async function ProPerfilPage() {
           lng: coords?.lng ?? null,
         }}
       />
+
+      {/* Métodos de acceso de la cuenta (Google + contraseña). */}
+      <section className="space-y-4 rounded-xl border border-border bg-card p-5">
+        <h2 className="font-heading font-semibold">Métodos de acceso</h2>
+        <GoogleAccountLink returnTo="/pro/perfil" />
+        <div className="h-px bg-border" />
+        <SetPasswordButton email={user.email ?? ""} />
+      </section>
     </div>
   );
 }

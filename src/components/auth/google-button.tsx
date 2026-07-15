@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { logAuthError } from "@/lib/auth-log";
 import type { Role } from "@/lib/auth";
 
 /**
@@ -48,6 +49,7 @@ export function GoogleButton({
     // loading activo para evitar doble click / parpadeo.
     if (error) {
       setLoading(false);
+      logAuthError("login:google-oauth", error, { role: role ?? null });
       toast.error(
         error.message.toLowerCase().includes("provider is not enabled")
           ? "El ingreso con Google no está habilitado todavía."

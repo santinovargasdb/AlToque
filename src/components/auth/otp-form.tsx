@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { logAuthError } from "@/lib/auth-log";
 import { EMAIL_INPUT_PATTERN, emailSchema } from "@/lib/validations/auth";
 import type { Role } from "@/lib/auth";
 
@@ -54,6 +55,7 @@ export function OtpForm({
     setLoading(false);
 
     if (error) {
+      logAuthError("otp:send-code", error, { mode });
       toast.error(
         error.message.includes("Signups not allowed") || !isSignup
           ? "No encontramos una cuenta con ese email. ¿Querés registrarte?"
@@ -76,6 +78,7 @@ export function OtpForm({
     setLoading(false);
 
     if (error) {
+      logAuthError("otp:verify-code", error, { mode });
       toast.error("Código inválido o vencido. Probá de nuevo.");
       return;
     }

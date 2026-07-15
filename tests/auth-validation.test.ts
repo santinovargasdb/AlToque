@@ -1,11 +1,72 @@
-import { describe, it, expect } from "vitest";
+// @vitest-environment node
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+} from "vitest";
+import type { NextRequest } from "next/server";
 import {
   emailSchema,
   passwordSchema,
   signUpSchema,
   authCallbackParamsSchema,
+  completeProfileSchema,
   PASSWORD_RULES,
 } from "@/lib/validations/auth";
+import { GET as authCallbackGET } from "@/app/auth/callback/route";
+
+/* ── Mocks del callback: Supabase (sesión) y Drizzle (promoción de rol) ──
+   Permiten testear el handler real de /auth/callback sin red ni DB. */
+
+const supa = vi.hoisted(() => ({
+  exchangeCodeForSession: vi.fn(),
+  verifyOtp: vi.fn(),
+  getUser: vi.fn(),
+  refreshSession: vi.fn(),
+}));
+
+const dbSpy = vi.hoisted(() => ({
+  selectLimit: vi.fn(),
+  txUpdateWhere: vi.fn(),
+  txInsertConflict: vi.fn(),
+}));
+
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: async () => ({ auth: supa }),
+}));
+
+vi.mock("@/lib/db", () => ({
+  db: {
+    select: () => ({
+      from: () => ({ where: () => ({ limit: dbSpy.selectLimit }) }),
+    }),
+    transaction: async (cb: (tx: unknown) => Promise<unknown>) =>
+      cb({
+        update: () => ({ set: () => ({ where: dbSpy.txUpdateWhere }) }),
+        insert: () => ({
+          values: () => ({ onConflictDoNothing: dbSpy.txInsertConflict }),
+        }),
+      }),
+  },
+}));
+
+/** Request mínima para el route handler (nextUrl + headers es lo que usa). */
+function makeRequest(url: string): NextRequest {
+  return {
+    nextUrl: new URL(url),
+    headers: new Headers(),
+  } as unknown as NextRequest;
+}
+
+/** Location de la redirección devuelta, parseada. */
+function redirectedTo(res: Response): URL {
+  const location = res.headers.get("location");
+  expect(location).toBeTruthy();
+  return new URL(location!);
+}
 
 describe("emailSchema · formato estricto", () => {
   it.each([
@@ -133,5 +194,143 @@ describe("authCallbackParamsSchema · params de /auth/callback (OAuth)", () => {
       role: "admin",
     });
     expect(r.role).toBeNull();
+  });
+});
+
+describe("completeProfileSchema · onboarding", () => {
+  it("acepta nombre y teléfono válidos", () => {
+    const r = completeProfileSchema.safeParse({
+      fullName: "Juan Pérez",
+      phone: "11 2345 6789",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it.each([
+    ["sin teléfono", { fullName: "Juan Pérez", phone: "" }],
+    ["teléfono inválido", { fullName: "Juan Pérez", phone: "abc" }],
+    ["sin nombre", { fullName: "", phone: "11 2345 6789" }],
+  ])("rechaza %s", (_label, input) => {
+    expect(completeProfileSchema.safeParse(input).success).toBe(false);
+  });
+});
+
+describe("GET /auth/callback · integración (edge cases de Google OAuth)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Los caminos de error loggean con logAuthError → silenciamos la consola.
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("cancelación manual en Google → mensaje amigable sin tocar la sesión", async () => {
+    const res = await authCallbackGET(
+      makeRequest(
+        "http://localhost:3000/auth/callback?error=access_denied&error_description=User+denied+access",
+      ),
+    );
+
+    const loc = redirectedTo(res);
+    expect(loc.pathname).toBe("/ingresar");
+    expect(loc.searchParams.get("error")).toBe(
+      "Cancelaste el ingreso con Google. Probá de nuevo.",
+    );
+    // La sesión no se toca: no hubo intercambio de código ni escritura en DB.
+    expect(supa.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(dbSpy.txUpdateWhere).not.toHaveBeenCalled();
+  });
+
+  it("fallo del intercambio (código inválido) → redirección limpia a /ingresar", async () => {
+    supa.exchangeCodeForSession.mockResolvedValue({
+      error: { message: "invalid code" },
+    });
+
+    const res = await authCallbackGET(
+      makeRequest("http://localhost:3000/auth/callback?code=xyz&next=/inicio"),
+    );
+
+    const loc = redirectedTo(res);
+    expect(loc.pathname).toBe("/ingresar");
+    expect(loc.searchParams.get("error")).toBe(
+      "No se pudo verificar el enlace",
+    );
+  });
+
+  it("timeout inesperado de Supabase (throw) → no explota, redirección limpia", async () => {
+    supa.exchangeCodeForSession.mockRejectedValue(
+      new Error("fetch failed: connect ETIMEDOUT"),
+    );
+
+    const res = await authCallbackGET(
+      makeRequest("http://localhost:3000/auth/callback?code=xyz&next=/inicio"),
+    );
+
+    const loc = redirectedTo(res);
+    expect(loc.pathname).toBe("/ingresar");
+    expect(loc.searchParams.get("error")).toBe(
+      "No se pudo verificar el enlace",
+    );
+    expect(dbSpy.txUpdateWhere).not.toHaveBeenCalled();
+  });
+
+  it("email ya registrado con contraseña que entra con Google (vinculación automática) → conserva su rol", async () => {
+    supa.exchangeCodeForSession.mockResolvedValue({ error: null });
+    // Cuenta EXISTENTE (creada hace meses): la vinculación de identidades la
+    // hace Supabase por email verificado; nuestra capa NO debe tocar el rol
+    // aunque venga ?role=provider (ej. entró por la pantalla de registro pro).
+    supa.getUser.mockResolvedValue({
+      data: { user: { id: "user-1", created_at: "2026-01-01T00:00:00.000Z" } },
+    });
+
+    const res = await authCallbackGET(
+      makeRequest(
+        "http://localhost:3000/auth/callback?code=xyz&next=/pro/inicio&role=provider",
+      ),
+    );
+
+    // Redirige (el middleware luego enruta por el rol real)…
+    expect(redirectedTo(res).pathname).toBe("/pro/inicio");
+    // …pero NO promueve ni refresca: la cuenta existente queda intacta.
+    expect(dbSpy.selectLimit).not.toHaveBeenCalled();
+    expect(dbSpy.txUpdateWhere).not.toHaveBeenCalled();
+    expect(supa.refreshSession).not.toHaveBeenCalled();
+  });
+
+  it("signup NUEVO vía Google con role=provider → promueve y re-emite el JWT", async () => {
+    supa.exchangeCodeForSession.mockResolvedValue({ error: null });
+    supa.getUser.mockResolvedValue({
+      data: { user: { id: "user-2", created_at: new Date().toISOString() } },
+    });
+    dbSpy.selectLimit.mockResolvedValue([{ role: "client" }]);
+    supa.refreshSession.mockResolvedValue({ error: null });
+
+    const res = await authCallbackGET(
+      makeRequest(
+        "http://localhost:3000/auth/callback?code=xyz&next=/pro/inicio&role=provider",
+      ),
+    );
+
+    expect(redirectedTo(res).pathname).toBe("/pro/inicio");
+    expect(dbSpy.txUpdateWhere).toHaveBeenCalledTimes(1); // profiles.role
+    expect(dbSpy.txInsertConflict).toHaveBeenCalledTimes(1); // provider_profiles
+    expect(supa.refreshSession).toHaveBeenCalledTimes(1); // claim user_role
+  });
+
+  it("signup nuevo SIN role=provider → no toca el rol", async () => {
+    supa.exchangeCodeForSession.mockResolvedValue({ error: null });
+    supa.getUser.mockResolvedValue({
+      data: { user: { id: "user-3", created_at: new Date().toISOString() } },
+    });
+
+    const res = await authCallbackGET(
+      makeRequest("http://localhost:3000/auth/callback?code=xyz&next=/inicio"),
+    );
+
+    expect(redirectedTo(res).pathname).toBe("/inicio");
+    expect(supa.getUser).not.toHaveBeenCalled();
+    expect(dbSpy.txUpdateWhere).not.toHaveBeenCalled();
   });
 });

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { profiles, providerProfiles } from "@/lib/db/schema";
 import { authCallbackParamsSchema } from "@/lib/validations/auth";
+import { logAuthError } from "@/lib/auth-log";
 
 /**
  * Ventana en la que un usuario se considera "recién registrado" para aplicar
@@ -79,7 +80,11 @@ async function promoteOAuthSignupToProvider(
 
   const { error } = await supabase.auth.refreshSession();
   if (error) {
-    console.error("auth/callback: fallo el refresh post-promoción", error);
+    // No fatal: el middleware resuelve el rol desde la DB si el claim
+    // del JWT quedó viejo; solo se registra para monitoreo.
+    logAuthError("callback:refresh-post-promocion", error, {
+      userId: user.id,
+    });
   }
 }
 
@@ -100,12 +105,12 @@ export async function GET(request: NextRequest) {
   // El proveedor OAuth puede volver con error (ej. el usuario canceló el
   // consentimiento en Google). Se informa amigablemente en /ingresar.
   if (searchParams.get("error")) {
-    const description = searchParams.get("error_description");
-    console.error(
-      `auth/callback: error del proveedor: ${searchParams.get("error")} — ${description}`,
-    );
+    const providerError = searchParams.get("error");
+    logAuthError("callback:provider-error", providerError, {
+      description: searchParams.get("error_description"),
+    });
     const friendly =
-      searchParams.get("error") === "access_denied"
+      providerError === "access_denied"
         ? "Cancelaste el ingreso con Google. Probá de nuevo."
         : "No pudimos completar el ingreso. Probá de nuevo.";
     return NextResponse.redirect(
@@ -123,28 +128,37 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      // Registro como profesional vía Google: promover ANTES de redirigir,
-      // para que el middleware enrute a /pro con el claim correcto.
-      if (role === "provider") {
-        await promoteOAuthSignupToProvider(supabase);
+  // try/catch integral: un timeout de red contra Supabase (exchange/verify
+  // lanzan en fallos duros) debe terminar en una redirección limpia a
+  // /ingresar, nunca en un 500 sin sesión ni contexto.
+  try {
+    if (code) {
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (!error) {
+        // Registro como profesional vía Google: promover ANTES de redirigir,
+        // para que el middleware enrute a /pro con el claim correcto.
+        if (role === "provider") {
+          await promoteOAuthSignupToProvider(supabase);
+        }
+        return NextResponse.redirect(`${base}${next}`);
       }
-      return NextResponse.redirect(`${base}${next}`);
+      logAuthError("callback:exchange", error, { flow: "pkce" });
+    } else if (tokenHash && type) {
+      const { error } = await supabase.auth.verifyOtp({
+        type,
+        token_hash: tokenHash,
+      });
+      if (!error) {
+        // Un link de recovery siempre debe aterrizar en el form de contraseña.
+        const dest = type === "recovery" ? "/restablecer" : next;
+        return NextResponse.redirect(`${base}${dest}`);
+      }
+      logAuthError("callback:verify-otp", error, { flow: type });
     }
-    console.error("auth/callback: exchangeCodeForSession falló", error);
-  } else if (tokenHash && type) {
-    const { error } = await supabase.auth.verifyOtp({
-      type,
-      token_hash: tokenHash,
+  } catch (err) {
+    logAuthError("callback:unexpected", err, {
+      flow: code ? "pkce" : (type ?? "unknown"),
     });
-    if (!error) {
-      // Un link de recovery siempre debe aterrizar en el form de contraseña.
-      const dest = type === "recovery" ? "/restablecer" : next;
-      return NextResponse.redirect(`${base}${dest}`);
-    }
-    console.error("auth/callback: verifyOtp falló", error);
   }
 
   return NextResponse.redirect(

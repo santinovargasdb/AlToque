@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LayoutDashboard, ClipboardList, Wallet, User } from "lucide-react";
+import { requireCompleteProfile } from "@/lib/auth";
 
 // Shell del profesional con bottom nav.
 const NAV = [
@@ -9,11 +10,15 @@ const NAV = [
   { href: "/pro/perfil", label: "Perfil", icon: User },
 ];
 
-export default function ProLayout({
+export default async function ProLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Gate de onboarding: sin nombre/teléfono no se entra al dashboard.
+  // La activación del profesional (oficios/zona/verificación) la sigue
+  // guiando el checklist de /pro/inicio + la regla "solo approved".
+  await requireCompleteProfile();
   return (
     <div className="flex min-h-dvh flex-col bg-background pb-16">
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">

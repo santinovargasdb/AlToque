@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordFields } from "./password-fields";
 import { signUpWithPassword } from "@/lib/actions/auth";
+import { logAuthError } from "@/lib/auth-log";
 import {
   EMAIL_INPUT_PATTERN,
   signUpSchema,
@@ -57,6 +58,7 @@ export function PasswordSignupForm({
     startTransition(async () => {
       const res = await signUpWithPassword(parsed.data);
       if (!res.ok) {
+        logAuthError("registro:password", res.error, { role });
         toast.error(res.error);
         return;
       }
@@ -99,7 +101,7 @@ export function PasswordSignupForm({
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="phone">Teléfono (opcional)</Label>
+        <Label htmlFor="phone">Teléfono</Label>
         <Input
           id="phone"
           type="tel"
@@ -107,7 +109,9 @@ export function PasswordSignupForm({
           placeholder="11 2345 6789"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          minLength={6}
           maxLength={25}
+          required
         />
       </div>
       <div className="space-y-1.5">

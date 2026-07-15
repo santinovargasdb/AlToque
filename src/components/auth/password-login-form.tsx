@@ -10,6 +10,7 @@ import {
   signInWithPassword,
   requestPasswordReset,
 } from "@/lib/actions/auth";
+import { logAuthError } from "@/lib/auth-log";
 import { EMAIL_INPUT_PATTERN, signInSchema } from "@/lib/validations/auth";
 
 /**
@@ -30,6 +31,7 @@ export function PasswordLoginForm({ redirectTo }: { redirectTo: string }) {
       startTransition(async () => {
         const res = await requestPasswordReset({ email });
         if (!res.ok) {
+          logAuthError("login:reset-request", res.error);
           toast.error(res.error);
           return;
         }
@@ -46,6 +48,7 @@ export function PasswordLoginForm({ redirectTo }: { redirectTo: string }) {
     startTransition(async () => {
       const res = await signInWithPassword(parsed.data);
       if (!res.ok) {
+        logAuthError("login:password", res.error);
         toast.error(res.error);
         return;
       }

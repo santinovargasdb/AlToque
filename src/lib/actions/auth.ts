@@ -1,13 +1,20 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
+import { db } from "@/lib/db";
+import { profiles } from "@/lib/db/schema";
+import { getSession, homeForRole } from "@/lib/auth";
 import { getRequestOrigin } from "@/lib/url";
+import { logAuthError } from "@/lib/auth-log";
 import {
   signUpSchema,
   signInSchema,
   resetRequestSchema,
   updatePasswordSchema,
+  completeProfileSchema,
 } from "@/lib/validations/auth";
 
 export type AuthActionResult =
@@ -161,6 +168,54 @@ export async function updatePassword(
   if (error) return { ok: false, error: translateAuthError(error.message) };
 
   return { ok: true };
+}
+
+export type CompleteProfileResult =
+  | { ok: true; home: string }
+  | { ok: false; error: string };
+
+/**
+ * Onboarding post-login (Tarea "completar perfil"): guarda los datos mínimos
+ * que el registro vía Google/OTP no aporta (nombre y teléfono). El gate
+ * `requireCompleteProfile` de los layouts bloquea el dashboard hasta que
+ * esta acción complete el perfil.
+ *
+ * @returns `home` — la ruta del dashboard según el rol, para que el form
+ *   haga la navegación dura post-guardado.
+ */
+export async function completeProfile(
+  input: unknown,
+): Promise<CompleteProfileResult> {
+  const session = await getSession();
+  if (!session) return { ok: false, error: "No autorizado." };
+
+  const parsed = completeProfileSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Datos inválidos.",
+    };
+  }
+
+  try {
+    await db
+      .update(profiles)
+      .set({
+        fullName: parsed.data.fullName,
+        phone: parsed.data.phone,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.id, session.user.id));
+  } catch (err) {
+    logAuthError("onboarding:complete-profile", err, {
+      userId: session.user.id,
+    });
+    return { ok: false, error: "No pudimos guardar tus datos. Probá de nuevo." };
+  }
+
+  revalidatePath("/perfil");
+  revalidatePath("/pro/perfil");
+  return { ok: true, home: homeForRole(session.role) };
 }
 
 /** Cierra la sesión y vuelve al inicio. */
