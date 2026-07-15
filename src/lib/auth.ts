@@ -25,6 +25,7 @@ export async function getSession() {
       role: profiles.role,
       fullName: profiles.fullName,
       phone: profiles.phone,
+      avatarUrl: profiles.avatarUrl,
     })
     .from(profiles)
     .where(eq(profiles.id, user.id))

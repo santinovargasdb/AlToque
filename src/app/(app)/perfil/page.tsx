@@ -4,6 +4,7 @@ import { CompleteProfileForm } from "@/components/auth/complete-profile-form";
 import { GoogleAccountLink } from "@/components/auth/google-account-link";
 import { SetPasswordButton } from "@/components/auth/set-password-button";
 import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
+import { AvatarUploader } from "@/components/shared/avatar-uploader";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 
 export const metadata: Metadata = { title: "Mi perfil" };
@@ -28,6 +29,13 @@ export default async function PerfilClientePage() {
         <p className="mb-4 mt-0.5 text-sm text-muted-foreground">
           {user.email}
         </p>
+        <div className="mb-5">
+          <AvatarUploader
+            userId={user.id}
+            initialUrl={profile?.avatarUrl ?? null}
+            name={profile?.fullName ?? null}
+          />
+        </div>
         <CompleteProfileForm
           mode="edit"
           initialFullName={profile?.fullName ?? ""}

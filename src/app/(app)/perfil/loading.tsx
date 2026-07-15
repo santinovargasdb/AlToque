@@ -16,7 +16,14 @@ export default function PerfilLoading() {
       <section className="rounded-xl border border-border bg-card p-5">
         <Skeleton className="h-5 w-40" />
         <Skeleton className="mt-2 h-4 w-52" />
-        <div className="mt-4 space-y-4">
+        <div className="mb-5 mt-4 flex items-center gap-4">
+          <Skeleton className="size-24 rounded-full" />
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-44" />
+          </div>
+        </div>
+        <div className="space-y-4">
           {[0, 1].map((i) => (
             <div key={i} className="space-y-1.5">
               <Skeleton className="h-4 w-32" />

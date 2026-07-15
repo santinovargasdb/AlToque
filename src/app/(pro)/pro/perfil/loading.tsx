@@ -13,6 +13,16 @@ export default function ProPerfilLoading() {
         <Skeleton className="h-4 w-80 max-w-full" />
       </div>
 
+      <section className="rounded-xl border border-border bg-card p-5">
+        <div className="flex items-center gap-4">
+          <Skeleton className="size-24 rounded-full" />
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-44" />
+          </div>
+        </div>
+      </section>
+
       <div className="space-y-5 rounded-xl border border-border bg-card p-5">
         <Skeleton className="h-4 w-24" />
         <div className="flex flex-wrap gap-2">

@@ -1,15 +1,8 @@
 import "server-only";
 import { createServiceClient } from "@/lib/supabase/server";
-
-/** Buckets de Supabase Storage (ver drizzle/storage.sql). */
-export const BUCKETS = {
-  /** Privado: DNI + selfie de verificación. */
-  verification: "verification",
-  /** Público: fotos de los problemas/trabajos. */
-  jobPhotos: "job-photos",
-  /** Público: avatares. */
-  avatars: "avatars",
-} as const;
+// BUCKETS vive en storage-buckets.ts (isomórfico): este módulo es
+// server-only y los uploaders del cliente también necesitan los nombres.
+import { BUCKETS } from "@/lib/storage-buckets";
 
 /**
  * URL firmada temporal para un archivo del bucket privado de verificación.

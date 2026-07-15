@@ -10,9 +10,10 @@ import { ProviderProfileForm } from "@/components/pro/provider-profile-form";
 import { GoogleAccountLink } from "@/components/auth/google-account-link";
 import { SetPasswordButton } from "@/components/auth/set-password-button";
 import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
+import { AvatarUploader } from "@/components/shared/avatar-uploader";
 
 export default async function ProPerfilPage() {
-  const { user } = await requireRole("provider");
+  const { user, profile } = await requireRole("provider");
   const uid = user.id;
 
   const [allCats, selectedCats, scalar, coordRows] = await Promise.all([
@@ -49,6 +50,15 @@ export default async function ProPerfilPage() {
           Definí tus oficios y tu zona para empezar a recibir pedidos.
         </p>
       </header>
+
+      {/* La foto se muestra a los clientes en búsquedas y perfil público. */}
+      <section className="rounded-xl border border-border bg-card p-5">
+        <AvatarUploader
+          userId={uid}
+          initialUrl={profile?.avatarUrl ?? null}
+          name={profile?.fullName ?? null}
+        />
+      </section>
 
       <ProviderProfileForm
         categories={allCats}

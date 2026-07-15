@@ -7,7 +7,7 @@ import { providerProfiles, providerCategories } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import { geocodeAddress } from "@/lib/maps/geocode";
 import { createServiceClient } from "@/lib/supabase/server";
-import { BUCKETS } from "@/lib/storage";
+import { BUCKETS } from "@/lib/storage-buckets";
 import {
   providerProfileSchema,
   ACCEPTED_DOC_TYPES,
