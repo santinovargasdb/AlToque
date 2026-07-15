@@ -3,6 +3,7 @@ import {
   emailSchema,
   passwordSchema,
   signUpSchema,
+  authCallbackParamsSchema,
   PASSWORD_RULES,
 } from "@/lib/validations/auth";
 
@@ -98,5 +99,39 @@ describe("signUpSchema", () => {
   it("acepta redirectTo interno", () => {
     const r = signUpSchema.safeParse({ ...base, redirectTo: "/pro/inicio" });
     expect(r.success).toBe(true);
+  });
+});
+
+describe("authCallbackParamsSchema · params de /auth/callback (OAuth)", () => {
+  it("acepta next interno y role válido", () => {
+    const r = authCallbackParamsSchema.parse({
+      next: "/pro/inicio",
+      role: "provider",
+    });
+    expect(r).toEqual({ next: "/pro/inicio", role: "provider" });
+  });
+
+  it("degrada un next externo (open redirect) a /inicio", () => {
+    const r = authCallbackParamsSchema.parse({
+      next: "//evil.com/phishing",
+      role: null,
+    });
+    expect(r.next).toBe("/inicio");
+  });
+
+  it("degrada un next absoluto (https://…) a /inicio", () => {
+    const r = authCallbackParamsSchema.parse({
+      next: "https://evil.com",
+      role: null,
+    });
+    expect(r.next).toBe("/inicio");
+  });
+
+  it("degrada un role desconocido a null (no escala privilegios)", () => {
+    const r = authCallbackParamsSchema.parse({
+      next: "/inicio",
+      role: "admin",
+    });
+    expect(r.role).toBeNull();
   });
 });

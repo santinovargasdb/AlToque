@@ -5,6 +5,8 @@ import Link from "next/link";
 import { User, Wrench, ArrowLeft } from "lucide-react";
 import { OtpForm } from "./otp-form";
 import { PasswordSignupForm } from "./password-signup-form";
+import { GoogleButton } from "./google-button";
+import { AuthDivider } from "./auth-divider";
 import type { Role } from "@/lib/auth";
 
 export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
@@ -34,6 +36,17 @@ export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
                 : "Te enviamos un código por email para confirmar."}
           </p>
         </div>
+        {/* El rol elegido viaja como intención al callback: Google no puede
+            mandarlo en los metadatos, así que /auth/callback lo aplica solo
+            a este signup nuevo (nunca a cuentas existentes). */}
+        <GoogleButton
+          redirectTo={redirectTo}
+          role={role}
+          label="Registrarme con Google"
+        />
+
+        <AuthDivider />
+
         {method === "password" ? (
           <PasswordSignupForm role={role} redirectTo={redirectTo} />
         ) : (

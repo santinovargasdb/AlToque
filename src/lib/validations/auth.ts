@@ -74,6 +74,24 @@ const internalPathSchema = z
   .regex(/^\/(?!\/)/, "Ruta inválida")
   .max(500);
 
+/**
+ * Query params que acepta `/auth/callback` (OTP, recovery y OAuth/Google).
+ * `.catch()` degrada valores inválidos a defaults seguros en vez de romper
+ * el flujo: un `next` externo cae a /inicio y un `role` desconocido a null.
+ */
+export const authCallbackParamsSchema = z.object({
+  /** Destino post-login; SOLO rutas internas (anti open redirect). */
+  next: internalPathSchema.catch("/inicio"),
+  /**
+   * Intención de rol del registro vía OAuth (el trigger de profiles no puede
+   * leerla de los metadatos de Google). El callback solo la aplica a
+   * signups recién creados — nunca cambia el rol de una cuenta existente.
+   */
+  role: z.enum(["client", "provider"]).nullable().catch(null),
+});
+
+export type AuthCallbackParams = z.infer<typeof authCallbackParamsSchema>;
+
 /** Input de `signUpWithPassword`. */
 export const signUpSchema = z
   .object({
