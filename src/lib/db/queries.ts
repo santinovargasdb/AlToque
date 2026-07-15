@@ -1,4 +1,4 @@
-import { sql, eq, inArray } from "drizzle-orm";
+import { sql, eq, and, asc, inArray } from "drizzle-orm";
 import { db } from "./index";
 import {
   profiles,
@@ -6,6 +6,7 @@ import {
   providerCategories,
   categories,
   reviews,
+  messages,
   jobs,
 } from "./schema";
 import type { JobStatus, JobType, PaymentMethod, PaymentStatus } from "@/types";
@@ -237,4 +238,34 @@ export async function getJobDetail(jobId: string): Promise<JobDetail | null> {
     providerAvatar: provider?.avatar ?? null,
     providerRating,
   };
+}
+
+/** Reseña que dejó `authorId` sobre un trabajo (o null si aún no reseñó). */
+export async function getJobReviewByAuthor(jobId: string, authorId: string) {
+  const [review] = await db
+    .select({
+      id: reviews.id,
+      rating: reviews.rating,
+      comment: reviews.comment,
+    })
+    .from(reviews)
+    .where(and(eq(reviews.jobId, jobId), eq(reviews.authorId, authorId)))
+    .limit(1);
+  return review ?? null;
+}
+
+/** Mensajes del chat de un trabajo, serializados para el client component. */
+export async function getJobMessages(jobId: string) {
+  const rows = await db
+    .select({
+      id: messages.id,
+      senderId: messages.senderId,
+      body: messages.body,
+      createdAt: messages.createdAt,
+    })
+    .from(messages)
+    .where(eq(messages.jobId, jobId))
+    .orderBy(asc(messages.createdAt))
+    .limit(200);
+  return rows.map((m) => ({ ...m, createdAt: m.createdAt.toISOString() }));
 }

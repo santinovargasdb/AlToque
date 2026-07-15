@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { EMAIL_INPUT_PATTERN, emailSchema } from "@/lib/validations/auth";
 import type { Role } from "@/lib/auth";
 
 type Mode = "login" | "signup";
@@ -32,9 +33,16 @@ export function OtpForm({
 
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
+    const parsedEmail = emailSchema.safeParse(email);
+    if (!parsedEmail.success) {
+      toast.error(
+        parsedEmail.error.issues[0]?.message ?? "Ingresá un email válido.",
+      );
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
-      email,
+      email: parsedEmail.data,
       options: {
         shouldCreateUser: isSignup,
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
@@ -148,6 +156,9 @@ export function OtpForm({
           placeholder="tu@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          pattern={EMAIL_INPUT_PATTERN}
+          title="Ingresá un email válido (ej: nombre@dominio.com)"
+          maxLength={254}
           required
           autoFocus={!isSignup}
         />

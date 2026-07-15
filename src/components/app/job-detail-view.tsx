@@ -154,10 +154,42 @@ export function JobDetailView({
               <span>{formatARS(job.commissionAmount)}</span>
             </div>
           )}
+          <SettlementNote
+            paymentMethod={job.paymentMethod}
+            priceEstimate={job.priceEstimate}
+            finalPrice={job.finalPrice}
+          />
         </section>
       )}
 
       {children}
     </div>
+  );
+}
+
+/**
+ * Liquidación estimado vs final para pagos por la app (Step 9b):
+ * si el final quedó abajo del estimado prepagado se reintegra la diferencia;
+ * si quedó arriba, el excedente se abona directo al profesional.
+ */
+function SettlementNote({
+  paymentMethod,
+  priceEstimate,
+  finalPrice,
+}: {
+  paymentMethod: JobDetail["paymentMethod"];
+  priceEstimate: string | null;
+  finalPrice: string;
+}) {
+  if (paymentMethod === "cash" || !priceEstimate) return null;
+  const diff = Number(priceEstimate) - Number(finalPrice);
+  if (!Number.isFinite(diff) || diff === 0) return null;
+
+  return (
+    <p className="mt-2 text-xs text-muted-foreground">
+      {diff > 0
+        ? `Se reintegra la diferencia con lo pagado por la app (${formatARS(diff)}).`
+        : `El excedente sobre lo pagado por la app (${formatARS(-diff)}) se abona directo al profesional.`}
+    </p>
   );
 }

@@ -4,10 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { User, Wrench, ArrowLeft } from "lucide-react";
 import { OtpForm } from "./otp-form";
+import { PasswordSignupForm } from "./password-signup-form";
 import type { Role } from "@/lib/auth";
 
 export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
   const [role, setRole] = useState<Role | null>(initialRole ?? null);
+  const [method, setMethod] = useState<"password" | "otp">("password");
 
   if (role) {
     const redirectTo = role === "provider" ? "/pro/inicio" : "/inicio";
@@ -27,10 +29,27 @@ export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
           <p className="mt-1 text-sm text-muted-foreground">
             {role === "provider"
               ? "Después vas a poder cargar tus oficios y verificar tu identidad."
-              : "Te enviamos un código por email para confirmar."}
+              : method === "password"
+                ? "Creá tu cuenta con email y contraseña."
+                : "Te enviamos un código por email para confirmar."}
           </p>
         </div>
-        <OtpForm mode="signup" role={role} redirectTo={redirectTo} />
+        {method === "password" ? (
+          <PasswordSignupForm role={role} redirectTo={redirectTo} />
+        ) : (
+          <OtpForm mode="signup" role={role} redirectTo={redirectTo} />
+        )}
+        <button
+          type="button"
+          onClick={() =>
+            setMethod(method === "password" ? "otp" : "password")
+          }
+          className="w-full text-center text-sm font-medium text-primary"
+        >
+          {method === "password"
+            ? "Prefiero registrarme con un código por email"
+            : "Prefiero registrarme con contraseña"}
+        </button>
         <p className="text-center text-sm text-muted-foreground">
           ¿Ya tenés cuenta?{" "}
           <Link href="/ingresar" className="font-medium text-primary">
