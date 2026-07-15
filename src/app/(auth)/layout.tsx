@@ -14,7 +14,8 @@ export default function AuthLayout({
         </span>
         <span className="font-heading text-xl font-bold">AlToque</span>
       </Link>
-      <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
+      {/* Entrada suave (tw-animate-css): fade + slide sutil al montar. */}
+      <div className="w-full max-w-sm animate-in fade-in slide-in-from-bottom-2 rounded-2xl border border-border bg-card p-6 shadow-[0_2px_8px_rgba(15,23,42,0.06)] duration-300">
         {children}
       </div>
     </div>

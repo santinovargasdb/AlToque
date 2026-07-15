@@ -9,6 +9,7 @@ import {
 import { ProviderProfileForm } from "@/components/pro/provider-profile-form";
 import { GoogleAccountLink } from "@/components/auth/google-account-link";
 import { SetPasswordButton } from "@/components/auth/set-password-button";
+import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
 
 export default async function ProPerfilPage() {
   const { user } = await requireRole("provider");
@@ -61,12 +62,14 @@ export default async function ProPerfilPage() {
         }}
       />
 
-      {/* Métodos de acceso de la cuenta (Google + contraseña). */}
+      {/* Métodos de acceso de la cuenta (Google + contraseña + sesiones). */}
       <section className="space-y-4 rounded-xl border border-border bg-card p-5">
         <h2 className="font-heading font-semibold">Métodos de acceso</h2>
         <GoogleAccountLink returnTo="/pro/perfil" />
         <div className="h-px bg-border" />
         <SetPasswordButton email={user.email ?? ""} />
+        <div className="h-px bg-border" />
+        <GlobalSignOutButton />
       </section>
     </div>
   );

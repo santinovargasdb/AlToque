@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { OtpForm } from "./otp-form";
 import { PasswordLoginForm } from "./password-login-form";
-import { GoogleButton } from "./google-button";
+import { OAuthButton } from "./oauth-button";
 import { AuthDivider } from "./auth-divider";
 
 type Method = "password" | "otp";
@@ -20,15 +20,21 @@ export function LoginFlow({ redirectTo }: { redirectTo: string }) {
 
   return (
     <div className="space-y-4">
-      <GoogleButton redirectTo={redirectTo} />
+      <OAuthButton provider="google" redirectTo={redirectTo} />
 
       <AuthDivider />
 
-      {method === "password" ? (
-        <PasswordLoginForm redirectTo={redirectTo} />
-      ) : (
-        <OtpForm mode="login" redirectTo={redirectTo} />
-      )}
+      {/* key={method} remonta el form → transición suave al alternar método. */}
+      <div
+        key={method}
+        className="animate-in fade-in slide-in-from-bottom-1 duration-200"
+      >
+        {method === "password" ? (
+          <PasswordLoginForm redirectTo={redirectTo} />
+        ) : (
+          <OtpForm mode="login" redirectTo={redirectTo} />
+        )}
+      </div>
 
       <button
         type="button"

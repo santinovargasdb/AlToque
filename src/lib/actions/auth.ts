@@ -224,3 +224,24 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+/**
+ * Cierra la sesión en TODOS los dispositivos: `scope: "global"` revoca
+ * todos los refresh tokens activos del usuario en Supabase (las otras
+ * sesiones caen al expirar su access token, ≤1 h). Redirige a /ingresar
+ * con un aviso de confirmación (query `notice`).
+ */
+export async function signOutEverywhere(): Promise<AuthActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut({ scope: "global" });
+  if (error) {
+    logAuthError("perfil:sign-out-global", error);
+    return {
+      ok: false,
+      error: "No pudimos cerrar las sesiones. Probá de nuevo.",
+    };
+  }
+  redirect(
+    `/ingresar?notice=${encodeURIComponent("Cerraste sesión en todos los dispositivos.")}`,
+  );
+}

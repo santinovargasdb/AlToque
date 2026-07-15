@@ -7,6 +7,7 @@ import type { UserIdentity } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { logAuthError } from "@/lib/auth-log";
 
 /**
@@ -49,10 +50,18 @@ export function GoogleAccountLink({ returnTo }: { returnTo: string }) {
   }, [loadIdentities]);
 
   if (identities === null) {
+    // Skeleton con la MISMA geometría que la fila real (evita CLS).
     return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Loader2 className="size-4 animate-spin" /> Cargando métodos de
-        acceso…
+      <div
+        className="flex items-center justify-between gap-3"
+        aria-busy="true"
+        aria-label="Cargando métodos de acceso"
+      >
+        <div className="space-y-1.5">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-3 w-48" />
+        </div>
+        <Skeleton className="h-9 w-28" />
       </div>
     );
   }

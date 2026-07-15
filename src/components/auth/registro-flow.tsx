@@ -5,7 +5,7 @@ import Link from "next/link";
 import { User, Wrench, ArrowLeft } from "lucide-react";
 import { OtpForm } from "./otp-form";
 import { PasswordSignupForm } from "./password-signup-form";
-import { GoogleButton } from "./google-button";
+import { OAuthButton } from "./oauth-button";
 import { AuthDivider } from "./auth-divider";
 import type { Role } from "@/lib/auth";
 
@@ -39,7 +39,8 @@ export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
         {/* El rol elegido viaja como intención al callback: Google no puede
             mandarlo en los metadatos, así que /auth/callback lo aplica solo
             a este signup nuevo (nunca a cuentas existentes). */}
-        <GoogleButton
+        <OAuthButton
+          provider="google"
           redirectTo={redirectTo}
           role={role}
           label="Registrarme con Google"
@@ -47,11 +48,17 @@ export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
 
         <AuthDivider />
 
-        {method === "password" ? (
-          <PasswordSignupForm role={role} redirectTo={redirectTo} />
-        ) : (
-          <OtpForm mode="signup" role={role} redirectTo={redirectTo} />
-        )}
+        {/* key={method} remonta el form → transición suave al alternar. */}
+        <div
+          key={method}
+          className="animate-in fade-in slide-in-from-bottom-1 duration-200"
+        >
+          {method === "password" ? (
+            <PasswordSignupForm role={role} redirectTo={redirectTo} />
+          ) : (
+            <OtpForm mode="signup" role={role} redirectTo={redirectTo} />
+          )}
+        </div>
         <button
           type="button"
           onClick={() =>

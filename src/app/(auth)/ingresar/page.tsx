@@ -7,9 +7,9 @@ export const metadata: Metadata = { title: "Ingresar" };
 export default async function IngresarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ returnUrl?: string; error?: string }>;
+  searchParams: Promise<{ returnUrl?: string; error?: string; notice?: string }>;
 }) {
-  const { returnUrl, error } = await searchParams;
+  const { returnUrl, error, notice } = await searchParams;
   // Solo permitir returnUrls internos (evita open redirect).
   const safeReturn =
     returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")
@@ -28,6 +28,13 @@ export default async function IngresarPage({
       {error && (
         <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
           {error}
+        </p>
+      )}
+
+      {/* Avisos informativos (ej. confirmación del cierre de sesión global). */}
+      {notice && (
+        <p className="rounded-lg border border-success/30 bg-success/5 p-3 text-sm text-success">
+          {notice}
         </p>
       )}
 
