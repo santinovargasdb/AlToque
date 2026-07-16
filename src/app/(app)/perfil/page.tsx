@@ -5,6 +5,7 @@ import { GoogleAccountLink } from "@/components/auth/google-account-link";
 import { SetPasswordButton } from "@/components/auth/set-password-button";
 import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
 import { AvatarUploader } from "@/components/shared/avatar-uploader";
+import { SecurityActivity } from "@/components/shared/security-activity";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 
 export const metadata: Metadata = { title: "Mi perfil" };
@@ -51,6 +52,8 @@ export default async function PerfilClientePage() {
         <div className="h-px bg-border" />
         <GlobalSignOutButton />
       </section>
+
+      <SecurityActivity userId={user.id} />
     </div>
   );
 }

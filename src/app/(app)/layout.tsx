@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Home, Search, MessageSquare, User } from "lucide-react";
+import { Home, Search, MessageSquare, User, Zap } from "lucide-react";
 import { requireCompleteProfile } from "@/lib/auth";
+import { NotificationsBell } from "@/components/shared/notifications-bell";
 
 // Shell mobile-first del cliente con bottom nav (Sección 6 del blueprint).
 const NAV = [
@@ -17,10 +18,21 @@ export default async function AppLayout({
 }) {
   // Gate de onboarding: sin nombre/teléfono no se entra al dashboard
   // (los registros vía Google/OTP pueden llegar sin esos datos).
-  await requireCompleteProfile();
+  const session = await requireCompleteProfile();
 
   return (
     <div className="flex min-h-dvh flex-col bg-background pb-16">
+      <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur">
+        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-2">
+          <Link href="/inicio" className="flex items-center gap-1.5">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Zap className="size-4" />
+            </span>
+            <span className="font-heading font-bold">AlToque</span>
+          </Link>
+          {session && <NotificationsBell userId={session.user.id} />}
+        </div>
+      </header>
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">
         {children}
       </main>

@@ -6,6 +6,8 @@ import { db } from "@/lib/db";
 import { profiles, providerProfiles } from "@/lib/db/schema";
 import { authCallbackParamsSchema } from "@/lib/validations/auth";
 import { logAuthError } from "@/lib/auth-log";
+import { logSecurityEvent, isNewLoginContext } from "@/lib/audit";
+import { sendSecurityAlert } from "@/lib/emails/security-events";
 
 /**
  * Ventana en la que un usuario se considera "recién registrado" para aplicar
@@ -89,6 +91,61 @@ async function promoteOAuthSignupToProvider(
 }
 
 /**
+ * Auditoría del intercambio PKCE exitoso (OAuth/magic link):
+ *  - flow="link" → el usuario VINCULÓ una identidad desde su perfil:
+ *    evento `identity_link` + email de alerta de seguridad.
+ *  - login normal → evento `login` y, si la IP/navegador son nuevos para
+ *    esta cuenta, email de alerta (`isNewLoginContext` se evalúa ANTES de
+ *    insertar el login actual para no matchear consigo mismo).
+ * Todo fire-and-forget: jamás afecta la redirección del usuario.
+ */
+async function auditPkceSuccess(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  flow: "link" | null,
+): Promise<void> {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const metadataName = user.user_metadata?.full_name;
+    const name = typeof metadataName === "string" ? metadataName : "";
+
+    if (flow === "link") {
+      void logSecurityEvent("identity_link", {
+        userId: user.id,
+        metadata: { provider: "google" },
+      });
+      if (user.email) {
+        void sendSecurityAlert({
+          to: user.email,
+          name,
+          eventLabel: "la vinculación de una cuenta de Google",
+        });
+      }
+      return;
+    }
+
+    const newContext = await isNewLoginContext(user.id);
+    void logSecurityEvent("login", {
+      userId: user.id,
+      metadata: { method: "oauth" },
+    });
+    if (newContext && user.email) {
+      void sendSecurityAlert({
+        to: user.email,
+        name,
+        eventLabel: "un inicio de sesión desde un dispositivo nuevo",
+      });
+    }
+  } catch (err) {
+    // La auditoría jamás rompe un login exitoso.
+    console.error("[audit] auditPkceSuccess falló", err);
+  }
+}
+
+/**
  * Callback de Supabase Auth para TODOS los flujos de entrada:
  *  - OAuth (Google) y magic links vía PKCE (`?code=`),
  *  - confirmación por email / recovery vía `?token_hash=&type=`,
@@ -109,6 +166,9 @@ export async function GET(request: NextRequest) {
     logAuthError("callback:provider-error", providerError, {
       description: searchParams.get("error_description"),
     });
+    void logSecurityEvent("failed_login", {
+      metadata: { method: "oauth", reason: providerError },
+    });
     const friendly =
       providerError === "access_denied"
         ? "Cancelaste el ingreso con Google. Probá de nuevo."
@@ -121,9 +181,10 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const { next, role } = authCallbackParamsSchema.parse({
+  const { next, role, flow } = authCallbackParamsSchema.parse({
     next: searchParams.get("next") ?? "/inicio",
     role: searchParams.get("role"),
+    flow: searchParams.get("flow"),
   });
 
   const supabase = await createClient();
@@ -140,20 +201,34 @@ export async function GET(request: NextRequest) {
         if (role === "provider") {
           await promoteOAuthSignupToProvider(supabase);
         }
+        await auditPkceSuccess(supabase, flow);
         return NextResponse.redirect(`${base}${next}`);
       }
       logAuthError("callback:exchange", error, { flow: "pkce" });
+      void logSecurityEvent("failed_login", {
+        metadata: { method: "oauth", reason: "exchange_failed" },
+      });
     } else if (tokenHash && type) {
       const { error } = await supabase.auth.verifyOtp({
         type,
         token_hash: tokenHash,
       });
       if (!error) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        void logSecurityEvent("login", {
+          userId: user?.id,
+          metadata: { method: `otp:${type}` },
+        });
         // Un link de recovery siempre debe aterrizar en el form de contraseña.
         const dest = type === "recovery" ? "/restablecer" : next;
         return NextResponse.redirect(`${base}${dest}`);
       }
       logAuthError("callback:verify-otp", error, { flow: type });
+      void logSecurityEvent("failed_login", {
+        metadata: { method: `otp:${type}` },
+      });
     }
   } catch (err) {
     logAuthError("callback:unexpected", err, {

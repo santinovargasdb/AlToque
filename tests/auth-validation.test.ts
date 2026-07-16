@@ -164,12 +164,21 @@ describe("signUpSchema", () => {
 });
 
 describe("authCallbackParamsSchema · params de /auth/callback (OAuth)", () => {
-  it("acepta next interno y role válido", () => {
+  it("acepta next interno y role válido (flow ausente → null)", () => {
     const r = authCallbackParamsSchema.parse({
       next: "/pro/inicio",
       role: "provider",
     });
-    expect(r).toEqual({ next: "/pro/inicio", role: "provider" });
+    expect(r).toEqual({ next: "/pro/inicio", role: "provider", flow: null });
+  });
+
+  it("acepta flow=link y degrada flows desconocidos a null", () => {
+    expect(
+      authCallbackParamsSchema.parse({ next: "/perfil", flow: "link" }).flow,
+    ).toBe("link");
+    expect(
+      authCallbackParamsSchema.parse({ next: "/perfil", flow: "hack" }).flow,
+    ).toBeNull();
   });
 
   it("degrada un next externo (open redirect) a /inicio", () => {
@@ -330,7 +339,9 @@ describe("GET /auth/callback · integración (edge cases de Google OAuth)", () =
     );
 
     expect(redirectedTo(res).pathname).toBe("/inicio");
-    expect(supa.getUser).not.toHaveBeenCalled();
+    // getUser sí se llama (audit trail del login), pero jamás se consulta
+    // ni se escribe el rol del perfil.
+    expect(dbSpy.selectLimit).not.toHaveBeenCalled();
     expect(dbSpy.txUpdateWhere).not.toHaveBeenCalled();
   });
 });

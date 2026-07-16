@@ -11,6 +11,7 @@ import { GoogleAccountLink } from "@/components/auth/google-account-link";
 import { SetPasswordButton } from "@/components/auth/set-password-button";
 import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
 import { AvatarUploader } from "@/components/shared/avatar-uploader";
+import { SecurityActivity } from "@/components/shared/security-activity";
 
 export default async function ProPerfilPage() {
   const { user, profile } = await requireRole("provider");
@@ -81,6 +82,8 @@ export default async function ProPerfilPage() {
         <div className="h-px bg-border" />
         <GlobalSignOutButton />
       </section>
+
+      <SecurityActivity userId={uid} />
     </div>
   );
 }

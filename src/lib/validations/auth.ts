@@ -118,6 +118,12 @@ export const authCallbackParamsSchema = z.object({
    * signups recién creados — nunca cambia el rol de una cuenta existente.
    */
   role: z.enum(["client", "provider"]).nullable().catch(null),
+  /**
+   * "link" cuando el OAuth viene de VINCULAR una identidad desde el perfil
+   * (no de un login): el callback lo audita como identity_link y dispara
+   * la alerta de seguridad correspondiente.
+   */
+  flow: z.enum(["link"]).nullable().catch(null),
 });
 
 export type AuthCallbackParams = z.infer<typeof authCallbackParamsSchema>;

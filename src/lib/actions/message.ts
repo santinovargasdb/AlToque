@@ -79,6 +79,7 @@ export async function sendMessage(input: unknown): Promise<SendMessageResult> {
       type: "new_message",
       title: `Nuevo mensaje — ${job.title}`,
       body,
+      link: url,
       data: { jobId },
     });
     await sendPushToUsers([recipientId], {

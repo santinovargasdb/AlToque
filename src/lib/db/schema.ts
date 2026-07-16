@@ -298,6 +298,9 @@ export const pushSubscriptions = pgTable("push_subscriptions", {
 });
 
 // ── notifications ──
+// `read_at` (timestamp) cumple el rol de `is_read` (null = no leída) y
+// además dice CUÁNDO se leyó. `link` es la ruta interna a la que navega
+// la campanita al hacer click.
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
@@ -306,12 +309,35 @@ export const notifications = pgTable("notifications", {
   type: text("type").notNull(),
   title: text("title").notNull(),
   body: text("body"),
+  link: text("link"),
   data: jsonb("data"),
   readAt: timestamp("read_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
 });
+
+// ── audit_logs (historial de seguridad, inmutable) ──
+// Sin FK a profiles a propósito: los logs sobreviven al borrado de la
+// cuenta (purga de huérfanos) y `user_id` es null en eventos pre-login
+// (ej. failed_login). Solo se INSERTA desde el servidor (Drizzle/owner);
+// el cliente únicamente puede LEER los suyos (RLS en
+// docs/audit-notifications-setup.sql).
+export const auditLogs = pgTable(
+  "audit_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id"),
+    action: text("action").notNull(), // 'login' | 'failed_login' | 'logout' | 'password_change' | 'identity_link' | ...
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [index("idx_audit_user_created").on(t.userId, t.createdAt)],
+);
 
 /* ── Relations (para queries relacionales de Drizzle) ── */
 export const profilesRelations = relations(profiles, ({ one, many }) => ({

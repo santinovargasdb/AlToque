@@ -24,6 +24,7 @@ export async function dispatchNewUrgentJob(params: {
       type: "new_urgent_job",
       title: "Nuevo pedido urgente cerca tuyo",
       body: params.title,
+      link: "/pro/inicio",
       data: { jobId: params.jobId },
     })),
   );

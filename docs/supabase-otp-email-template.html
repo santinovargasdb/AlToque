@@ -1,0 +1,46 @@
+<!-- ════════════════════════════════════════════════════════════════
+  AlToque — Template del email de OTP para SUPABASE.
+  PEGAR EN: Supabase → Authentication → Email Templates → Magic Link / OTP.
+  Fuente de verdad del diseño: src/lib/emails/otp.ts (este archivo es su
+  salida con el placeholder {{ .Token }} de Supabase como código).
+════════════════════════════════════════════════════════════════ -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Código de acceso</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#F8FAFC;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Tu código de un solo uso para entrar a AlToque.</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F8FAFC;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;">
+            <tr>
+              <td style="padding-bottom:20px;text-align:center;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                <span style="display:inline-block;background-color:#2563EB;color:#ffffff;border-radius:10px;padding:8px 14px;font-size:18px;font-weight:700;">&#9889; AlToque</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color:#ffffff;border:1px solid #E2E8F0;border-radius:16px;padding:32px 28px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#0F172A;font-size:16px;line-height:1.6;">
+                <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">Tu código de acceso</h1>
+                <p style="margin:0 0 20px;">Usalo para entrar a AlToque. Vence en unos minutos y solo sirve una vez.</p>
+                <div style="background-color:#F8FAFC;border:1px dashed #2563EB;border-radius:10px;padding:20px;text-align:center;margin:0 0 20px;">
+                  <span style="font-size:34px;font-weight:700;letter-spacing:10px;color:#2563EB;font-family:'Courier New',monospace;">{{ .Token }}</span>
+                </div>
+                <p style="margin:0;color:#64748B;font-size:14px;">Si no pediste este código, ignorá este email: nadie puede entrar sin él.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top:20px;text-align:center;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;color:#64748B;line-height:1.5;">
+                AlToque — Profesionales de oficios verificados.<br />
+                Recibiste este email por tu cuenta en AlToque.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

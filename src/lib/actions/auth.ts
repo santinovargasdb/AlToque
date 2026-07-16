@@ -6,9 +6,14 @@ import { eq } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
-import { getSession, homeForRole } from "@/lib/auth";
+import { getSession, homeForRole, isProfileComplete } from "@/lib/auth";
 import { getRequestOrigin } from "@/lib/url";
 import { logAuthError } from "@/lib/auth-log";
+import { logSecurityEvent, isNewLoginContext } from "@/lib/audit";
+import { maskEmail } from "@/lib/security-utils";
+import { sendSecurityAlert } from "@/lib/emails/security-events";
+import { sendEmail } from "@/lib/emails/send";
+import { welcomeEmail } from "@/lib/emails/welcome";
 import {
   signUpSchema,
   signInSchema,
@@ -90,6 +95,12 @@ export async function signUpWithPassword(
     };
   }
 
+  // Audit trail (fire-and-forget: jamás bloquea el registro).
+  void logSecurityEvent("signup", {
+    userId: res.user?.id,
+    metadata: { method: "password", role: data.role },
+  });
+
   // Sin sesión = las confirmaciones por email están activas en Supabase.
   return { ok: true, needsEmailConfirm: !res.session };
 }
@@ -107,8 +118,31 @@ export async function signInWithPassword(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { ok: false, error: translateAuthError(error.message) };
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+  if (error) {
+    // Audit del intento fallido (email enmascarado: sin datos sensibles).
+    void logSecurityEvent("failed_login", {
+      metadata: { method: "password", email: maskEmail(parsed.data.email) },
+    });
+    return { ok: false, error: translateAuthError(error.message) };
+  }
+
+  // ¿Dispositivo/IP nuevos? Se evalúa ANTES de registrar el login actual
+  // (si no, el evento recién insertado siempre "matchearía" consigo mismo).
+  const user = data.user;
+  const newContext = await isNewLoginContext(user.id);
+  void logSecurityEvent("login", {
+    userId: user.id,
+    metadata: { method: "password" },
+  });
+  if (newContext && user.email) {
+    const metadataName = user.user_metadata?.full_name;
+    void sendSecurityAlert({
+      to: user.email,
+      name: typeof metadataName === "string" ? metadataName : "",
+      eventLabel: "un inicio de sesión desde un dispositivo nuevo",
+    });
+  }
 
   return { ok: true };
 }
@@ -136,6 +170,9 @@ export async function requestPasswordReset(
   );
   if (error) return { ok: false, error: translateAuthError(error.message) };
 
+  void logSecurityEvent("password_reset_request", {
+    metadata: { email: maskEmail(parsed.data.email) },
+  });
   return { ok: true };
 }
 
@@ -167,6 +204,17 @@ export async function updatePassword(
   });
   if (error) return { ok: false, error: translateAuthError(error.message) };
 
+  // Audit + alerta: un cambio de contraseña siempre merece aviso.
+  void logSecurityEvent("password_change", { userId: user.id });
+  if (user.email) {
+    const metadataName = user.user_metadata?.full_name;
+    void sendSecurityAlert({
+      to: user.email,
+      name: typeof metadataName === "string" ? metadataName : "",
+      eventLabel: "un cambio de contraseña",
+    });
+  }
+
   return { ok: true };
 }
 
@@ -197,6 +245,10 @@ export async function completeProfile(
     };
   }
 
+  // ¿Es la PRIMERA completada (onboarding) o una edición posterior?
+  // Define si corresponde el email de bienvenida.
+  const wasIncomplete = !isProfileComplete(session.profile);
+
   try {
     await db
       .update(profiles)
@@ -213,6 +265,21 @@ export async function completeProfile(
     return { ok: false, error: "No pudimos guardar tus datos. Probá de nuevo." };
   }
 
+  void logSecurityEvent("profile_update", {
+    userId: session.user.id,
+    metadata: { fields: "fullName,phone", onboarding: wasIncomplete },
+  });
+
+  // Bienvenida solo al completar el onboarding por primera vez.
+  if (wasIncomplete && session.user.email && session.role !== "admin") {
+    const { subject, html } = welcomeEmail({
+      name: parsed.data.fullName,
+      role: session.role,
+      appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+    });
+    void sendEmail({ to: session.user.email, subject, html });
+  }
+
   revalidatePath("/perfil");
   revalidatePath("/pro/perfil");
   return { ok: true, home: homeForRole(session.role) };
@@ -221,7 +288,11 @@ export async function completeProfile(
 /** Cierra la sesión y vuelve al inicio. */
 export async function signOut() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   await supabase.auth.signOut();
+  if (user) void logSecurityEvent("logout", { userId: user.id });
   redirect("/");
 }
 
@@ -233,6 +304,9 @@ export async function signOut() {
  */
 export async function signOutEverywhere(): Promise<AuthActionResult> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { error } = await supabase.auth.signOut({ scope: "global" });
   if (error) {
     logAuthError("perfil:sign-out-global", error);
@@ -241,6 +315,7 @@ export async function signOutEverywhere(): Promise<AuthActionResult> {
       error: "No pudimos cerrar las sesiones. Probá de nuevo.",
     };
   }
+  if (user) void logSecurityEvent("logout_all", { userId: user.id });
   redirect(
     `/ingresar?notice=${encodeURIComponent("Cerraste sesión en todos los dispositivos.")}`,
   );

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { logAuthError } from "@/lib/auth-log";
+import { recordUnlinkAudit } from "@/lib/actions/audit";
 
 /**
  * Gestor de vinculación de Google en la configuración de la cuenta.
@@ -78,6 +79,8 @@ export function GoogleAccountLink({ returnTo }: { returnTo: string }) {
     const supabase = createClient();
     const callback = new URL("/auth/callback", window.location.origin);
     callback.searchParams.set("next", returnTo);
+    // flow=link: el callback lo audita como identity_link (no como login).
+    callback.searchParams.set("flow", "link");
     const { error } = await supabase.auth.linkIdentity({
       provider: "google",
       options: { redirectTo: callback.toString() },
@@ -110,6 +113,8 @@ export function GoogleAccountLink({ returnTo }: { returnTo: string }) {
       toast.error("No pudimos desvincular Google. Probá de nuevo.");
       return;
     }
+    // Audit trail + alerta de seguridad (server-side; fire-and-forget).
+    void recordUnlinkAudit();
     toast.success("Cuenta de Google desvinculada.");
     await loadIdentities();
   }

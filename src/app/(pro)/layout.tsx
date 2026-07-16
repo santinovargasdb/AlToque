@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LayoutDashboard, ClipboardList, Wallet, User } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Wallet, User, Zap } from "lucide-react";
 import { requireCompleteProfile } from "@/lib/auth";
+import { NotificationsBell } from "@/components/shared/notifications-bell";
 
 // Shell del profesional con bottom nav.
 const NAV = [
@@ -18,9 +19,20 @@ export default async function ProLayout({
   // Gate de onboarding: sin nombre/teléfono no se entra al dashboard.
   // La activación del profesional (oficios/zona/verificación) la sigue
   // guiando el checklist de /pro/inicio + la regla "solo approved".
-  await requireCompleteProfile();
+  const session = await requireCompleteProfile();
   return (
     <div className="flex min-h-dvh flex-col bg-background pb-16">
+      <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur">
+        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-2">
+          <Link href="/pro/inicio" className="flex items-center gap-1.5">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-action text-white">
+              <Zap className="size-4" />
+            </span>
+            <span className="font-heading font-bold">AlToque Pro</span>
+          </Link>
+          {session && <NotificationsBell userId={session.user.id} />}
+        </div>
+      </header>
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">
         {children}
       </main>

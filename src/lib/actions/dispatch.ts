@@ -112,6 +112,7 @@ export async function acceptJob(jobId: string): Promise<ActionResult> {
     type: "job_accepted",
     title: "¡Tu pedido fue aceptado!",
     body: "Un profesional ya está en camino.",
+    link: `/pedido/${jobId}`,
     data: { jobId },
   });
   await sendPushToUsers([clientId], {
