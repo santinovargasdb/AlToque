@@ -13,7 +13,11 @@ Marketplace web/PWA que conecta usuarios con profesionales de oficios verificado
 - `pnpm db:generate` — Generar migración desde el schema (drizzle-kit generate)
 - `pnpm db:migrate` — Aplicar migraciones (drizzle-kit migrate)
 
-> Tras migrar, correr `drizzle/postgis.sql` en Supabase (extensión PostGIS, índices GIST, función `find_nearby_providers`, RLS).
+> **Migraciones contra Supabase** (runbook completo: `docs/deploy-migraciones.md`):
+> - En una base **nueva**, habilitar PostGIS **antes** de migrar (`drizzle/00-pre-migrate.sql`): la migración 0000 crea columnas `geography` y sin la extensión falla con `type "geography" does not exist`.
+> - Migrar por el **Session pooler (puerto 5432)** seteando `MIGRATION_DATABASE_URL` solo para ese comando; el runtime de la app usa el **Transaction pooler (6543)** en `DATABASE_URL` (drizzle-kit no funciona por el 6543: corre DDL transaccional que pgBouncer en modo transacción rompe).
+> - **`pnpm db:push` está PROHIBIDO contra prod**: borraría los objetos que viven fuera de `schema.ts` (PostGIS, policies RLS, `find_nearby_providers`, `uq_jobs_mp_payment_id`). Solo `db:migrate`.
+> - Tras migrar, correr `drizzle/postgis.sql` en Supabase (índices GIST, función `find_nearby_providers`, RLS, Realtime).
 
 ## Tech Stack
 

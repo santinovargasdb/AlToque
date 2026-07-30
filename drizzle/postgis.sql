@@ -221,6 +221,20 @@ create unique index if not exists uq_jobs_mp_payment_id
 -- Realtime: publicar cambios de jobs, job_dispatch y messages
 -- (feed del profesional, timeline del cliente, chat).
 -- ════════════════════════════════════════════════════════════
-alter publication supabase_realtime add table jobs;
-alter publication supabase_realtime add table job_dispatch;
-alter publication supabase_realtime add table messages;
+-- Idempotente: `alter publication ... add table` falla con duplicate_object
+-- si la tabla YA está publicada, y en el SQL Editor de Supabase ese error
+-- hace rollback de TODO el script. Por eso cada add va en su propio bloque.
+do $$ begin
+  alter publication supabase_realtime add table jobs;
+exception when duplicate_object then null;
+end $$;
+
+do $$ begin
+  alter publication supabase_realtime add table job_dispatch;
+exception when duplicate_object then null;
+end $$;
+
+do $$ begin
+  alter publication supabase_realtime add table messages;
+exception when duplicate_object then null;
+end $$;
