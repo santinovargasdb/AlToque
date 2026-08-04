@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession, homeForRole, isProfileComplete } from "@/lib/auth";
 import { CompleteProfileForm } from "@/components/auth/complete-profile-form";
+import { SignOutButton } from "@/components/shared/sign-out-button";
 
 export const metadata: Metadata = { title: "Completá tu perfil" };
 
@@ -36,6 +37,11 @@ export default async function CompletarPerfilPage() {
         initialFullName={initialFullName}
         initialPhone={session.profile?.phone ?? ""}
       />
+      {/* Gate sin "volver" a propósito; la única salida es cambiar de cuenta. */}
+      <div className="flex items-center justify-between gap-2 border-t border-border pt-4">
+        <p className="text-sm text-muted-foreground">¿No sos vos?</p>
+        <SignOutButton />
+      </div>
     </div>
   );
 }

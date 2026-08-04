@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LayoutDashboard, ClipboardList, Wallet, User, Zap } from "lucide-react";
 import { requireCompleteProfile } from "@/lib/auth";
 import { NotificationsBell } from "@/components/shared/notifications-bell";
+import { HeaderBack } from "@/components/shared/header-back";
 
 // Shell del profesional con bottom nav.
 const NAV = [
@@ -24,12 +25,15 @@ export default async function ProLayout({
     <div className="flex min-h-dvh flex-col bg-background pb-16">
       <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-2">
-          <Link href="/pro/inicio" className="flex items-center gap-1.5">
-            <span className="flex size-7 items-center justify-center rounded-lg bg-action text-white">
-              <Zap className="size-4" />
-            </span>
-            <span className="font-heading font-bold">AlToque Pro</span>
-          </Link>
+          <div className="flex items-center gap-1.5">
+            <HeaderBack />
+            <Link href="/pro/inicio" className="flex items-center gap-1.5">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-action text-white">
+                <Zap className="size-4" />
+              </span>
+              <span className="font-heading font-bold">AlToque Pro</span>
+            </Link>
+          </div>
           {session && <NotificationsBell userId={session.user.id} />}
         </div>
       </header>
