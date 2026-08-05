@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlToque — El oficio que necesitás, al toque · Evaluación de Proyectos · Instituto Leonardo Murialdo</title>
+  <meta name="description" content="AlToque — plataforma web que conecta clientes con trabajadores de oficios verificados. Proyecto de la materia Evaluación de Proyectos, prof. Lourdes Pedaci, Instituto Leonardo Murialdo, 7mo Informática A, 2026.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     NAV
+     ════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Al<span>Toque</span></div>
+    <div class="nav-links">
+      <a href="#proyecto">Proyecto</a>
+      <a href="#etapas">Etapas</a>
+      <a href="#caso">Caso</a>
+      <a href="#materiales">Materiales</a>
+    </div>
+    <div class="nav-inst">Prof. Pedaci, Lourdes</div>
+    <button class="nav-burger" id="navBurger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Menú móvil">
+  <a href="#proyecto"   class="mobile-link">Proyecto</a>
+  <a href="#etapas"     class="mobile-link">Etapas</a>
+  <a href="#caso"       class="mobile-link">Caso</a>
+  <a href="#materiales" class="mobile-link">Materiales</a>
+  <div class="mobile-menu-inst">Prof. Pedaci, Lourdes</div>
+</div>
+
+<!-- ════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-eyebrow fade-up">
+    <span class="hero-eyebrow-pill">2026</span>
+    Tecnicatura en Informática Personal y Profesional
+  </div>
+  <h1 class="fade-up d1">
+    AlToque —<br>
+    el <em>oficio</em> que necesitás,<br>
+    <span class="warm">al toque.</span>
+  </h1>
+  <p class="hero-sub fade-up d2">
+    Proyecto de la materia Evaluación de Proyectos: una plataforma web (PWA) que conecta
+    clientes con trabajadores de oficios verificados para trabajos urgentes o agendados.
+    Desarrollada por el equipo de 7mo Informática A y publicada en producción.
+  </p>
+  <div class="hero-meta fade-up d3">
+    <div class="hm-badge"><strong>Prof. Pedaci, Lourdes</strong> · Docente</div>
+    <div class="hm-badge"><strong>Evaluación de Proyectos</strong> · 7mo Informática A</div>
+    <div class="hm-badge"><strong>Instituto Leonardo Murialdo</strong> · 2026</div>
+  </div>
+  <div class="hero-ctas fade-up d4">
+    <a href="#caso"       class="btn-primary">Ver el caso →</a>
+    <a href="#materiales" class="btn-sec">Materiales del proyecto</a>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════
+     CONTEXTO BAND — QUÉ ES ALTOQUE + EQUIPO
+     ════════════════════════════════════════ -->
+<div class="context-band" id="proyecto">
+  <div class="context-band-inner">
+
+    <!-- Columna izquierda: descripción -->
+    <div>
+      <div class="cb-label">¿Qué es AlToque?</div>
+      <h2 class="cb-title">Una plataforma que nace de un problema real</h2>
+      <div class="cb-body">
+        <p>
+          AlToque es una plataforma web (PWA) que conecta clientes con trabajadores de oficios
+          verificados —plomería, electricidad, cerrajería, gasistas— para trabajos urgentes
+          o agendados.
+        </p>
+        <p>
+          Identidad verificada con DNI, reseñas reales, búsqueda por cercanía con geolocalización,
+          despacho de urgencias en tiempo real y chat integrado. El modelo de ingresos es una
+          <strong>suscripción mensual</strong> (cliente free/premium y profesional premium):
+          el pago del servicio se acuerda entre las partes, la plataforma no interviene.
+        </p>
+        <p>
+          El proyecto está <strong>en producción</strong>:
+          <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">al-toque-eta.vercel.app</a>
+        </p>
+      </div>
+      <div class="cb-stats" style="margin-top:2rem;">
+        <div class="cb-stat"><div class="cb-num">6</div><div class="cb-desc">Etapas del proyecto</div></div>
+        <div class="cb-stat"><div class="cb-num">5</div><div class="cb-desc">Integrantes del equipo</div></div>
+        <div class="cb-stat"><div class="cb-num">4</div><div class="cb-desc">Oficios cubiertos</div></div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: equipo -->
+    <div>
+      <div class="cb-label" style="margin-bottom:1.25rem;">El equipo — 7mo Informática A</div>
+      <div style="display:grid;gap:.75rem;">
+
+        <div style="display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rsm);padding:1rem;">
+          <div style="min-width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;">SV</div>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;color:#fff;">Santino Vargas</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.55);">PM · Backend · Despliegue</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rsm);padding:1rem;">
+          <div style="min-width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;">LB</div>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;color:#fff;">Luciana Begnes</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.55);">Backend</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rsm);padding:1rem;">
+          <div style="min-width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;">NR</div>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;color:#fff;">Nicholas Reemeerie</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.55);">Frontend</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rsm);padding:1rem;">
+          <div style="min-width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;">NM</div>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;color:#fff;">Nahuel Montes Rojas</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.55);">Base de datos</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rsm);padding:1rem;">
+          <div style="min-width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;">ML</div>
+          <div>
+            <div style="font-weight:600;font-size:.85rem;color:#fff;">Mirko Ledesma</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.55);">Despliegue</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     ETAPAS
+     ════════════════════════════════════════ -->
+<section id="etapas">
+  <div class="sec-label">02 — Recorrido del proyecto</div>
+  <h2 class="sec-title">Las 6 etapas, con su estado real</h2>
+  <p class="sec-desc">
+    El proyecto siguió las seis fases de la asignatura, de la validación del problema
+    a la presentación final. Cinco etapas están completas y la app ya está publicada.
+  </p>
+  <div class="metod-grid">
+    <div class="metod-card">
+      <div class="metod-n">E01</div>
+      <div class="etapa-estado ok">✓ Completa</div>
+      <div class="metod-title">Validación del problema</div>
+      <div class="metod-desc">Los clientes no encuentran profesionales de confianza —boca a boca, sin garantías— y los profesionales dependen de contactos informales. Relevamiento de requerimientos y casos de uso validados con usuarios reales.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">E02</div>
+      <div class="etapa-estado ok">✓ Completa</div>
+      <div class="metod-title">Estudio de factibilidad</div>
+      <div class="metod-desc">Factibilidad técnica (stack serverless, costo inicial cero), de gestión y económica. Se evaluaron tres modelos de ingresos con documento de análisis y consulta al área de administración y legales; se adoptó la suscripción mensual.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">E03</div>
+      <div class="etapa-estado ok">✓ Completa</div>
+      <div class="metod-title">Diseño del sistema</div>
+      <div class="metod-desc">Requerimientos, perfiles de usuario (cliente, profesional, administrador), esquema PostgreSQL + PostGIS para el matching geográfico, y roles y permisos con RLS.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">E04</div>
+      <div class="etapa-estado ok">✓ Completa</div>
+      <div class="metod-title">Prototipado HCI</div>
+      <div class="metod-desc">Diseño mobile-first y accesibilidad, validados con pruebas reales desde el celular. De esas pruebas salieron correcciones de navegación: el botón de volver y el menú móvil del panel de administración.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">E05</div>
+      <div class="etapa-estado ok">✓ Completa · En producción</div>
+      <div class="metod-title">Desarrollo</div>
+      <div class="metod-desc">Repositorio en GitHub y despliegue en Vercel con base de producción en Supabase: login con Google, Google Maps (mapa, autocompletado, geocodificación), notificaciones push, chat en tiempo real, reseñas y panel de administración. Pendiente dentro de esta etapa: implementar el modelo de suscripción.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">E06</div>
+      <div class="etapa-estado prox">Octubre 2026</div>
+      <div class="metod-title">Presentación final</div>
+      <div class="metod-desc">Presentación y defensa oral del proyecto, con demo de la app en producción y entrega de la carpeta de proyecto. Programada para octubre de 2026.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════
+     STACK
+     ════════════════════════════════════════ -->
+<section id="stack">
+  <div class="sec-label">03 — Tecnología</div>
+  <h2 class="sec-title">El stack detrás de AlToque</h2>
+  <p class="sec-desc">
+    Cada pieza del stack principal fue elegida por una razón concreta: costo inicial cero,
+    tiempo real para las urgencias y matching geográfico entre clientes y profesionales.
+  </p>
+
+  <div class="materiales-grid">
+
+    <!-- Next.js -->
+    <div class="mat-card">
+      <div class="mat-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.7 15.9 4.8 12l3.9-3.9-1.4-1.4L2 12l5.3 5.3 1.4-1.4zm6.6 0 3.9-3.9-3.9-3.9 1.4-1.4L22 12l-5.3 5.3-1.4-1.4zM13.9 4.5l-4 15-1.9-.5 4-15 1.9.5z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod">Framework</div>
+        <div class="mat-title">Next.js 15 + TypeScript estricto</div>
+        <div class="mat-desc">
+          Framework full-stack con tipado estricto de punta a punta: una sola base de código
+          para el frontend, la API y la lógica de servidor, con renderizado del lado del servidor.
+        </div>
+        <a href="https://nextjs.org" target="_blank" rel="noopener" class="mat-link">Sitio oficial →</a>
+      </div>
+    </div>
+
+    <!-- Supabase -->
+    <div class="mat-card">
+      <div class="mat-icon" style="background:var(--accent2);">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C7.6 2 4 3.6 4 5.5v13C4 20.4 7.6 22 12 22s8-1.6 8-3.5v-13C20 3.6 16.4 2 12 2zm6 16.5c0 .8-2.7 1.5-6 1.5s-6-.7-6-1.5v-2.6c1.5.9 3.9 1.4 6 1.4s4.5-.5 6-1.4v2.6zm0-5c0 .8-2.7 1.5-6 1.5s-6-.7-6-1.5V10c1.5.9 3.9 1.4 6 1.4s4.5-.5 6-1.4v3.5zm-6-6C8.7 7.5 6 6.8 6 6s2.7-1.5 6-1.5S18 5.2 18 6s-2.7 1.5-6 1.5z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod" style="color:var(--accent2);">Backend</div>
+        <div class="mat-title">Supabase — PostgreSQL + PostGIS, Auth y Realtime</div>
+        <div class="mat-desc">
+          Base de datos relacional con extensión geográfica para el matching por cercanía,
+          autenticación integrada y canales en tiempo real para el despacho de urgencias y el chat.
+        </div>
+        <a href="https://supabase.com" target="_blank" rel="noopener" class="mat-link" style="color:var(--accent2);">Sitio oficial →</a>
+      </div>
+    </div>
+
+    <!-- Google Maps -->
+    <div class="mat-card">
+      <div class="mat-icon" style="background:var(--warm);">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod" style="color:var(--warm);">Geolocalización</div>
+        <div class="mat-title">Google Maps Platform</div>
+        <div class="mat-desc">
+          Mapa, autocompletado de direcciones y geocodificación: la base del matching
+          por cercanía y del despacho de urgencias al profesional más próximo.
+        </div>
+        <a href="https://mapsplatform.google.com" target="_blank" rel="noopener" class="mat-link" style="color:var(--warm);">Sitio oficial →</a>
+      </div>
+    </div>
+
+    <!-- Mercado Pago -->
+    <div class="mat-card">
+      <div class="mat-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4H4V6h16v2zm0 10H4v-6h16v6zM6 15h5v2H6z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod">Suscripciones</div>
+        <div class="mat-title">Mercado Pago</div>
+        <div class="mat-desc">
+          Procesa las suscripciones mensuales (cliente premium y profesional premium).
+          El pago del servicio se acuerda entre las partes: la plataforma no interviene.
+        </div>
+        <a href="https://www.mercadopago.com.ar" target="_blank" rel="noopener" class="mat-link">Sitio oficial →</a>
+      </div>
+    </div>
+
+    <!-- Vercel -->
+    <div class="mat-card">
+      <div class="mat-icon" style="background:var(--accent2);">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3l10 18H2L12 3z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod" style="color:var(--accent2);">Despliegue</div>
+        <div class="mat-title">Vercel</div>
+        <div class="mat-desc">
+          Despliegue serverless con integración continua desde GitHub: cada cambio llega
+          a producción de forma automática, sin administrar servidores y con costo inicial cero.
+        </div>
+        <a href="https://vercel.com" target="_blank" rel="noopener" class="mat-link" style="color:var(--accent2);">Sitio oficial →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════
+     CASO
+     ════════════════════════════════════════ -->
+<section id="caso">
+  <div class="sec-label">04 — Caso de estudio</div>
+  <h2 class="sec-title">Un problema real. Una metodología.</h2>
+  <p class="sec-desc">
+    El proyecto parte de usuarios con un problema concreto. El equipo relevó la situación
+    actual, identificó síntomas y causas raíz, y construyó el sistema desde cero.
+  </p>
+
+  <div class="casos-grid solo">
+
+    <!-- CASO — ALTOQUE -->
+    <div class="caso-card">
+      <div class="cc-header altoque">
+        <div class="cc-num">Caso — AlToque</div>
+        <div class="cc-avatar-row">
+          <div class="cc-avatar">AT</div>
+          <div>
+            <div class="cc-name">AlToque</div>
+            <div class="cc-role">Plataforma de oficios verificados · Conurbano bonaerense</div>
+          </div>
+        </div>
+        <div class="cc-tag">🔧 Oficios verificados · Urgencias en tiempo real</div>
+      </div>
+      <div class="cc-body">
+        <p class="cc-desc">
+          En el conurbano bonaerense, conseguir un plomero o un electricista de confianza
+          depende del boca a boca, sin forma de validar identidad ni antecedentes, y en una
+          urgencia no hay ningún canal con respuesta inmediata. Del lado del profesional,
+          el trabajo llega por contactos informales, sin vidriera ni reputación portable.
+        </p>
+        <div class="cc-datos">
+          <div class="cc-dato"><span class="cc-dato-k">Problema raíz</span><span class="cc-dato-v warn">La confianza depende del boca a boca: sin validación de identidad ni antecedentes</span></div>
+          <div class="cc-dato"><span class="cc-dato-k">Urgencias</span><span class="cc-dato-v warn">Ningún canal con respuesta inmediata ante una emergencia</span></div>
+          <div class="cc-dato"><span class="cc-dato-k">Lado profesional</span><span class="cc-dato-v">Trabajo por contactos informales, sin vidriera ni reputación portable</span></div>
+          <div class="cc-dato"><span class="cc-dato-k">Solución</span><span class="cc-dato-v">Verificación de identidad, reseñas, matching geográfico en tiempo real y despacho de urgencias</span></div>
+          <div class="cc-dato"><span class="cc-dato-k">Estado</span><span class="cc-dato-v">En producción — al-toque-eta.vercel.app</span></div>
+        </div>
+        <div class="cc-actions">
+          <a href="https://al-toque-eta.vercel.app"            target="_blank" rel="noopener" class="btn-sm-accent">Abrir la app →</a>
+          <a href="https://github.com/santinovargasdb/AlToque" target="_blank" rel="noopener" class="btn-sm-out">Ver repositorio en GitHub</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NOTA METODOLÓGICA -->
+  <div class="nota-met" style="margin-top:2rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 2rem;display:flex;gap:1rem;align-items:flex-start;">
+    <div style="font-size:1.5rem;flex-shrink:0;">💡</div>
+    <div>
+      <div style="font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:.3rem;">Principio fundamental del proyecto</div>
+      <div style="font-size:.85rem;color:var(--ink2);line-height:1.7;">
+        Antes de escribir una sola línea de código, el equipo relevó el problema con clientes
+        y profesionales reales para diagnosticar la situación actual.
+        <strong>Definición incorrecta → solución incorrecta.</strong>
+        Recién cuando los casos de uso estuvieron validados se diseñó y construyó el sistema.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════
+     MATERIALES
+     ════════════════════════════════════════ -->
+<section id="materiales">
+  <div class="sec-label">05 — Materiales del proyecto</div>
+  <h2 class="sec-title">Materiales y entregas</h2>
+  <p class="sec-desc">
+    Las entregas de las etapas anteriores, el código fuente del sistema
+    y la plataforma publicada en producción.
+  </p>
+
+  <div class="materiales-grid">
+
+    <!-- Entregas -->
+    <div class="mat-card">
+      <div class="mat-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod">Entregas</div>
+        <div class="mat-title">Presentaciones y entregas anteriores</div>
+        <div class="mat-desc">
+          Acceso centralizado a las presentaciones y materiales de las etapas
+          anteriores del proyecto.
+        </div>
+        <a href="https://linktr.ee/Altoque247" target="_blank" rel="noopener" class="mat-link">Abrir Linktree →</a>
+      </div>
+    </div>
+
+    <!-- Repositorio -->
+    <div class="mat-card">
+      <div class="mat-icon" style="background:var(--accent2);">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.7 15.9 4.8 12l3.9-3.9-1.4-1.4L2 12l5.3 5.3 1.4-1.4zm6.6 0 3.9-3.9-3.9-3.9 1.4-1.4L22 12l-5.3 5.3-1.4-1.4z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod" style="color:var(--accent2);">Código</div>
+        <div class="mat-title">Repositorio en GitHub</div>
+        <div class="mat-desc">
+          Código fuente completo de la plataforma, con el historial de desarrollo
+          e integración continua hacia producción.
+        </div>
+        <a href="https://github.com/santinovargasdb/AlToque" target="_blank" rel="noopener" class="mat-link" style="color:var(--accent2);">Ver en GitHub →</a>
+      </div>
+    </div>
+
+    <!-- App en producción -->
+    <div class="mat-card">
+      <div class="mat-icon" style="background:var(--warm);">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.9 9h-3a15.6 15.6 0 0 0-1.2-5.4A8 8 0 0 1 19.9 11zM12 4c.9 1.2 1.7 3.6 1.9 7h-3.8c.2-3.4 1-5.8 1.9-7zM8.3 5.6A15.6 15.6 0 0 0 7.1 11h-3a8 8 0 0 1 4.2-5.4zM4.1 13h3c.1 2 .5 3.9 1.2 5.4A8 8 0 0 1 4.1 13zM12 20c-.9-1.2-1.7-3.6-1.9-7h3.8c-.2 3.4-1 5.8-1.9 7zm3.7-1.6c.7-1.5 1.1-3.4 1.2-5.4h3a8 8 0 0 1-4.2 5.4z"/></svg>
+      </div>
+      <div class="mat-info">
+        <div class="mat-mod" style="color:var(--warm);">Producción</div>
+        <div class="mat-title">AlToque en producción</div>
+        <div class="mat-desc">
+          La plataforma publicada y funcionando en servidor real,
+          lista para usar desde el celular.
+        </div>
+        <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener" class="mat-link" style="color:var(--warm);">Abrir la app →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════
+     METODOLOGÍA
+     ════════════════════════════════════════ -->
+<section>
+  <div class="sec-label">06 — ¿Cómo trabajamos?</div>
+  <h2 class="sec-title">El método detrás del proyecto</h2>
+  <p class="sec-desc">
+    Los principios de la asignatura, aplicados tal como se usaron en AlToque
+    a lo largo de las seis etapas.
+  </p>
+  <div class="metod-grid">
+    <div class="metod-card">
+      <div class="metod-n">01</div>
+      <div class="metod-title">Usuario real como punto de partida</div>
+      <div class="metod-desc">El problema no se supuso: se relevó con clientes y profesionales de oficios reales, y los casos de uso se validaron antes de diseñar el sistema.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">02</div>
+      <div class="metod-title">Relevamiento y análisis del problema</div>
+      <div class="metod-desc">El relevamiento de requerimientos distinguió síntomas («no consigo un plomero») de causas raíz (no hay forma de validar la confianza). Definición incorrecta = solución incorrecta.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">03</div>
+      <div class="metod-title">Viabilidad técnica, de gestión y económica</div>
+      <div class="metod-desc">Antes de diseñar se analizó si el proyecto era realizable y sostenible: stack serverless con costo inicial cero y tres modelos de ingresos evaluados antes de adoptar la suscripción mensual.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">04</div>
+      <div class="metod-title">Requerimientos medibles</div>
+      <div class="metod-desc">Los requerimientos funcionales y no funcionales son verificables: identidad verificada con DNI, matching por cercanía, despacho de urgencias y chat en tiempo real.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">05</div>
+      <div class="metod-title">Diseño HCI y prototipado</div>
+      <div class="metod-desc">El diseño mobile-first se validó con pruebas reales desde el celular antes de cerrar cada pantalla. Accesibilidad y contraste como requisitos no negociables.</div>
+    </div>
+    <div class="metod-card">
+      <div class="metod-n">06</div>
+      <div class="metod-title">Documentación y entrega completa</div>
+      <div class="metod-desc">Carpeta de proyecto, repositorio en GitHub y producto publicado en servidor real, no en localhost: <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">al-toque-eta.vercel.app</a>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Al<span>Toque</span></div>
+      <div class="footer-desc">Proyecto de la materia Evaluación de Proyectos · Prof. Pedaci, Lourdes · 7mo Informática A · Instituto Leonardo Murialdo · 2026.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Proyecto</h4>
+      <a href="https://al-toque-eta.vercel.app"            target="_blank" rel="noopener">App en producción</a>
+      <a href="https://github.com/santinovargasdb/AlToque" target="_blank" rel="noopener">Repositorio en GitHub</a>
+      <a href="#caso">Caso — AlToque</a>
+      <a href="#etapas">Las 6 etapas</a>
+    </div>
+    <div class="footer-col">
+      <h4>Materiales</h4>
+      <a href="https://linktr.ee/Altoque247" target="_blank" rel="noopener">Entregas del proyecto</a>
+      <a href="https://lpedaci.github.io/ev_proy-landing-casos/" target="_blank" rel="noopener">Hub de la asignatura</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+      <span>7mo Informática A · Instituto Leonardo Murialdo</span>
+      <a href="https://www.linkedin.com/in/santino-vargas-di-buono-7b77b2378/" target="_blank" rel="noopener" class="linkedin-pill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/santinovargasdb/AlToque" target="_blank" rel="noopener" class="linkedin-pill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.69 1.25 3.35.95.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.66.41.35.77 1.05.77 2.12 0 1.53-.01 2.76-.01 3.14 0 .3.21.67.8.55C20.22 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+        GitHub
+      </a>
+    </div>
+    <div>AlToque — Evaluación de Proyectos 2026</div>
+  </div>
+</footer>
+
+<!-- Script al final del body para no bloquear el render -->
+<script src="assets/js/script.js"></script>
+</body>
+</html>
