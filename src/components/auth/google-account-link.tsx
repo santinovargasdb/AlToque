@@ -14,7 +14,7 @@ import { recordUnlinkAudit } from "@/lib/actions/audit";
 /**
  * Gestor de vinculación de Google en la configuración de la cuenta.
  *
- * - **Vincular**: `linkIdentity` (OAuth manual linking de Supabase) — el
+ * - **Vincular**: `linkIdentity` (OAuth manual linking de Supabase): el
  *   browser pasa por Google y vuelve por `/auth/callback?next={returnTo}`.
  * - **Desvincular**: `unlinkIdentity`, SOLO si el usuario conserva otra vía
  *   de acceso verificada: exige identidad `email` con el email confirmado

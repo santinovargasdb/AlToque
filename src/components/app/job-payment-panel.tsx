@@ -44,7 +44,7 @@ export function JobPaymentPanel({
   if (paymentStatus === "held") {
     return (
       <p className="flex items-center gap-2 rounded-xl border border-success/30 bg-success/5 p-4 text-sm font-medium text-success">
-        <ShieldCheck className="size-4" /> Pago retenido — protegido hasta completar el trabajo.
+        <ShieldCheck className="size-4" /> Pago retenido: protegido hasta completar el trabajo.
       </p>
     );
   }

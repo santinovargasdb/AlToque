@@ -102,7 +102,7 @@ export type PurgeResult = {
  * Purga (o lista, con `dryRun`) las cuentas huérfanas de origen OAuth.
  *
  * Por cada candidato consulta la Admin API (service_role) y solo borra si
- * `app_metadata.providers` incluye un proveedor OAuth — así se respeta el
+ * `app_metadata.providers` incluye un proveedor OAuth; así se respeta el
  * criterio "creados mediante registro OAuth" que la DB sola no puede ver.
  * El borrado va primero contra auth.users (Admin API) y después contra
  * `profiles` (por si no hay FK con cascade); `provider_profiles`,

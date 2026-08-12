@@ -98,7 +98,7 @@ export default async function AdminComisionesPage() {
                   <td className="px-4 py-3 whitespace-nowrap">
                     {formatDate(e.createdAt)}
                   </td>
-                  <td className="px-4 py-3">{e.providerName ?? "—"}</td>
+                  <td className="px-4 py-3">{e.providerName ?? "s/d"}</td>
                   <td className="max-w-48 truncate px-4 py-3">{e.jobTitle}</td>
                   <td className="px-4 py-3">{SOURCE_LABEL[e.source]}</td>
                   <td className="px-4 py-3 text-right font-medium">

@@ -43,7 +43,7 @@ export default function LandingPage() {
             <span className="text-action">al toque</span>.
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Plomeros, cerrajeros, electricistas y más — verificados y cerca
+            Plomeros, cerrajeros, electricistas y más, verificados y cerca
             tuyo. Para una urgencia ahora mismo o un trabajo agendado para la
             semana que viene.
           </p>

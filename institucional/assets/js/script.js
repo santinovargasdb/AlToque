@@ -1,5 +1,5 @@
 /**
- * AlToque — El oficio que necesitás, al toque
+ * AlToque: El oficio que necesitás, al toque
  * Evaluación de Proyectos · Instituto Leonardo Murialdo · 7mo Informática A · 2026
  * script.js
  */

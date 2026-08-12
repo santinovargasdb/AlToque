@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 /* ────────────────────────────────────────────────────────────
-   AlToque — Design System (Sección 7 del blueprint)
+   AlToque: Design System (Sección 7 del blueprint)
    Confianza primero: limpio, cálido, mobile-first.
    Tailwind v4 + tokens shadcn/ui (variables CSS).
    ──────────────────────────────────────────────────────────── */
@@ -10,7 +10,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Radios — 10px default, 16px cards, full avatars/badges */
+  /* Radios: 10px default, 16px cards, full avatars/badges */
   --radius: 0.625rem; /* 10px */
 
   /* Marca / superficies */
@@ -21,7 +21,7 @@
   --popover: #ffffff;
   --popover-foreground: #0f172a;
 
-  /* Primary — azul confianza */
+  /* Primary: azul confianza */
   --primary: #2563eb;
   --primary-foreground: #ffffff;
 
@@ -43,13 +43,13 @@
   --ring: #2563eb;
 
   /* ── Tokens semánticos de AlToque ── */
-  /* Acción / urgencia — naranja "al toque" (usar con moderación) */
+  /* Acción / urgencia: naranja "al toque" (usar con moderación) */
   --action: #f97316;
   --action-foreground: #ffffff;
-  /* Éxito / verificado — trabajo completado, badge "Verificado" */
+  /* Éxito / verificado: trabajo completado, badge "Verificado" */
   --success: #16a34a;
   --success-foreground: #ffffff;
-  /* Advertencia — pendiente de verificación, deuda de comisión */
+  /* Advertencia: pendiente de verificación, deuda de comisión */
   --warning: #f59e0b;
   --warning-foreground: #0f172a;
 
@@ -130,7 +130,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 6px);
 
-  /* Fuentes — inyectadas por next/font en el layout raíz */
+  /* Fuentes: inyectadas por next/font en el layout raíz */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;

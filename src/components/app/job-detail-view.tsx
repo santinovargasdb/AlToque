@@ -45,7 +45,7 @@ export function JobDetailView({
           <p className="flex items-center gap-2">
             {job.type === "urgent" ? (
               <>
-                <Clock className="size-4 text-action" /> Urgente — lo antes
+                <Clock className="size-4 text-action" /> Urgente: lo antes
                 posible
               </>
             ) : (
@@ -120,7 +120,7 @@ export function JobDetailView({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="truncate font-medium">
-                {counterpart.name ?? "—"}
+                {counterpart.name ?? "Sin nombre"}
               </span>
               {counterpart.rating != null && <VerifiedBadge />}
             </div>

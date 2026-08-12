@@ -5,7 +5,7 @@ import {
 } from "@/lib/db/maintenance";
 
 /**
- * Vercel Cron — mantenimiento de cuentas huérfanas (registros OAuth que
+ * Vercel Cron: mantenimiento de cuentas huérfanas (registros OAuth que
  * nunca completaron el onboarding de /completar-perfil en 48 h).
  *
  * Seguro por defecto: corre en modo `dryRun` (solo lista candidatos en la

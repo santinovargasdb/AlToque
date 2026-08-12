@@ -46,7 +46,7 @@ export function formatDateTime(date: Date | string): string {
 
 /** Distancia legible: 0.6 → "600 m", 3.4 → "3,4 km". */
 export function formatDistance(km: number): string {
-  if (!Number.isFinite(km)) return "—";
+  if (!Number.isFinite(km)) return "s/d";
   if (km < 1) return `${Math.round(km * 1000)} m`;
   return `${km.toFixed(1).replace(".", ",")} km`;
 }

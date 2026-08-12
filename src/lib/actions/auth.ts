@@ -228,7 +228,7 @@ export type CompleteProfileResult =
  * `requireCompleteProfile` de los layouts bloquea el dashboard hasta que
  * esta acción complete el perfil.
  *
- * @returns `home` — la ruta del dashboard según el rol, para que el form
+ * @returns `home`: la ruta del dashboard según el rol, para que el form
  *   haga la navegación dura post-guardado.
  */
 export async function completeProfile(

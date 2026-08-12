@@ -68,8 +68,8 @@ export default async function AdminProfesionalesPage() {
                   <td className="px-4 py-3 whitespace-nowrap">
                     {formatDate(p.createdAt)}
                   </td>
-                  <td className="px-4 py-3 font-medium">{p.fullName ?? "—"}</td>
-                  <td className="px-4 py-3">{p.phone ?? "—"}</td>
+                  <td className="px-4 py-3 font-medium">{p.fullName ?? "s/d"}</td>
+                  <td className="px-4 py-3">{p.phone ?? "s/d"}</td>
                   <td className="px-4 py-3">
                     <Badge variant={VERIFICATION_VARIANT[p.verificationStatus]}>
                       {VERIFICATION_LABEL[p.verificationStatus]}
@@ -83,7 +83,7 @@ export default async function AdminProfesionalesPage() {
                     {p.isOnline ? (
                       <Badge variant="success">Online</Badge>
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">Offline</span>
                     )}
                   </td>
                 </tr>

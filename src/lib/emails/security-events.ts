@@ -6,7 +6,7 @@ import { sendEmail } from "./send";
 
 /**
  * Dispara el email de alerta de seguridad con el contexto (IP + dispositivo)
- * de la request actual. Fire-and-forget por diseño: jamás lanza — un fallo
+ * de la request actual. Fire-and-forget por diseño: jamás lanza: un fallo
  * de email nunca debe romper un login ni una (des)vinculación.
  *
  * @param eventLabel Descripción humana del evento, ej.

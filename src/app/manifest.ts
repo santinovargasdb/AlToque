@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "AlToque — Oficios verificados",
+    name: "AlToque: Oficios verificados",
     short_name: "AlToque",
     description:
       "Profesionales de oficios verificados cerca tuyo. Urgencias y trabajos agendados.",

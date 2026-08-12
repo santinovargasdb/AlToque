@@ -23,7 +23,7 @@ const serwist = new Serwist({
 serwist.addEventListeners();
 
 /* ────────────────────────────────────────────────────────────
-   Web Push — núcleo del flujo urgente.
+   Web Push: núcleo del flujo urgente.
    Recibe "nuevo pedido cerca tuyo" / "pedido aceptado" / mensajes.
    El payload lo envía src/lib/push/send.ts (VAPID).
    ──────────────────────────────────────────────────────────── */

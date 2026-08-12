@@ -13,7 +13,7 @@ const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
  * service worker y registra la suscripción en `/api/push/subscribe`.
  *
  * No se renderiza si el navegador no soporta push o falta la clave VAPID
- * pública (degradación elegante — ej. iOS sin la PWA instalada).
+ * pública (degradación elegante, ej. iOS sin la PWA instalada).
  */
 export function PushSubscribe({ className }: { className?: string }) {
   const [supported, setSupported] = useState(false);

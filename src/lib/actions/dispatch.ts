@@ -70,7 +70,7 @@ export async function getIncomingJobs(): Promise<IncomingJob[]> {
 }
 
 /**
- * Aceptar un pedido urgente — RACE-SAFE.
+ * Aceptar un pedido urgente (RACE-SAFE).
  * El `WHERE status = 'broadcasting'` garantiza "el primero que acepta gana"
  * a nivel DB, sin locks de aplicación.
  */

@@ -115,7 +115,7 @@ export const authCallbackParamsSchema = z.object({
   /**
    * Intención de rol del registro vía OAuth (el trigger de profiles no puede
    * leerla de los metadatos de Google). El callback solo la aplica a
-   * signups recién creados — nunca cambia el rol de una cuenta existente.
+   * signups recién creados; nunca cambia el rol de una cuenta existente.
    */
   role: z.enum(["client", "provider"]).nullable().catch(null),
   /**

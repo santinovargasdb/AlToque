@@ -3,7 +3,7 @@ import { emailLayout, emailButton } from "./layout";
 export type EmailContent = { subject: string; html: string };
 
 /**
- * Email de bienvenida — se envía cuando el usuario COMPLETA el onboarding
+ * Email de bienvenida: se envía cuando el usuario COMPLETA el onboarding
  * (`completeProfile`), no al registrarse: recién ahí la cuenta está
  * operativa de verdad.
  */

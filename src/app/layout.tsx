@@ -33,7 +33,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: "AlToque — Profesionales de oficios verificados, al toque",
+    default: "AlToque | Profesionales de oficios verificados, al toque",
     template: "%s · AlToque",
   },
   description:

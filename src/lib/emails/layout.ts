@@ -54,7 +54,7 @@ export function emailLayout({
             </tr>
             <tr>
               <td style="padding-top:20px;text-align:center;font-family:${FONT_STACK};font-size:12px;color:#64748B;line-height:1.5;">
-                AlToque — Profesionales de oficios verificados.<br />
+                AlToque · Profesionales de oficios verificados.<br />
                 Recibiste este email por tu cuenta en AlToque.
               </td>
             </tr>

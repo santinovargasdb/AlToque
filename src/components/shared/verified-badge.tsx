@@ -2,7 +2,7 @@ import { BadgeCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Badge "Verificado" — patrón de confianza recurrente del producto.
+ * Badge "Verificado": patrón de confianza recurrente del producto.
  * Se muestra en perfiles y cards de profesionales aprobados.
  */
 export function VerifiedBadge({

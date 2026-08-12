@@ -10,7 +10,7 @@ const DATE_FMT = new Intl.DateTimeFormat("es-AR", {
 });
 
 /**
- * Alerta de seguridad — se envía automáticamente cuando:
+ * Alerta de seguridad. Se envía automáticamente cuando:
  *  - hay un login exitoso desde una IP/navegador nuevos (`isNewLoginContext`), o
  *  - se vincula/desvincula Google Auth en la cuenta.
  * Nunca incluye tokens ni credenciales: solo el contexto del evento.

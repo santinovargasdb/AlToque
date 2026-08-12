@@ -14,7 +14,7 @@ export type SentMessage = {
   id: string;
   senderId: string;
   body: string;
-  createdAt: string; // ISO — serializable para el client component
+  createdAt: string; // ISO, serializable para el client component
 };
 
 export type SendMessageResult =
@@ -77,13 +77,13 @@ export async function sendMessage(input: unknown): Promise<SendMessageResult> {
     await db.insert(notifications).values({
       userId: recipientId,
       type: "new_message",
-      title: `Nuevo mensaje — ${job.title}`,
+      title: `Nuevo mensaje: ${job.title}`,
       body,
       link: url,
       data: { jobId },
     });
     await sendPushToUsers([recipientId], {
-      title: `Nuevo mensaje — ${job.title}`,
+      title: `Nuevo mensaje: ${job.title}`,
       body: body.length > 120 ? `${body.slice(0, 117)}…` : body,
       url,
       tag: `chat-${jobId}`,

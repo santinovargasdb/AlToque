@@ -96,15 +96,15 @@ export default async function AdminTrabajosPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">{j.categoryName}</td>
-                  <td className="px-4 py-3">{j.clientName ?? "—"}</td>
-                  <td className="px-4 py-3">{j.providerName ?? "—"}</td>
+                  <td className="px-4 py-3">{j.clientName ?? "s/d"}</td>
+                  <td className="px-4 py-3">{j.providerName ?? "s/d"}</td>
                   <td className="px-4 py-3">
                     <Badge variant={STATUS_VARIANT[j.status]}>
                       {STATUS_LABEL[j.status]}
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {j.finalPrice ? formatARS(j.finalPrice) : "—"}
+                    {j.finalPrice ? formatARS(j.finalPrice) : "s/d"}
                   </td>
                 </tr>
               ))}

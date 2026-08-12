@@ -5,7 +5,7 @@ import { jobs } from "@/lib/db/schema";
 import { refundJobPayment } from "@/lib/mercadopago/refund";
 
 /**
- * Vercel Cron — expira pedidos urgentes vencidos:
+ * Vercel Cron: expira pedidos urgentes vencidos:
  *  - en broadcast que nadie aceptó, y
  *  - aceptados que el cliente nunca pagó (paymentStatus none/pending).
  * Si un job expirado tenía el pago retenido (held), lo reintegra.

@@ -16,7 +16,7 @@ import {
  * Subida de foto de perfil al bucket público `avatars` con UX instantánea:
  *
  *  1. Validación inmediata en el cliente (solo imágenes raster, máx 2 MB)
- *     con toast de error al instante — sin tocar la red si no pasa.
+ *     con toast de error al instante, sin tocar la red si no pasa.
  *  2. Preview inmediato con `URL.createObjectURL(file)` apenas se elige.
  *  3. Spinner superpuesto sobre el avatar + selector deshabilitado mientras
  *     sube (no hay dudas de si "está haciendo algo").

@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Mi perfil" };
 
 /**
  * Configuración de la cuenta del cliente: datos de contacto (editables con
- * la misma acción del onboarding) y métodos de acceso — vincular/desvincular
+ * la misma acción del onboarding) y métodos de acceso: vincular/desvincular
  * Google y configurar contraseña (anti-lockout, ver GoogleAccountLink).
  */
 export default async function PerfilClientePage() {

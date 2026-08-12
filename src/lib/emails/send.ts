@@ -8,7 +8,7 @@ import { Resend } from "resend";
  * funcionan sin configurar nada; solo se informa por consola). El remitente
  * sale de `EMAIL_FROM` (dominio verificado en Resend) con un default seguro.
  *
- * Nunca lanza: un fallo de email jamás rompe el flujo que lo disparó —
+ * Nunca lanza: un fallo de email jamás rompe el flujo que lo disparó;
  * llamar con `void sendEmail(...)` para fire-and-forget.
  */
 export async function sendEmail(params: {

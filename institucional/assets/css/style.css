@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   AlToque — El oficio que necesitás, al toque
+   AlToque: El oficio que necesitás, al toque
    Evaluación de Proyectos · Instituto Leonardo Murialdo · 7mo Informática A · 2026
    style.css
    ═══════════════════════════════════════════════════════════════ */
@@ -461,7 +461,7 @@ footer { background: var(--ink); color: var(--bg); padding: 3rem 2rem; margin-to
 .d5 { animation-delay: .6s; }
 
 /* ══════════════════════════════════════════
-   RESPONSIVE — 900px
+   RESPONSIVE: 900px
    ══════════════════════════════════════════ */
 @media (max-width: 900px) {
   .context-band-inner  { grid-template-columns: 1fr; }
@@ -476,7 +476,7 @@ footer { background: var(--ink); color: var(--bg); padding: 3rem 2rem; margin-to
 }
 
 /* ══════════════════════════════════════════
-   RESPONSIVE — 600px
+   RESPONSIVE: 600px
    ══════════════════════════════════════════ */
 @media (max-width: 600px) {
   /* Nav */
@@ -530,7 +530,7 @@ footer { background: var(--ink); color: var(--bg); padding: 3rem 2rem; margin-to
   .footer-inner   { gap: 1.5rem; }
   .footer-bottom  { flex-direction: column; align-items: flex-start; gap: .5rem; }
 
-  /* Buttons — touch targets */
+  /* Buttons: touch targets */
   .btn-primary, .btn-sec, .btn-accent, .btn-warm { padding: 13px 22px; }
   .btn-sm-accent, .btn-sm-green, .btn-sm-out { padding: 11px 16px; font-size: 12px; }
 

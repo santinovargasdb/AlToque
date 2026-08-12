@@ -11,7 +11,7 @@ import type { ActionResult } from "./provider";
  * Action que pueda loggearla sola.
  *
  * Superficie segura: acción fija (no la elige el cliente) y siempre sobre
- * el usuario de la sesión — lo peor que puede hacer un cliente malicioso
+ * el usuario de la sesión; lo peor que puede hacer un cliente malicioso
  * es escribir un evento verídico en su PROPIO historial.
  */
 export async function recordUnlinkAudit(): Promise<ActionResult> {

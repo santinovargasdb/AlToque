@@ -34,7 +34,7 @@ export async function createClient() {
 }
 
 /**
- * Cliente con service_role — BYPASSA RLS. Solo en el servidor, para
+ * Cliente con service_role: BYPASSA RLS. Solo en el servidor, para
  * operaciones de sistema (webhooks de pago, leer provider_mp_tokens,
  * acciones de admin). NUNCA exponer al cliente.
  */

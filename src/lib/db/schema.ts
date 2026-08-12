@@ -16,7 +16,7 @@ import { relations } from "drizzle-orm";
 import { geographyPoint } from "./geography";
 
 /* ────────────────────────────────────────────────────────────
-   AlToque — Schema Drizzle (Sección 4 del blueprint)
+   AlToque: Schema Drizzle (Sección 4 del blueprint)
    Tras `db:migrate`, correr drizzle/postgis.sql (PostGIS, índices
    GIST, find_nearby_providers, RLS) y drizzle/seed-categories.sql.
    ──────────────────────────────────────────────────────────── */
@@ -111,7 +111,7 @@ export const providerProfiles = pgTable(
   ],
 );
 
-// ── provider_mp_tokens (separada — SOLO service_role vía RLS) ──
+// ── provider_mp_tokens (separada: SOLO service_role vía RLS) ──
 export const providerMpTokens = pgTable("provider_mp_tokens", {
   providerId: uuid("provider_id")
     .primaryKey()
@@ -144,7 +144,7 @@ export const providerCategories = pgTable(
   (t) => [primaryKey({ columns: [t.providerId, t.categoryId] })],
 );
 
-// ── jobs (entidad central — el "pedido") ──
+// ── jobs (entidad central: el "pedido") ──
 export const jobs = pgTable(
   "jobs",
   {
@@ -219,7 +219,7 @@ export const jobDispatch = pgTable(
   ],
 );
 
-// ── reviews (bidireccional — una por parte) ──
+// ── reviews (bidireccional: una por parte) ──
 export const reviews = pgTable(
   "reviews",
   {
