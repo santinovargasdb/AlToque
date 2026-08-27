@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const BENEFICIOS = [
   ["Más trabajos cerca tuyo", "Recibí pedidos por geolocalización dentro de tu zona y radio de cobertura."],
-  ["Cobrá como quieras", "En efectivo o por la app con Mercado Pago. La comisión se descuenta clara y automáticamente."],
+  ["Cobrá directo, sin descuentos", "El precio y el medio de pago los acordás con tu cliente. Lo que cobrás es tuyo: AlToque no toca tu plata."],
   ["Construí tu reputación", "Las reviews reales de tus clientes te traen más trabajo."],
   ["Vos manejás tu agenda", "Ponete online para urgencias o aceptá solo trabajos agendados."],
 ];

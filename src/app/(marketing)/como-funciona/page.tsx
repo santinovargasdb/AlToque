@@ -13,15 +13,15 @@ const PASOS = [
   },
   {
     t: "2. Compará con confianza",
-    d: "Cada profesional está verificado con DNI y selfie. Mirá sus reviews reales, su rating y el precio estimado antes de confirmar.",
+    d: "Cada profesional está verificado con DNI y selfie. Mirá sus reviews reales y su rating antes de confirmar.",
   },
   {
     t: "3. Coordiná y seguí el trabajo",
     d: "Chateá dentro de la app y seguí el estado del pedido en vivo: aceptado, en curso, completado.",
   },
   {
-    t: "4. Pagá como prefieras",
-    d: "En efectivo o por la app con Mercado Pago. Al terminar, dejás tu reseña y ayudás a otros a elegir mejor.",
+    t: "4. Acordá el pago directo",
+    d: "El precio y el medio de pago los arreglás directamente con el profesional. Al terminar, dejás tu reseña y ayudás a otros a elegir mejor.",
   },
 ];
 
@@ -30,7 +30,7 @@ export default function ComoFuncionaPage() {
     <section className="mx-auto max-w-3xl px-4 py-16">
       <h1 className="font-heading text-4xl font-bold">Cómo funciona</h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        Confianza de punta a punta: profesionales verificados, precios claros y
+        Confianza de punta a punta: profesionales verificados, trato directo y
         seguimiento en vivo.
       </p>
       <div className="mt-10 space-y-6">

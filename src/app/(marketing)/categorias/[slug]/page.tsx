@@ -42,7 +42,7 @@ export default async function CategoriaPage({
         {oficio.name} cerca tuyo
       </h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        {oficio.name} verificados, con reviews reales y precios claros.
+        {oficio.name} verificados, con reviews reales y trato directo.
         {oficio.urgent
           ? " Disponibles también para urgencias 24/7."
           : " Coordiná tu trabajo agendado en minutos."}

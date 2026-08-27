@@ -120,12 +120,12 @@ export default function LandingPage() {
               {
                 n: 2,
                 t: "Elegí con confianza",
-                d: "Verificación con DNI, reviews reales y precio claro antes de confirmar. Sin sorpresas.",
+                d: "Verificación con DNI y reviews reales antes de confirmar. Sin sorpresas.",
               },
               {
                 n: 3,
-                t: "Pagá como quieras",
-                d: "En efectivo o por la app con Mercado Pago. Seguimiento del trabajo en vivo y chat directo.",
+                t: "Arreglá directo",
+                d: "El precio y el pago los acordás con el profesional, sin intermediarios. Seguimiento del trabajo en vivo y chat directo.",
               },
             ].map((s) => (
               <div key={s.n} className="text-center">

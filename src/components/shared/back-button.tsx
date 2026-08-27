@@ -5,9 +5,9 @@ import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Contador de navegaciones SPA de ESTA carga del documento (module scope a
-// propósito: una navegación completa (volver de Mercado Pago por back_urls,
-// abrir un push, pegar la URL) lo resetea). history.length no sirve acá: al
-// volver de MP el historial existe pero back() caería en el checkout.
+// propósito: una navegación completa (abrir un push, pegar la URL, volver de
+// un sitio externo) lo resetea). history.length no sirve acá: al volver de un
+// sitio externo el historial existe pero back() saldría de la app.
 let inAppNavigations = 0;
 
 /** Lo llama el tracker de ruta del header (HeaderBack) en cada cambio de pathname. */

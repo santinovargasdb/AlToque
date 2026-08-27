@@ -49,7 +49,7 @@
   /* Éxito / verificado: trabajo completado, badge "Verificado" */
   --success: #16a34a;
   --success-foreground: #ffffff;
-  /* Advertencia: pendiente de verificación, deuda de comisión */
+  /* Advertencia: pendiente de verificación */
   --warning: #f59e0b;
   --warning-foreground: #0f172a;
 

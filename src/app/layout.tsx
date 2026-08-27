@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s · AlToque",
   },
   description:
-    "Encontrá plomeros, cerrajeros, electricistas y más profesionales verificados cerca tuyo. Para urgencias o trabajos agendados. Pago en efectivo o por la app.",
+    "Encontrá plomeros, cerrajeros, electricistas y más profesionales verificados cerca tuyo. Para urgencias o trabajos agendados. Trato directo con el profesional.",
   applicationName: "AlToque",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

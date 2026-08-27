@@ -26,7 +26,7 @@ export function welcomeEmail(params: {
              <li style="margin-bottom:6px;">Verificá tu identidad (DNI + selfie).</li>
              <li>Ponete <strong>online</strong> y empezá a recibir urgencias cerca tuyo.</li>
            </ol>`
-        : `<p style="margin:0 0 16px;">Buscá plomeros, cerrajeros, electricistas y más profesionales <strong>verificados</strong> cerca tuyo, para urgencias o trabajos agendados. Pagá en efectivo o por la app con Mercado Pago.</p>`
+        : `<p style="margin:0 0 16px;">Buscá plomeros, cerrajeros, electricistas y más profesionales <strong>verificados</strong> cerca tuyo, para urgencias o trabajos agendados. El precio y el pago los acordás directamente con el profesional.</p>`
     }
     ${emailButton(isPro ? "Completar mi perfil profesional" : "Buscar profesionales", home)}
   `;
