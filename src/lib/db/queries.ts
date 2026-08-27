@@ -9,7 +9,7 @@ import {
   messages,
   jobs,
 } from "./schema";
-import type { JobStatus, JobType, PaymentMethod, PaymentStatus } from "@/types";
+import type { JobStatus, JobType, PaymentMethod } from "@/types";
 
 /** Fila devuelta por find_nearby_providers (ver drizzle/postgis.sql). */
 export type NearbyProvider = {
@@ -149,11 +149,7 @@ export type JobDetail = {
   lng: number | null;
   scheduledAt: Date | null;
   paymentMethod: PaymentMethod;
-  priceEstimate: string | null;
-  mpPreferenceId: string | null;
   finalPrice: string | null;
-  commissionAmount: string | null;
-  paymentStatus: PaymentStatus;
   cancelReason: string | null;
   createdAt: Date;
   acceptedAt: Date | null;
@@ -182,11 +178,7 @@ export async function getJobDetail(jobId: string): Promise<JobDetail | null> {
       lng: sql<number | null>`st_x(${jobs.location}::geometry)`,
       scheduledAt: jobs.scheduledAt,
       paymentMethod: jobs.paymentMethod,
-      priceEstimate: jobs.priceEstimate,
-      mpPreferenceId: jobs.mpPreferenceId,
       finalPrice: jobs.finalPrice,
-      commissionAmount: jobs.commissionAmount,
-      paymentStatus: jobs.paymentStatus,
       cancelReason: jobs.cancelReason,
       createdAt: jobs.createdAt,
       acceptedAt: jobs.acceptedAt,

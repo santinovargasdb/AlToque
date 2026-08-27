@@ -6,7 +6,6 @@ const NAV = [
   { href: "/admin/verificaciones", label: "Verificaciones" },
   { href: "/admin/profesionales", label: "Profesionales" },
   { href: "/admin/trabajos", label: "Trabajos" },
-  { href: "/admin/comisiones", label: "Comisiones" },
 ];
 
 export default function AdminLayout({

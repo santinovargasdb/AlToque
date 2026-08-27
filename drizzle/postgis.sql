@@ -2,6 +2,11 @@
 -- AlToque — PostGIS + matching geográfico + RLS
 -- Correr en el SQL Editor de Supabase DESPUÉS de `pnpm db:migrate`.
 -- (Sección 4 del blueprint)
+--
+-- 2026-08-27: actualizado por el cambio al modelo de suscripción
+-- (spec 2026-07-31-modelo-suscripcion): se quitaron el índice
+-- uq_jobs_mp_payment_id y el RLS de provider_mp_tokens y
+-- commission_ledger (tablas dadas de baja en la migración 0002).
 -- ════════════════════════════════════════════════════════════
 
 create extension if not exists postgis;
@@ -93,14 +98,12 @@ $$ language sql stable set search_path = public;
 -- ════════════════════════════════════════════════════════════
 alter table profiles            enable row level security;
 alter table provider_profiles   enable row level security;
-alter table provider_mp_tokens  enable row level security;
 alter table categories          enable row level security;
 alter table provider_categories enable row level security;
 alter table jobs                enable row level security;
 alter table job_dispatch        enable row level security;
 alter table reviews             enable row level security;
 alter table messages            enable row level security;
-alter table commission_ledger   enable row level security;
 alter table push_subscriptions  enable row level security;
 alter table notifications       enable row level security;
 
@@ -120,9 +123,6 @@ create policy provider_self_rw on provider_profiles
 drop policy if exists provider_public_read on provider_profiles;
 create policy provider_public_read on provider_profiles
   for select using (true);
-
--- provider_mp_tokens: SOLO service_role (sin policies → nadie con anon/auth accede).
--- (RLS habilitado y sin policy = denegado para roles no service_role.)
 
 -- categories: lectura pública; escritura solo admin.
 drop policy if exists categories_read on categories;
@@ -193,14 +193,6 @@ create policy messages_parties_rw on messages
     )
   ) with check (auth.uid() = sender_id);
 
--- commission_ledger: el profesional ve su deuda/cobros; admin todo.
-drop policy if exists ledger_provider_read on commission_ledger;
-create policy ledger_provider_read on commission_ledger
-  for select using (auth.uid() = provider_id or is_admin());
-drop policy if exists ledger_admin_write on commission_ledger;
-create policy ledger_admin_write on commission_ledger
-  for all using (is_admin()) with check (is_admin());
-
 -- push_subscriptions / notifications: cada usuario las suyas.
 drop policy if exists push_self_rw on push_subscriptions;
 create policy push_self_rw on push_subscriptions
@@ -208,14 +200,6 @@ create policy push_self_rw on push_subscriptions
 drop policy if exists notif_self_rw on notifications;
 create policy notif_self_rw on notifications
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-
--- ════════════════════════════════════════════════════════════
--- Pagos (Step 9): idempotencia del webhook por mp_payment_id.
--- Único parcial: muchos jobs tienen mp_payment_id NULL (cash / sin pagar).
--- ════════════════════════════════════════════════════════════
-create unique index if not exists uq_jobs_mp_payment_id
-  on jobs (mp_payment_id)
-  where mp_payment_id is not null;
 
 -- ════════════════════════════════════════════════════════════
 -- Realtime: publicar cambios de jobs, job_dispatch y messages

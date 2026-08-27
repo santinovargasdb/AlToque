@@ -13,10 +13,7 @@ const serverSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 
-  MP_CLIENT_ID: z.string().optional(),
-  MP_CLIENT_SECRET: z.string().optional(),
   MP_ACCESS_TOKEN: z.string().optional(),
-  NEXT_PUBLIC_MP_PUBLIC_KEY: z.string().optional(),
   MP_WEBHOOK_SECRET: z.string().optional(),
 
   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().optional(),
@@ -29,11 +26,6 @@ const serverSchema = z.object({
   VAPID_PRIVATE_KEY: z.string().optional(),
 
   CRON_SECRET: z.string().optional(),
-  COMMISSION_RATE: z
-    .string()
-    .default("0.12")
-    .transform((v) => Number(v))
-    .pipe(z.number().min(0).max(1)),
 });
 
 const parsed = serverSchema.safeParse(process.env);

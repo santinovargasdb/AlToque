@@ -46,8 +46,6 @@ export default async function AdminTrabajosPage() {
       title: jobs.title,
       status: jobs.status,
       type: jobs.type,
-      paymentMethod: jobs.paymentMethod,
-      paymentStatus: jobs.paymentStatus,
       finalPrice: jobs.finalPrice,
       createdAt: jobs.createdAt,
       categoryName: categories.name,

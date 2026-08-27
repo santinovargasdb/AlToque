@@ -87,9 +87,9 @@ describe.skipIf(!hasTestDb)("despacho urgente (integración)", () => {
   async function seedBroadcastJob(): Promise<string> {
     const [job] = await sql<{ id: string }[]>`
       insert into jobs
-        (client_id, category_id, type, status, title, payment_method, commission_rate)
+        (client_id, category_id, type, status, title, payment_method)
       values
-        (${CLIENT}, ${CATEGORY}, 'urgent', 'broadcasting', 'Cerradura trabada', 'cash', '0.120')
+        (${CLIENT}, ${CATEGORY}, 'urgent', 'broadcasting', 'Cerradura trabada', 'cash')
       returning id`;
     await sql`
       insert into job_dispatch (job_id, provider_id, status, distance_km) values

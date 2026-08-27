@@ -43,28 +43,11 @@ export const paymentMethodEnum = pgEnum("payment_method", [
   "transfer",
   "card",
 ]);
-export const paymentStatusEnum = pgEnum("payment_status", [
-  "none",
-  "pending",
-  "held",
-  "released",
-  "paid_cash",
-  "refunded",
-]);
 export const dispatchStatusEnum = pgEnum("dispatch_status", [
   "notified",
   "accepted",
   "declined",
   "expired",
-]);
-export const commissionSourceEnum = pgEnum("commission_source", [
-  "split",
-  "cash_debt",
-]);
-export const commissionStatusEnum = pgEnum("commission_status", [
-  "collected",
-  "owed",
-  "settled",
 ]);
 
 // ── profiles (extiende auth.users 1:1 por id; lo crea un trigger al registrarse) ──
@@ -103,23 +86,11 @@ export const providerProfiles = pgTable(
       .notNull()
       .default("0.0"),
     jobsCompleted: integer("jobs_completed").notNull().default(0),
-    mpUserId: text("mp_user_id"),
-    mpConnected: boolean("mp_connected").notNull().default(false),
   },
   (t) => [
     index("idx_provider_online").on(t.isOnline, t.verificationStatus),
   ],
 );
-
-// ── provider_mp_tokens (separada: SOLO service_role vía RLS) ──
-export const providerMpTokens = pgTable("provider_mp_tokens", {
-  providerId: uuid("provider_id")
-    .primaryKey()
-    .references(() => profiles.id, { onDelete: "cascade" }),
-  accessToken: text("access_token").notNull(), // encriptado
-  refreshToken: text("refresh_token"),
-  expiresAt: timestamp("expires_at", { withTimezone: true }),
-});
 
 // ── categories (oficios) ──
 export const categories = pgTable("categories", {
@@ -164,20 +135,11 @@ export const jobs = pgTable(
     addressText: text("address_text"),
     location: geographyPoint("location"), // dónde se ejecuta
     scheduledAt: timestamp("scheduled_at", { withTimezone: true }), // null si urgente
+    // `payment_method` y `final_price` son datos INFORMATIVOS del acuerdo
+    // entre las partes: la plataforma no participa del cobro del servicio
+    // (spec 2026-07-31-modelo-suscripcion).
     paymentMethod: paymentMethodEnum("payment_method").notNull(),
-    priceEstimate: numeric("price_estimate", { precision: 12, scale: 2 }),
     finalPrice: numeric("final_price", { precision: 12, scale: 2 }),
-    commissionRate: numeric("commission_rate", { precision: 4, scale: 3 })
-      .notNull(), // snapshot al crear
-    commissionAmount: numeric("commission_amount", {
-      precision: 12,
-      scale: 2,
-    }),
-    paymentStatus: paymentStatusEnum("payment_status")
-      .notNull()
-      .default("none"),
-    mpPreferenceId: text("mp_preference_id"),
-    mpPaymentId: text("mp_payment_id"),
     cancelReason: text("cancel_reason"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
@@ -264,24 +226,6 @@ export const messages = pgTable(
   },
   (t) => [index("idx_messages_job").on(t.jobId)],
 );
-
-// ── commission_ledger (contabilidad de la comisión) ──
-export const commissionLedger = pgTable("commission_ledger", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  jobId: uuid("job_id")
-    .notNull()
-    .references(() => jobs.id, { onDelete: "cascade" }),
-  providerId: uuid("provider_id")
-    .notNull()
-    .references(() => profiles.id),
-  amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
-  source: commissionSourceEnum("source").notNull(),
-  status: commissionStatusEnum("status").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  settledAt: timestamp("settled_at", { withTimezone: true }),
-});
 
 // ── push_subscriptions ──
 export const pushSubscriptions = pgTable("push_subscriptions", {

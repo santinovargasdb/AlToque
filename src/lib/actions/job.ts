@@ -3,40 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { sql, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import {
-  jobs,
-  jobDispatch,
-  commissionLedger,
-  providerProfiles,
-} from "@/lib/db/schema";
+import { jobs, jobDispatch, providerProfiles } from "@/lib/db/schema";
 import { findNearbyProviders } from "@/lib/db/queries";
 import { dispatchNewUrgentJob } from "@/lib/notifications/dispatch";
 import { getSession } from "@/lib/auth";
 import { geocodeAddress } from "@/lib/maps/geocode";
 import { createJobSchema, setFinalPriceSchema } from "@/lib/validations/job";
-import {
-  DEFAULT_COMMISSION_RATE,
-  calculateCommission,
-} from "@/lib/mercadopago/commission";
-import { createJobPreference } from "@/lib/mercadopago/preference";
-import {
-  refundJobPayment,
-  refundJobPaymentPartial,
-} from "@/lib/mercadopago/refund";
 import type { ActionResult } from "./provider";
 
 const URGENT_BROADCAST_LIMIT = 10;
 
 export type CreateJobResult =
-  | { ok: true; jobId: string; redirectUrl?: string }
+  | { ok: true; jobId: string }
   | { ok: false; error: string };
 
 /**
- * Crea un pedido (agendado o urgente). Pago:
- *  - cash → no toca MP (paymentStatus 'none').
- *  - transfer/card → crea preferencia de Checkout Pro (escrow a la cuenta de
- *    AlToque), deja paymentStatus 'pending' y devuelve `redirectUrl` (init_point)
- *    para que el cliente pague. El webhook lo pasa a 'held'.
+ * Crea un pedido (agendado o urgente). El pago del servicio se acuerda entre
+ * cliente y profesional, por fuera de la plataforma: `paymentMethod` es un
+ * dato informativo del acuerdo (spec 2026-07-31-modelo-suscripcion).
  */
 export async function createJob(input: unknown): Promise<CreateJobResult> {
   const session = await getSession();
@@ -63,9 +47,6 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
     lng = geo.lng;
   }
 
-  const commissionRate = DEFAULT_COMMISSION_RATE.toFixed(3);
-  const isPrepaid = data.paymentMethod !== "cash";
-  const initialPaymentStatus = isPrepaid ? "pending" : "none";
   const isBroadcast = data.type === "urgent" && !data.providerId;
 
   let jobId: string;
@@ -100,9 +81,6 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
           photos: data.photos,
           addressText: data.addressText,
           paymentMethod: data.paymentMethod,
-          priceEstimate: data.priceEstimate?.toFixed(2),
-          paymentStatus: initialPaymentStatus,
-          commissionRate,
         })
         .returning({ id: jobs.id });
       const id = row!.id;
@@ -120,7 +98,6 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
       return id;
     });
 
-    // Broadcast inmediato (el pago va en paralelo).
     await dispatchNewUrgentJob({
       jobId,
       title: data.title,
@@ -143,9 +120,6 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
           addressText: data.addressText,
           scheduledAt: data.scheduledAt,
           paymentMethod: data.paymentMethod,
-          priceEstimate: data.priceEstimate?.toFixed(2),
-          paymentStatus: initialPaymentStatus,
-          commissionRate,
         })
         .returning({ id: jobs.id });
       const id = row!.id;
@@ -154,35 +128,6 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
       );
       return id;
     });
-  }
-
-  // ── Cola de pago (transfer/card): preferencia de Checkout Pro ──
-  if (isPrepaid) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    try {
-      const { preferenceId, initPoint } = await createJobPreference({
-        jobId,
-        title: data.title,
-        amount: data.priceEstimate!,
-        appUrl,
-      });
-      await db
-        .update(jobs)
-        .set({ mpPreferenceId: preferenceId })
-        .where(eq(jobs.id, jobId));
-      revalidatePath("/pedidos");
-      revalidatePath("/pro/pedidos");
-      return { ok: true, jobId, redirectUrl: initPoint };
-    } catch {
-      await db
-        .update(jobs)
-        .set({ status: "cancelled", updatedAt: new Date() })
-        .where(eq(jobs.id, jobId));
-      return {
-        ok: false,
-        error: "No pudimos iniciar el pago. Probá de nuevo.",
-      };
-    }
   }
 
   revalidatePath("/pedidos");
@@ -207,9 +152,6 @@ export async function updateJobStatus(params: {
       clientId: jobs.clientId,
       providerId: jobs.providerId,
       status: jobs.status,
-      paymentMethod: jobs.paymentMethod,
-      paymentStatus: jobs.paymentStatus,
-      mpPaymentId: jobs.mpPaymentId,
     })
     .from(jobs)
     .where(eq(jobs.id, params.jobId))
@@ -236,12 +178,6 @@ export async function updateJobStatus(params: {
     if (!isProvider || job.status !== "accepted") {
       return { ok: false, error: "El pedido debe estar aceptado." };
     }
-    if (job.paymentMethod !== "cash" && job.paymentStatus !== "held") {
-      return {
-        ok: false,
-        error: "Esperá a que el cliente complete el pago para iniciar.",
-      };
-    }
     await db
       .update(jobs)
       .set({ status: "in_progress", updatedAt: now })
@@ -250,25 +186,10 @@ export async function updateJobStatus(params: {
     if (!["requested", "accepted", "in_progress"].includes(job.status)) {
       return { ok: false, error: "El pedido ya no se puede cancelar." };
     }
-    // Reintegro si el dinero estaba retenido. Si MP falla, NO cancelamos
-    // (no dejamos el dinero "perdido" en estado) y devolvemos error.
-    let paymentStatus = job.paymentStatus;
-    if (job.paymentStatus === "held" && job.mpPaymentId) {
-      try {
-        await refundJobPayment(job.mpPaymentId);
-        paymentStatus = "refunded";
-      } catch {
-        return {
-          ok: false,
-          error: "No pudimos reintegrar el pago. Intentá de nuevo en un momento.",
-        };
-      }
-    }
     await db
       .update(jobs)
       .set({
         status: "cancelled",
-        paymentStatus,
         cancelReason: params.reason ?? null,
         updatedAt: now,
       })
@@ -282,17 +203,9 @@ export async function updateJobStatus(params: {
 }
 
 /**
- * El profesional carga el precio final → liquidación (Step 9b):
- *  - Comisión SIEMPRE vía commission.ts (única fuente de verdad).
- *  - cash → paymentStatus 'paid_cash' + ledger `cash_debt/owed` (el
- *    profesional cobró todo en mano y le debe la comisión a AlToque).
- *  - transfer/card ('held') → si el final es menor al estimado prepagado,
- *    reintegro parcial de la diferencia al cliente; luego 'released' +
- *    ledger `split/collected` (AlToque ya retiene la comisión del escrow;
- *    el payout del neto al profesional es batch/manual).
- *  - Si el final supera el estimado, el excedente se abona directo al
- *    profesional (se muestra en la UI); la comisión igual se calcula
- *    sobre el precio final completo.
+ * El profesional carga el precio final y el trabajo queda completado.
+ * `finalPrice` es un dato de negocio (volumen que pasa por la plataforma);
+ * el cobro es entre las partes y la plataforma no interviene.
  */
 export async function completeJob(input: unknown): Promise<ActionResult> {
   const session = await getSession();
@@ -313,11 +226,6 @@ export async function completeJob(input: unknown): Promise<ActionResult> {
     .select({
       providerId: jobs.providerId,
       status: jobs.status,
-      commissionRate: jobs.commissionRate,
-      paymentMethod: jobs.paymentMethod,
-      paymentStatus: jobs.paymentStatus,
-      priceEstimate: jobs.priceEstimate,
-      mpPaymentId: jobs.mpPaymentId,
     })
     .from(jobs)
     .where(eq(jobs.id, jobId))
@@ -330,64 +238,19 @@ export async function completeJob(input: unknown): Promise<ActionResult> {
     return { ok: false, error: "El pedido debe estar en curso." };
   }
 
-  const { commissionAmount } = calculateCommission(
-    finalPrice,
-    Number(job.commissionRate),
-  );
   const now = new Date();
   const providerId = job.providerId;
-
-  const isCash = job.paymentMethod === "cash";
-  let nextPaymentStatus: "paid_cash" | "released";
-
-  if (isCash) {
-    nextPaymentStatus = "paid_cash";
-  } else {
-    if (job.paymentStatus !== "held") {
-      return {
-        ok: false,
-        error: "El pago del cliente todavía no está confirmado.",
-      };
-    }
-    // Reintegro parcial ANTES de completar: si MP falla no liquidamos a
-    // medias (mismo criterio conservador que el reintegro al cancelar).
-    const held = Number(job.priceEstimate ?? 0);
-    const overpaid = Math.round((held - finalPrice) * 100) / 100;
-    if (overpaid > 0 && job.mpPaymentId) {
-      try {
-        await refundJobPaymentPartial(job.mpPaymentId, overpaid);
-      } catch {
-        return {
-          ok: false,
-          error:
-            "No pudimos reintegrar la diferencia al cliente. Probá de nuevo en un momento.",
-        };
-      }
-    }
-    nextPaymentStatus = "released";
-  }
 
   await db.transaction(async (tx) => {
     await tx
       .update(jobs)
       .set({
         finalPrice: finalPrice.toFixed(2),
-        commissionAmount: commissionAmount.toFixed(2),
-        paymentStatus: nextPaymentStatus,
         status: "completed",
         completedAt: now,
         updatedAt: now,
       })
       .where(eq(jobs.id, jobId));
-
-    await tx.insert(commissionLedger).values({
-      jobId,
-      providerId,
-      amount: commissionAmount.toFixed(2),
-      source: isCash ? "cash_debt" : "split",
-      status: isCash ? "owed" : "collected",
-      settledAt: isCash ? null : now,
-    });
 
     await tx
       .update(providerProfiles)
@@ -399,6 +262,5 @@ export async function completeJob(input: unknown): Promise<ActionResult> {
   revalidatePath(`/pro/pedido/${jobId}`);
   revalidatePath("/pro/pedidos");
   revalidatePath("/pro/inicio");
-  revalidatePath("/pro/cobros");
   return { ok: true };
 }

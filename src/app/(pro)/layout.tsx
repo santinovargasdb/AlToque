@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, ClipboardList, Wallet, User, Zap } from "lucide-react";
+import { LayoutDashboard, ClipboardList, User, Zap } from "lucide-react";
 import { requireCompleteProfile } from "@/lib/auth";
 import { NotificationsBell } from "@/components/shared/notifications-bell";
 import { HeaderBack } from "@/components/shared/header-back";
@@ -8,7 +8,6 @@ import { HeaderBack } from "@/components/shared/header-back";
 const NAV = [
   { href: "/pro/inicio", label: "Inicio", icon: LayoutDashboard },
   { href: "/pro/pedidos", label: "Pedidos", icon: ClipboardList },
-  { href: "/pro/cobros", label: "Cobros", icon: Wallet },
   { href: "/pro/perfil", label: "Perfil", icon: User },
 ];
 
@@ -41,7 +40,7 @@ export default async function ProLayout({
         {children}
       </main>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card">
-        <div className="mx-auto grid max-w-2xl grid-cols-4">
+        <div className="mx-auto grid max-w-2xl grid-cols-3">
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}

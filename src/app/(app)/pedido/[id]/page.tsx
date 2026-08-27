@@ -8,7 +8,6 @@ import {
 } from "@/lib/db/queries";
 import { JobDetailView } from "@/components/app/job-detail-view";
 import { ClientJobActions } from "@/components/app/client-job-actions";
-import { JobPaymentPanel } from "@/components/app/job-payment-panel";
 import { JobChat } from "@/components/shared/job-chat";
 import { ReviewForm } from "@/components/shared/review-form";
 import { ReviewSummary } from "@/components/shared/review-summary";
@@ -47,12 +46,6 @@ export default async function ClientJobPage({
         href: job.providerId ? `/profesional/${job.providerId}` : undefined,
       }}
     >
-      <JobPaymentPanel
-        paymentMethod={job.paymentMethod}
-        paymentStatus={job.paymentStatus}
-        mpPreferenceId={job.mpPreferenceId}
-      />
-
       {showChat && (
         <JobChat
           jobId={job.id}

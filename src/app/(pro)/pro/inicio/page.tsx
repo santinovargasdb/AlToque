@@ -16,7 +16,6 @@ export default async function ProInicioPage() {
     select (base_location is not null) as has_loc,
            verification_status as status,
            (id_document_url is not null and selfie_url is not null) as has_docs,
-           mp_connected,
            is_online,
            (select count(*) from provider_categories pc where pc.provider_id = ${user.id}) as cat_count
     from provider_profiles where profile_id = ${user.id}
@@ -24,7 +23,6 @@ export default async function ProInicioPage() {
     has_loc: boolean;
     status: "pending" | "approved" | "rejected";
     has_docs: boolean;
-    mp_connected: boolean;
     is_online: boolean;
     cat_count: number;
   }>;
@@ -33,8 +31,7 @@ export default async function ProInicioPage() {
   const profileDone = !!s && s.has_loc && Number(s.cat_count) > 0;
   const verified = s?.status === "approved";
   const docsSent = !!s?.has_docs;
-  const mpDone = !!s?.mp_connected;
-  const allDone = profileDone && verified && mpDone;
+  const allDone = profileDone && verified;
 
   const steps = [
     {
@@ -52,12 +49,6 @@ export default async function ProInicioPage() {
           ? "Documentos en revisión"
           : "Subí tu DNI y selfie",
       href: "/pro/verificacion",
-    },
-    {
-      done: mpDone,
-      title: "Conectá Mercado Pago",
-      desc: "Para cobrar por la app (Step 9)",
-      href: "/pro/cobros",
     },
   ];
 

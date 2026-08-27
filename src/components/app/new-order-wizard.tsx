@@ -56,7 +56,6 @@ export function NewOrderWizard({
   );
   const [scheduledAt, setScheduledAt] = useState("");
   const [payment, setPayment] = useState<PaymentMethod>("cash");
-  const [priceEstimate, setPriceEstimate] = useState("");
 
   function next() {
     if (step === 1) {
@@ -73,10 +72,6 @@ export function NewOrderWizard({
     if (type === "scheduled" && !scheduledAt) {
       return toast.error("Elegí fecha y hora.");
     }
-    const estimate = Number(priceEstimate);
-    if (payment !== "cash" && (!Number.isFinite(estimate) || estimate <= 0)) {
-      return toast.error("Ingresá un precio estimado para pagar por la app.");
-    }
     startTransition(async () => {
       const res = await createJob({
         categoryId,
@@ -89,16 +84,10 @@ export function NewOrderWizard({
         lng: address.lng,
         scheduledAt: type === "scheduled" ? scheduledAt : undefined,
         paymentMethod: payment,
-        priceEstimate: payment !== "cash" ? estimate : undefined,
         providerId: isBroadcast ? undefined : providerId,
       });
       if (!res.ok) {
         toast.error(res.error);
-        return;
-      }
-      if (res.redirectUrl) {
-        // Pago prepago: ir a Checkout Pro de Mercado Pago.
-        window.location.href = res.redirectUrl;
         return;
       }
       toast.success("¡Pedido creado!");
@@ -200,40 +189,27 @@ export function NewOrderWizard({
           </div>
 
           <div className="space-y-2">
-            <Label>¿Cómo pagás?</Label>
+            <Label>¿Cómo pensás pagar?</Label>
             <div className="grid gap-2">
               <PaymentOption
                 active={payment === "cash"}
                 onClick={() => setPayment("cash")}
                 icon={<Banknote className="size-5" />}
                 title="Efectivo"
-                desc="Coordinás el pago con el profesional"
+                desc="Le pagás en mano al profesional"
               />
               <PaymentOption
                 active={payment === "transfer"}
                 onClick={() => setPayment("transfer")}
                 icon={<CreditCard className="size-5" />}
                 title="Transferencia / Tarjeta"
-                desc="Por la app con Mercado Pago"
+                desc="Lo acordás directamente con el profesional"
               />
             </div>
-            {payment !== "cash" && (
-              <div className="space-y-1.5 pt-2">
-                <Label htmlFor="estimate">Precio estimado (ARS)</Label>
-                <Input
-                  id="estimate"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  placeholder="Ej: 15000"
-                  value={priceEstimate}
-                  onChange={(e) => setPriceEstimate(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Lo pagás ahora y queda retenido hasta completar el trabajo.
-                </p>
-              </div>
-            )}
+            <p className="text-xs text-muted-foreground">
+              El pago se acuerda entre vos y el profesional; AlToque no
+              participa del cobro.
+            </p>
           </div>
         </div>
       )}

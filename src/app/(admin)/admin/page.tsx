@@ -1,14 +1,14 @@
 import { eq, sql } from "drizzle-orm";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { jobs, providerProfiles, commissionLedger } from "@/lib/db/schema";
+import { jobs, providerProfiles } from "@/lib/db/schema";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { formatARS } from "@/lib/utils";
 
 export default async function AdminPage() {
   await requireRole("admin");
 
-  const [[providersRow], [jobsRow], [ledgerRow]] = await Promise.all([
+  const [[providersRow], [jobsRow]] = await Promise.all([
     db
       .select({ verified: sql<number>`count(*)::int` })
       .from(providerProfiles)
@@ -19,11 +19,6 @@ export default async function AdminPage() {
         gmv: sql<string>`coalesce(sum(${jobs.finalPrice}) filter (where ${jobs.status} = 'completed'), 0)`,
       })
       .from(jobs),
-    db
-      .select({
-        collected: sql<string>`coalesce(sum(${commissionLedger.amount}) filter (where ${commissionLedger.status} in ('collected','settled')), 0)`,
-      })
-      .from(commissionLedger),
   ]);
 
   const KPIS = [
@@ -33,10 +28,6 @@ export default async function AdminPage() {
     },
     { label: "Pedidos completados", value: String(jobsRow?.completed ?? 0) },
     { label: "GMV (volumen)", value: formatARS(Number(jobsRow?.gmv ?? 0)) },
-    {
-      label: "Comisión cobrada",
-      value: formatARS(Number(ledgerRow?.collected ?? 0)),
-    },
   ];
 
   return (
@@ -45,7 +36,7 @@ export default async function AdminPage() {
         <h1 className="font-heading text-2xl font-bold">Panel de control</h1>
         <SignOutButton />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {KPIS.map((k) => (
           <div
             key={k.label}

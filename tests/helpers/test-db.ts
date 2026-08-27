@@ -43,15 +43,12 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     drop type if exists job_type cascade;
     drop type if exists job_status cascade;
     drop type if exists payment_method cascade;
-    drop type if exists payment_status cascade;
     drop type if exists dispatch_status cascade;
 
     create type job_type as enum ('scheduled','urgent');
     create type job_status as enum
       ('requested','broadcasting','accepted','in_progress','completed','cancelled','expired');
     create type payment_method as enum ('cash','transfer','card');
-    create type payment_status as enum
-      ('none','pending','held','released','paid_cash','refunded');
     create type dispatch_status as enum ('notified','accepted','declined','expired');
 
     -- Stubs de PostGIS (DB de test sin la extensión): guardan un marcador.
@@ -74,22 +71,13 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       location text,
       scheduled_at timestamptz,
       payment_method payment_method not null,
-      price_estimate numeric(12,2),
       final_price numeric(12,2),
-      commission_rate numeric(4,3) not null,
-      commission_amount numeric(12,2),
-      payment_status payment_status not null default 'none',
-      mp_preference_id text,
-      mp_payment_id text,
       cancel_reason text,
       created_at timestamptz not null default now(),
       updated_at timestamptz not null default now(),
       accepted_at timestamptz,
       completed_at timestamptz
     );
-
-    create unique index uq_jobs_mp_payment_id
-      on jobs (mp_payment_id) where mp_payment_id is not null;
 
     create table job_dispatch (
       id uuid primary key default gen_random_uuid(),

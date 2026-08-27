@@ -48,12 +48,7 @@ export default async function ProviderJobPage({
         />
       )}
 
-      <ProviderJobActions
-        jobId={job.id}
-        status={job.status}
-        paymentMethod={job.paymentMethod}
-        paymentStatus={job.paymentStatus}
-      />
+      <ProviderJobActions jobId={job.id} status={job.status} />
 
       {job.status === "completed" &&
         (myReview ? (
