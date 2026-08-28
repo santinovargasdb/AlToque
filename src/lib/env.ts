@@ -25,7 +25,7 @@ const serverSchema = z.object({
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
 
-  CRON_SECRET: z.string().optional(),
+  CRON_SECRET: z.string().min(1, "CRON_SECRET es obligatoria: protege los cron jobs de expire-jobs y cleanup-orphans"),
 });
 
 const parsed = serverSchema.safeParse(process.env);
