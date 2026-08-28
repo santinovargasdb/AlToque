@@ -22,7 +22,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "seed:test-providers": "tsx scripts/seed-test-providers.ts",
-    "seed:test-providers:remove": "tsx scripts/remove-test-providers.ts"
+    "seed:test-providers:remove": "tsx scripts/remove-test-providers.ts",
+    "seed:providers": "tsx scripts/seed-providers.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
