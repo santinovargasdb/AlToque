@@ -31,13 +31,13 @@ const jetbrains = JetBrains_Mono({
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(APP_URL),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://altoque.ar"),
   title: {
-    default: "AlToque | Profesionales de oficios verificados, al toque",
-    template: "%s · AlToque",
+    default: "AlToque — Oficios verificados cerca tuyo",
+    template: "%s | AlToque",
   },
   description:
-    "Encontrá plomeros, cerrajeros, electricistas y más profesionales verificados cerca tuyo. Para urgencias o trabajos agendados. Trato directo con el profesional.",
+    "Plomeros, cerrajeros, electricistas y gasistas verificados con DNI. Urgencias 24/7 y trabajos agendados en el Gran Buenos Aires.",
   applicationName: "AlToque",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -50,6 +50,13 @@ export const metadata: Metadata = {
     locale: "es_AR",
     siteName: "AlToque",
     images: ["/og-image.png"],
+  },
+  twitter: {
+    card: "summary",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -66,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es-AR" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} antialiased`}
       >

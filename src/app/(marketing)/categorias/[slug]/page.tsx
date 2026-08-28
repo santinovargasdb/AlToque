@@ -21,6 +21,11 @@ export async function generateMetadata({
   return {
     title: `${oficio.name} verificados cerca tuyo`,
     description: `Encontrá ${oficio.name.toLowerCase()} verificados con DNI y reviews reales en tu zona. Urgencias y trabajos agendados con AlToque.`,
+    alternates: { canonical: `/categorias/${slug}` },
+    openGraph: {
+      title: `${oficio.name} verificados cerca tuyo | AlToque`,
+      description: `Encontrá ${oficio.name.toLowerCase()} verificados con DNI y reviews reales en tu zona.`,
+    },
   };
 }
 
@@ -35,6 +40,26 @@ export default async function CategoriaPage({
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: `${oficio.name} a domicilio`,
+            description: `Servicio de ${oficio.name.toLowerCase()} verificados con DNI para trabajos a domicilio en el Gran Buenos Aires.`,
+            provider: {
+              "@type": "Organization",
+              name: "AlToque",
+            },
+            areaServed: {
+              "@type": "City",
+              name: "Buenos Aires",
+            },
+            serviceType: oficio.name,
+          }),
+        }}
+      />
       <div className="mb-3">
         <VerifiedBadge label="Verificados con DNI" />
       </div>

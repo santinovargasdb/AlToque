@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { OFICIOS } from "@/lib/constants";
+import type { Metadata } from "next";
 
 const ICONS: Record<string, LucideIcon> = {
   Wrench,
@@ -29,9 +30,48 @@ const ICONS: Record<string, LucideIcon> = {
   BrickWall,
 };
 
+export const metadata: Metadata = {
+  title: "AlToque — Oficios verificados cerca tuyo",
+  description:
+    "Plomeros, cerrajeros, electricistas y gasistas verificados con DNI. Urgencias 24/7 y trabajos agendados en el Gran Buenos Aires.",
+  alternates: { canonical: "/" },
+};
+
 export default function LandingPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebSite",
+                name: "AlToque",
+                url: process.env.NEXT_PUBLIC_APP_URL ?? "https://altoque.ar",
+                description:
+                  "Plomeros, cerrajeros, electricistas y gasistas verificados con DNI.",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://altoque.ar"}/categorias/{oficio}`,
+                  },
+                  "query-input": "required name=oficio",
+                },
+              },
+              {
+                "@type": "Organization",
+                name: "AlToque",
+                url: process.env.NEXT_PUBLIC_APP_URL ?? "https://altoque.ar",
+                description:
+                  "Plataforma que conecta clientes con profesionales de oficios verificados para trabajos a domicilio.",
+              },
+            ],
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="mx-auto max-w-[1200px] px-4 pb-12 pt-12 md:pt-20">
         <div className="mx-auto max-w-3xl text-center">

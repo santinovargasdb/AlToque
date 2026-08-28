@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
+import type { Metadata } from "next";
 
 const NAV = [
   { href: "/admin", label: "Métricas" },
@@ -7,6 +8,10 @@ const NAV = [
   { href: "/admin/profesionales", label: "Profesionales" },
   { href: "/admin/trabajos", label: "Trabajos" },
 ];
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function AdminLayout({
   children,

@@ -3,6 +3,7 @@ import { Home, Search, MessageSquare, User, Zap } from "lucide-react";
 import { requireCompleteProfile } from "@/lib/auth";
 import { NotificationsBell } from "@/components/shared/notifications-bell";
 import { HeaderBack } from "@/components/shared/header-back";
+import type { Metadata } from "next";
 
 // Shell mobile-first del cliente con bottom nav (Sección 6 del blueprint).
 const NAV = [
@@ -11,6 +12,10 @@ const NAV = [
   { href: "/mensajes", label: "Mensajes", icon: MessageSquare },
   { href: "/perfil", label: "Perfil", icon: User },
 ];
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function AppLayout({
   children,

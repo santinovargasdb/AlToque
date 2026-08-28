@@ -3,6 +3,7 @@ import { LayoutDashboard, ClipboardList, User, Zap } from "lucide-react";
 import { requireCompleteProfile } from "@/lib/auth";
 import { NotificationsBell } from "@/components/shared/notifications-bell";
 import { HeaderBack } from "@/components/shared/header-back";
+import type { Metadata } from "next";
 
 // Shell del profesional con bottom nav.
 const NAV = [
@@ -10,6 +11,10 @@ const NAV = [
   { href: "/pro/pedidos", label: "Pedidos", icon: ClipboardList },
   { href: "/pro/perfil", label: "Perfil", icon: User },
 ];
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function ProLayout({
   children,
