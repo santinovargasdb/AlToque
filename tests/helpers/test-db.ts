@@ -96,6 +96,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       type text not null,
       title text not null,
       body text,
+      link text,
       data jsonb,
       read_at timestamptz,
       created_at timestamptz not null default now()
@@ -119,3 +120,37 @@ export async function truncateAll(sql: RawClient): Promise<void> {
   await sql`truncate table job_dispatch, jobs, notifications, push_subscriptions
             restart identity cascade`;
 }
+
+/*
+ * ── Postgres de test en esta máquina (Windows, verificado 2026-08-28) ──
+ *
+ * Hay un PostgreSQL 18 instalado como servicio en el puerto 5432, pero su
+ * contraseña no está a mano. Para los tests usamos una SEGUNDA instancia
+ * descartable con los mismos binarios, data dir propio y SIN servicio de
+ * Windows, en el puerto 5433 (usuario `postgres`, pass `altoque_test_local`;
+ * solo escucha en localhost — no es un secreto).
+ *
+ * Crearla (una sola vez):
+ *   $base = "$env:LOCALAPPDATA\altoque-test-pg"
+ *   Set-Content "$base\pw.txt" 'altoque_test_local' -Encoding ascii -NoNewline
+ *   & 'C:\Program Files\PostgreSQL\18\bin\initdb.exe' -D "$base\data" `
+ *       -U postgres -A scram-sha-256 --pwfile="$base\pw.txt" -E UTF8 --locale=C
+ *   Remove-Item "$base\pw.txt"
+ *
+ * Arrancarla (tras cada reboot; no arranca sola):
+ *   & 'C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe' `
+ *       -D "$env:LOCALAPPDATA\altoque-test-pg\data" `
+ *       -l "$env:LOCALAPPDATA\altoque-test-pg\log.txt" -o "-p 5433" start
+ *
+ * Base + suite:
+ *   $env:PGPASSWORD='altoque_test_local'
+ *   & 'C:\Program Files\PostgreSQL\18\bin\createdb.exe' -U postgres -h localhost -p 5433 altoque_test
+ *   Remove-Item Env:\PGPASSWORD
+ *   $env:TEST_DATABASE_URL='postgresql://postgres:altoque_test_local@localhost:5433/altoque_test'
+ *   pnpm test
+ *   Remove-Item Env:\TEST_DATABASE_URL
+ *
+ * Apagarla / borrarla:
+ *   & 'C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe' -D "$env:LOCALAPPDATA\altoque-test-pg\data" stop
+ *   Remove-Item -Recurse -Force "$env:LOCALAPPDATA\altoque-test-pg"
+ */
