@@ -29,12 +29,16 @@ const PROD_MARKERS = ["kjscohighnukjcyztqfi", "aws-1"];
 const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const DB_URL = process.env.DATABASE_URL ?? "";
 
-if (PROD_MARKERS.some((m) => SUPA_URL.includes(m) || DB_URL.includes(m))) {
+const isProd = PROD_MARKERS.some((m) => SUPA_URL.includes(m) || DB_URL.includes(m));
+if (isProd && process.env.SEED_ALLOW_PROD !== "yes-prod") {
   console.error(
     "❌  Detecté una base de PRODUCCIÓN (marcadores: kjscohighnukjcyztqfi / aws-1).\n" +
-      "    Este script NUNCA debe correr contra prod. Abortando.",
+      "    Para correrlo igualmente agregá SEED_ALLOW_PROD=yes-prod al comando.",
   );
   process.exit(1);
+}
+if (isProd) {
+  console.warn("⚠️  Corriendo contra PRODUCCIÓN (SEED_ALLOW_PROD=yes-prod).\n");
 }
 
 if (process.env.SEED_CONFIRM !== "yes-i-know") {
