@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 /* ────────────────────────────────────────────────────────────
    AlToque: Design System (Sección 7 del blueprint)

@@ -18,6 +18,7 @@ const PUBLIC_PREFIXES = [
   "/categorias",
   "/ingresar",
   "/registro",
+  "/privacidad",
 ];
 
 function isPublic(pathname: string): boolean {

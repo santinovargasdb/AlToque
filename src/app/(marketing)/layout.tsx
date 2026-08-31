@@ -51,6 +51,9 @@ export default function MarketingLayout({
             <Link href="/registro" className="hover:text-foreground">
               Registrarse
             </Link>
+            <Link href="/privacidad" className="hover:text-foreground">
+              Política de Privacidad
+            </Link>
           </nav>
         </div>
       </footer>
