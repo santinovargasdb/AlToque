@@ -59,6 +59,8 @@ export function NotificationsBell({ userId }: { userId: string }) {
   // Conteo inicial de no leídas + suscripción Realtime a las nuevas.
   useEffect(() => {
     const supabase = createClient();
+    let channel: ReturnType<typeof supabase.channel> | undefined;
+    let cancelled = false;
 
     void supabase
       .from("notifications")
@@ -67,29 +69,36 @@ export function NotificationsBell({ userId }: { userId: string }) {
       .is("read_at", null)
       .then(({ count }) => setUnread(count ?? 0));
 
-    const channel = supabase
-      .channel(`notifications-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          const row = payload.new as NotificationRow;
-          setUnread((n) => n + 1);
-          setItems((prev) =>
-            prev && !prev.some((p) => p.id === row.id)
-              ? [row, ...prev]
-              : prev,
-          );
-        },
-      )
-      .subscribe();
+    void (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      await supabase.realtime.setAuth(session?.access_token);
+      if (cancelled) return;
+      channel = supabase
+        .channel(`notifications-${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            const row = payload.new as NotificationRow;
+            setUnread((n) => n + 1);
+            setItems((prev) =>
+              prev && !prev.some((p) => p.id === row.id)
+                ? [row, ...prev]
+                : prev,
+            );
+          },
+        )
+        .subscribe();
+    })();
+
     return () => {
-      void supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) void supabase.removeChannel(channel);
     };
   }, [userId]);
 

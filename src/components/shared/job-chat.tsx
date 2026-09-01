@@ -52,29 +52,39 @@ export function JobChat({
 
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase
-      .channel(`chat-${jobId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `job_id=eq.${jobId}`,
-        },
-        (payload) => {
-          const row = payload.new as MessageRow;
-          append({
-            id: row.id,
-            senderId: row.sender_id,
-            body: row.body,
-            createdAt: row.created_at,
-          });
-        },
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | undefined;
+    let cancelled = false;
+
+    void (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      await supabase.realtime.setAuth(session?.access_token);
+      if (cancelled) return;
+      channel = supabase
+        .channel(`chat-${jobId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "messages",
+            filter: `job_id=eq.${jobId}`,
+          },
+          (payload) => {
+            const row = payload.new as MessageRow;
+            append({
+              id: row.id,
+              senderId: row.sender_id,
+              body: row.body,
+              createdAt: row.created_at,
+            });
+          },
+        )
+        .subscribe();
+    })();
+
     return () => {
-      void supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) void supabase.removeChannel(channel);
     };
   }, [jobId]);
 

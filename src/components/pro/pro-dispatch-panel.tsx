@@ -36,26 +36,36 @@ export function ProDispatchPanel({
   useEffect(() => {
     if (!online) return;
     const supabase = createClient();
-    const channel = supabase
-      .channel(`dispatch-${providerId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "job_dispatch",
-          filter: `provider_id=eq.${providerId}`,
-        },
-        () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "jobs" },
-        () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | undefined;
+    let cancelled = false;
+
+    void (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      await supabase.realtime.setAuth(session?.access_token);
+      if (cancelled) return;
+      channel = supabase
+        .channel(`dispatch-${providerId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "job_dispatch",
+            filter: `provider_id=eq.${providerId}`,
+          },
+          () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "jobs" },
+          () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
+        )
+        .subscribe();
+    })();
+
     return () => {
-      void supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) void supabase.removeChannel(channel);
     };
   }, [providerId, online, qc]);
 
