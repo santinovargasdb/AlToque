@@ -14,15 +14,19 @@ export function createClient() {
   _client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      realtime: {
+        // supabase-js ignora INITIAL_SESSION en _handleTokenChanged, así que el
+        // JOIN inicial puede salir sin JWT. Con accessToken como callback, el
+        // RealtimeClient llama esta función en la respuesta 'ok' de cada JOIN y
+        // en cada heartbeat, enviando el token al server para que re-evalúe RLS.
+        accessToken: async () => {
+          const { data } = await _client!.auth.getSession();
+          return data.session?.access_token ?? null;
+        },
+      },
+    },
   );
-
-  // supabase-js's internal _listenForAuthEvents sólo maneja TOKEN_REFRESHED y SIGNED_IN,
-  // no INITIAL_SESSION (sesión existente al cargar la página). Este listener llena ese gap:
-  // garantiza que el WebSocket Realtime tenga el JWT antes de que los canales hagan JOIN,
-  // para que los eventos de postgres_changes pasen los checks de RLS.
-  _client.auth.onAuthStateChange((_, session) => {
-    _client?.realtime.setAuth(session?.access_token ?? null);
-  });
 
   return _client;
 }
