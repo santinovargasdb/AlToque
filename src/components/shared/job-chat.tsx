@@ -18,6 +18,7 @@ type MessageRow = {
 };
 
 const TIME = new Intl.DateTimeFormat("es-AR", {
+  timeZone: "America/Argentina/Buenos_Aires",
   hour: "2-digit",
   minute: "2-digit",
 });

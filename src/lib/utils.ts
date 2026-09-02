@@ -20,12 +20,14 @@ export function formatARS(amount: number | string): string {
 }
 
 const DATE = new Intl.DateTimeFormat("es-AR", {
+  timeZone: "America/Argentina/Buenos_Aires",
   day: "2-digit",
   month: "short",
   year: "numeric",
 });
 
 const DATETIME = new Intl.DateTimeFormat("es-AR", {
+  timeZone: "America/Argentina/Buenos_Aires",
   day: "2-digit",
   month: "short",
   hour: "2-digit",
