@@ -85,7 +85,14 @@ export async function acceptJob(jobId: string): Promise<ActionResult> {
     sql`update jobs
         set provider_id = ${uid}, status = 'accepted',
             accepted_at = now(), updated_at = now()
-        where id = ${jobId} and status = 'broadcasting'
+        where id = ${jobId}
+          and status = 'broadcasting'
+          and exists (
+            select 1 from job_dispatch
+            where job_id = ${jobId}
+              and provider_id = ${uid}
+              and status = 'notified'
+          )
         returning id, client_id`,
   )) as unknown as { id: string; client_id: string }[];
 
@@ -124,6 +131,37 @@ export async function acceptJob(jobId: string): Promise<ActionResult> {
 
   revalidatePath("/pro/inicio");
   revalidatePath(`/pro/pedido/${jobId}`);
+  revalidatePath(`/pedido/${jobId}`);
+  return { ok: true };
+}
+
+/**
+ * El cliente cancela un pedido en broadcast mientras espera.
+ * Race-safe e idempotente: si el pedido ya fue aceptado, la primera
+ * update no matchea (status != 'broadcasting') y retorna ok:true igual;
+ * el cliente verá el estado real por Realtime.
+ */
+export async function cancelBroadcastJob(
+  jobId: string,
+): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session || session.role !== "client") {
+    return { ok: false, error: "No autorizado." };
+  }
+  const uid = session.user.id;
+
+  await db.execute(
+    sql`update jobs
+        set status = 'cancelled', cancel_reason = 'client_cancelled',
+            updated_at = now()
+        where id = ${jobId} and client_id = ${uid} and status = 'broadcasting'`,
+  );
+  await db.execute(
+    sql`update job_dispatch
+        set status = 'expired', responded_at = now()
+        where job_id = ${jobId} and status = 'notified'`,
+  );
+
   revalidatePath(`/pedido/${jobId}`);
   return { ok: true };
 }

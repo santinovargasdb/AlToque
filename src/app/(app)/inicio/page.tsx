@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Zap, ArrowRight } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { ClientSearch } from "@/components/app/client-search";
@@ -23,6 +23,22 @@ export default async function InicioClientePage({
         </div>
         <SignOutButton />
       </header>
+
+      <Link
+        href="/pedido/urgente"
+        className="flex items-center gap-3 rounded-xl border-2 border-destructive bg-destructive/5 p-4 text-sm shadow-[0_1px_3px_rgba(15,23,42,0.08)] transition-colors hover:bg-destructive/10"
+      >
+        <Zap className="size-5 shrink-0 text-destructive" />
+        <div className="flex-1">
+          <span className="block font-semibold text-destructive">
+            Necesito ayuda AHORA
+          </span>
+          <span className="block text-xs text-destructive/70">
+            Conectamos con el profesional disponible más cercano
+          </span>
+        </div>
+        <ArrowRight className="size-4 shrink-0 text-destructive/60" />
+      </Link>
 
       <ClientSearch defaultOficio={oficio} />
 

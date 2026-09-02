@@ -90,16 +90,20 @@ export function NewOrderWizard({
         toast.error(res.error);
         return;
       }
-      toast.success("¡Pedido creado!");
-      router.push(`/pedido/${res.jobId}`);
+      toast.success(isBroadcast ? "¡Buscando profesional!" : "¡Pedido creado!");
+      router.push(isBroadcast ? `/pedido/${res.jobId}/esperando` : `/pedido/${res.jobId}`);
     });
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>Pedido para</span>
-        <span className="font-medium text-foreground">{providerName}</span>
+        {!isBroadcast && (
+          <>
+            <span>Pedido para</span>
+            <span className="font-medium text-foreground">{providerName}</span>
+          </>
+        )}
         <span className="ml-auto">Paso {step} de 3</span>
       </div>
 
@@ -163,30 +167,32 @@ export function NewOrderWizard({
 
       {step === 3 && (
         <div className="space-y-5">
-          <div className="space-y-2">
-            <Label>¿Cuándo?</Label>
-            <div className="grid grid-cols-2 gap-2">
-              <TypeOption
-                active={type === "scheduled"}
-                onClick={() => setType("scheduled")}
-                title="Agendado"
-                desc="Elegís día y hora"
-              />
-              <TypeOption
-                active={type === "urgent"}
-                onClick={() => setType("urgent")}
-                title="Urgente"
-                desc="Lo antes posible"
-              />
+          {!isBroadcast && (
+            <div className="space-y-2">
+              <Label>¿Cuándo?</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <TypeOption
+                  active={type === "scheduled"}
+                  onClick={() => setType("scheduled")}
+                  title="Agendado"
+                  desc="Elegís día y hora"
+                />
+                <TypeOption
+                  active={type === "urgent"}
+                  onClick={() => setType("urgent")}
+                  title="Urgente"
+                  desc="Lo antes posible"
+                />
+              </div>
+              {type === "scheduled" && (
+                <Input
+                  type="datetime-local"
+                  value={scheduledAt}
+                  onChange={(e) => setScheduledAt(e.target.value)}
+                />
+              )}
             </div>
-            {type === "scheduled" && (
-              <Input
-                type="datetime-local"
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-              />
-            )}
-          </div>
+          )}
 
           <div className="space-y-2">
             <Label>¿Cómo pensás pagar?</Label>

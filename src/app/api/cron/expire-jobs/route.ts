@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
  * Vercel Cron: expira pedidos urgentes en broadcast que nadie aceptó.
  * Protegido por CRON_SECRET. Schedule en vercel.json.
  */
-const TTL_MINUTES = 10;
+const TTL_MINUTES = 20;
 
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");
