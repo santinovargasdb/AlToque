@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { useRouter } from "next/navigation";
 import {
   Bell,
@@ -56,51 +57,39 @@ export function NotificationsBell({ userId }: { userId: string }) {
   const [unread, setUnread] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Conteo inicial de no leídas + suscripción Realtime a las nuevas.
+  // Conteo inicial de no leídas (one-shot fetch).
   useEffect(() => {
     const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | undefined;
-    let cancelled = false;
-
     void supabase
       .from("notifications")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .is("read_at", null)
       .then(({ count }) => setUnread(count ?? 0));
-
-    void (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      await supabase.realtime.setAuth(session?.access_token);
-      if (cancelled) return;
-      channel = supabase
-        .channel(`notifications-${userId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "notifications",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            const row = payload.new as NotificationRow;
-            setUnread((n) => n + 1);
-            setItems((prev) =>
-              prev && !prev.some((p) => p.id === row.id)
-                ? [row, ...prev]
-                : prev,
-            );
-          },
-        )
-        .subscribe();
-    })();
-
-    return () => {
-      cancelled = true;
-      if (channel) void supabase.removeChannel(channel);
-    };
   }, [userId]);
+
+  // Suscripción Realtime a nuevas notificaciones.
+  const postgresChanges = useMemo(
+    () => ({
+      event: "INSERT" as const,
+      schema: "public",
+      table: "notifications",
+      filter: `user_id=eq.${userId}`,
+    }),
+    [userId],
+  );
+
+  useRealtimeChannel<NotificationRow>({
+    channelName: `notifications-${userId}`,
+    postgresChanges,
+    onChange: (payload) => {
+      const row = payload.new as NotificationRow;
+      setUnread((n) => n + 1);
+      setItems((prev) =>
+        prev && !prev.some((p) => p.id === row.id) ? [row, ...prev] : prev,
+      );
+    },
+  });
 
   const loadItems = useCallback(async () => {
     const supabase = createClient();

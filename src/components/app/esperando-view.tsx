@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { cancelBroadcastJob } from "@/lib/actions/dispatch";
 
 const TIMEOUT_MS = 10 * 60 * 1000;
@@ -32,44 +32,28 @@ export function EsperandoView({
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | undefined;
-    let cleanup = false;
+  const postgresChanges = useMemo(
+    () => ({
+      event: "UPDATE" as const,
+      schema: "public",
+      table: "jobs",
+      filter: `id=eq.${jobId}`,
+    }),
+    [jobId],
+  );
 
-    void (async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      await supabase.realtime.setAuth(session?.access_token);
-      if (cleanup) return;
-      channel = supabase
-        .channel(`job-status-${jobId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "jobs",
-            filter: `id=eq.${jobId}`,
-          },
-          (payload) => {
-            const status = (payload.new as { status: string }).status;
-            if (status === "accepted" || status === "in_progress") {
-              router.replace(`/pedido/${jobId}`);
-            } else if (status === "cancelled" || status === "expired") {
-              setTimedOut(true);
-            }
-          },
-        )
-        .subscribe();
-    })();
-
-    return () => {
-      cleanup = true;
-      if (channel) void supabase.removeChannel(channel);
-    };
-  }, [jobId, router]);
+  useRealtimeChannel<{ status: string }>({
+    channelName: `job-status-${jobId}`,
+    postgresChanges,
+    onChange: (payload) => {
+      const { status } = payload.new as { status: string };
+      if (status === "accepted" || status === "in_progress") {
+        router.replace(`/pedido/${jobId}`);
+      } else if (status === "cancelled" || status === "expired") {
+        setTimedOut(true);
+      }
+    },
+  });
 
   function cancelAndGo(destination: string) {
     startTransition(async () => {

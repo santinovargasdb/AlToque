@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Send } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { sendMessage, type SentMessage } from "@/lib/actions/message";
@@ -50,43 +50,29 @@ export function JobChat({
     );
   }
 
-  useEffect(() => {
-    const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | undefined;
-    let cancelled = false;
+  const postgresChanges = useMemo(
+    () => ({
+      event: "INSERT" as const,
+      schema: "public",
+      table: "messages",
+      filter: `job_id=eq.${jobId}`,
+    }),
+    [jobId],
+  );
 
-    void (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      await supabase.realtime.setAuth(session?.access_token);
-      if (cancelled) return;
-      channel = supabase
-        .channel(`chat-${jobId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "messages",
-            filter: `job_id=eq.${jobId}`,
-          },
-          (payload) => {
-            const row = payload.new as MessageRow;
-            append({
-              id: row.id,
-              senderId: row.sender_id,
-              body: row.body,
-              createdAt: row.created_at,
-            });
-          },
-        )
-        .subscribe();
-    })();
-
-    return () => {
-      cancelled = true;
-      if (channel) void supabase.removeChannel(channel);
-    };
-  }, [jobId]);
+  useRealtimeChannel<MessageRow>({
+    channelName: `chat-${jobId}`,
+    postgresChanges,
+    onChange: (payload) => {
+      const row = payload.new as MessageRow;
+      append({
+        id: row.id,
+        senderId: row.sender_id,
+        body: row.body,
+        createdAt: row.created_at,
+      });
+    },
+  });
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });

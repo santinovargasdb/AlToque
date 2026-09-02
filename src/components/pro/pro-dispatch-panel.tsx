@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, Radio, Inbox } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { toggleOnline, getIncomingJobs } from "@/lib/actions/dispatch";
+import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { IncomingJobCard } from "./incoming-job-card";
 
 /**
@@ -32,42 +32,33 @@ export function ProDispatchPanel({
     enabled: online,
   });
 
-  // Suscripción Realtime: cualquier cambio en mis dispatch o en jobs invalida.
-  useEffect(() => {
-    if (!online) return;
-    const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | undefined;
-    let cancelled = false;
+  // Suscripciones Realtime: cambios en mis dispatch o en jobs invalidan el feed.
+  const dispatchChanges = useMemo(
+    () => ({
+      event: "*" as const,
+      schema: "public",
+      table: "job_dispatch",
+      filter: `provider_id=eq.${providerId}`,
+    }),
+    [providerId],
+  );
+  const jobsChanges = useMemo(
+    () => ({ event: "UPDATE" as const, schema: "public", table: "jobs" }),
+    [],
+  );
 
-    void (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      await supabase.realtime.setAuth(session?.access_token);
-      if (cancelled) return;
-      channel = supabase
-        .channel(`dispatch-${providerId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "job_dispatch",
-            filter: `provider_id=eq.${providerId}`,
-          },
-          () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
-        )
-        .on(
-          "postgres_changes",
-          { event: "UPDATE", schema: "public", table: "jobs" },
-          () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
-        )
-        .subscribe();
-    })();
-
-    return () => {
-      cancelled = true;
-      if (channel) void supabase.removeChannel(channel);
-    };
-  }, [providerId, online, qc]);
+  useRealtimeChannel({
+    channelName: `dispatch-${providerId}`,
+    postgresChanges: dispatchChanges,
+    onChange: () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
+    enabled: online,
+  });
+  useRealtimeChannel({
+    channelName: `dispatch-jobs-${providerId}`,
+    postgresChanges: jobsChanges,
+    onChange: () => qc.invalidateQueries({ queryKey: ["incoming-jobs"] }),
+    enabled: online,
+  });
 
   function toggle() {
     const next = !online;
