@@ -25,7 +25,6 @@ export function AddressAutocomplete({
   label?: string;
 }) {
   const id = useId();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [locating, setLocating] = useState(false);
   const hasCoords = value.lat != null && value.lng != null;
 
@@ -57,15 +56,20 @@ export function AddressAutocomplete({
     <div className="space-y-1.5">
       <Label htmlFor={id}>{label}</Label>
       <div className="flex gap-2">
-        <Input
-          id={id}
-          ref={inputRef}
-          placeholder="Av. Corrientes 1234, CABA"
-          defaultValue={value.addressText}
-          onChange={(e) =>
-            onChange({ ...value, addressText: e.target.value })
-          }
-        />
+        {HAS_MAPS_KEY ? (
+          <PlacesInput
+            id={id}
+            initialAddress={value.addressText}
+            onChange={onChange}
+          />
+        ) : (
+          <Input
+            id={id}
+            placeholder="Av. Corrientes 1234, CABA"
+            defaultValue={value.addressText}
+            onChange={(e) => onChange({ ...value, addressText: e.target.value })}
+          />
+        )}
         <button
           type="button"
           onClick={useMyLocation}
@@ -79,10 +83,6 @@ export function AddressAutocomplete({
           )}
         </button>
       </div>
-
-      {HAS_MAPS_KEY && (
-        <PlacesBinder inputRef={inputRef} onPlace={onChange} />
-      )}
 
       {hasCoords ? (
         <p className="flex items-center gap-1 text-xs text-success">
@@ -98,35 +98,72 @@ export function AddressAutocomplete({
   );
 }
 
-/** Adjunta Google Places Autocomplete al input. Render-null. */
-function PlacesBinder({
-  inputRef,
-  onPlace,
+/**
+ * Monta PlaceAutocompleteElement (Web Component de la nueva Places API)
+ * una vez que la librería Places está disponible. Render-null hasta entonces.
+ *
+ * Se usa `useMapsLibrary("places")` para esperar que vis.gl cargue la
+ * librería; el efecto corre solo cuando `places` resuelve (≡ importLibrary).
+ * `onChange` va en un ref para que cambios de closure no fuercen re-mount
+ * del elemento (mismo patrón que useRealtimeChannel).
+ */
+function PlacesInput({
+  id,
+  initialAddress,
+  onChange,
 }: {
-  inputRef: React.RefObject<HTMLInputElement | null>;
-  onPlace: (v: AddressValue) => void;
+  id: string;
+  initialAddress: string;
+  onChange: (v: AddressValue) => void;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   const places = useMapsLibrary("places");
 
   useEffect(() => {
-    if (!places || !inputRef.current) return;
-    const ac = new places.Autocomplete(inputRef.current, {
-      fields: ["formatted_address", "geometry", "name"],
-      componentRestrictions: { country: "ar" },
-    });
-    const listener = ac.addListener("place_changed", () => {
-      const place = ac.getPlace();
-      const loc = place.geometry?.location;
-      if (!loc) return;
-      onPlace({
-        addressText:
-          place.formatted_address ?? inputRef.current?.value ?? "",
-        lat: loc.lat(),
-        lng: loc.lng(),
-      });
-    });
-    return () => listener.remove();
-  }, [places, inputRef, onPlace]);
+    const container = containerRef.current;
+    if (!places || !container) return;
 
-  return null;
+    const element = new places.PlaceAutocompleteElement({
+      includedRegionCodes: ["AR"],
+      requestedLanguage: "es",
+      requestedRegion: "ar",
+    });
+    element.id = id;
+    element.placeholder = "Av. Corrientes 1234, CABA";
+    element.noInputIcon = true;
+    if (initialAddress) element.value = initialAddress;
+
+    function handler(event: google.maps.places.PlacePredictionSelectEvent) {
+      const place = event.placePrediction.toPlace();
+      void place
+        .fetchFields({ fields: ["formattedAddress", "location"] })
+        .then(() => {
+          onChangeRef.current({
+            addressText: place.formattedAddress ?? element.value ?? "",
+            lat: place.location?.lat(),
+            lng: place.location?.lng(),
+          });
+        });
+    }
+
+    element.addEventListener("gmp-select", handler);
+    container.appendChild(element);
+
+    return () => {
+      // removeEventListener no tiene el overload tipado de PlaceAutocompleteElement;
+      // el cast a EventListener es seguro porque el handler solo recibe gmp-select.
+      element.removeEventListener("gmp-select", handler as EventListener);
+      element.remove();
+    };
+    // id e initialAddress son estables: id viene de useId() (constante por
+    // instancia) e initialAddress se aplica solo al montar, como defaultValue.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [places]);
+
+  return <div ref={containerRef} className="flex-1" />;
 }
