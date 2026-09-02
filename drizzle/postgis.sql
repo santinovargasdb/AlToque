@@ -222,3 +222,7 @@ do $$ begin
   alter publication supabase_realtime add table messages;
 exception when duplicate_object then null;
 end $$;
+
+alter table messages replica identity full;
+alter table job_dispatch replica identity full;
+alter table notifications replica identity full;
