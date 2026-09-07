@@ -198,7 +198,7 @@
       <div class="metod-n">E05</div>
       <div class="etapa-estado ok">✓ Completa · En producción</div>
       <div class="metod-title">Desarrollo</div>
-      <div class="metod-desc">Repositorio en GitHub y despliegue en Vercel con base de producción en Supabase: login con Google, Google Maps (mapa, autocompletado, geocodificación), notificaciones push, chat en tiempo real, reseñas y panel de administración. Pendiente dentro de esta etapa: implementar el modelo de suscripción.</div>
+      <div class="metod-desc">Repositorio en GitHub y despliegue en Vercel con base de producción en Supabase: login con Google, Google Maps con la API nueva (mapa, autocompletado, geocodificación), notificaciones push, chat en tiempo real con Realtime autenticado (JWT), reseñas, panel de administración, despacho de urgencias con broadcast a los profesionales cercanos y modelo de suscripción mensual con Mercado Pago (preapproval con período de gracia, cancelación en tiempo real y cron de reconciliación diario). Incluye documentos legales publicados (Privacidad y Términos) para el consent screen de Google OAuth.</div>
     </div>
     <div class="metod-card">
       <div class="metod-n">E06</div>
@@ -281,8 +281,10 @@
         <div class="mat-mod">Suscripciones</div>
         <div class="mat-title">Mercado Pago</div>
         <div class="mat-desc">
-          Procesa las suscripciones mensuales (cliente premium y profesional premium).
-          El pago del servicio se acuerda entre las partes: la plataforma no interviene.
+          Procesa las suscripciones mensuales del profesional mediante <em>preapproval</em>,
+          con webhooks para renovaciones y cancelaciones, período de gracia para pagos
+          fallidos y un cron diario de reconciliación. El pago del servicio se acuerda
+          entre las partes: la plataforma no interviene.
         </div>
         <a href="https://www.mercadopago.com.ar" target="_blank" rel="noopener" class="mat-link">Sitio oficial →</a>
       </div>
@@ -346,7 +348,7 @@
           <div class="cc-dato"><span class="cc-dato-k">Problema raíz</span><span class="cc-dato-v warn">La confianza depende del boca a boca: sin validación de identidad ni antecedentes</span></div>
           <div class="cc-dato"><span class="cc-dato-k">Urgencias</span><span class="cc-dato-v warn">Ningún canal con respuesta inmediata ante una emergencia</span></div>
           <div class="cc-dato"><span class="cc-dato-k">Lado profesional</span><span class="cc-dato-v">Trabajo por contactos informales, sin vidriera ni reputación portable</span></div>
-          <div class="cc-dato"><span class="cc-dato-k">Solución</span><span class="cc-dato-v">Verificación de identidad, reseñas, matching geográfico en tiempo real y despacho de urgencias</span></div>
+          <div class="cc-dato"><span class="cc-dato-k">Solución</span><span class="cc-dato-v">Verificación de identidad, reseñas, matching geográfico en tiempo real, despacho de urgencias por broadcast y modelo de suscripción mensual con Mercado Pago</span></div>
           <div class="cc-dato"><span class="cc-dato-k">Estado</span><span class="cc-dato-v">En producción: al-toque-eta.vercel.app</span></div>
         </div>
         <div class="cc-actions">
