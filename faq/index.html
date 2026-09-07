@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlToque · Preguntas frecuentes</title>
+  <meta name="description" content="Preguntas frecuentes sobre AlToque: cómo funciona la plataforma, verificación, urgencias, suscripción y seguridad. Conectá con trabajadores de oficios verificados en el conurbano bonaerense.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     NAV
+     ════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Al<span>Toque</span> · FAQ</div>
+    <div class="nav-links">
+      <a href="#preguntas">Preguntas</a>
+      <a href="https://altoque-manual.vercel.app" target="_blank" rel="noopener">Manual de uso</a>
+      <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">Abrir la app</a>
+      <a href="mailto:altoquecorp@gmail.com">Contacto</a>
+    </div>
+    <div class="nav-inst">altoquecorp@gmail.com</div>
+    <button class="nav-burger" id="navBurger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Menú móvil">
+  <a href="#preguntas"                         class="mobile-link">Preguntas</a>
+  <a href="https://altoque-manual.vercel.app"  class="mobile-link" target="_blank" rel="noopener">Manual de uso</a>
+  <a href="https://al-toque-eta.vercel.app"    class="mobile-link" target="_blank" rel="noopener">Abrir la app</a>
+  <a href="mailto:altoquecorp@gmail.com"       class="mobile-link">Contacto</a>
+  <div class="mobile-menu-inst">altoquecorp@gmail.com</div>
+</div>
+
+<!-- ════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-eyebrow">
+    <span class="hero-eyebrow-pill">FAQ</span>
+    Preguntas frecuentes
+  </div>
+  <h1>
+    Todo lo que <em>necesitás</em> saber<br>
+    sobre <span class="warm">AlToque.</span>
+  </h1>
+  <p class="hero-sub">
+    Respuestas cortas y claras sobre la plataforma: cómo pedir un servicio, cómo
+    verificarse como profesional, cómo funciona la suscripción, y qué pasa con tus
+    datos. Buscá una pregunta o filtrá por categoría.
+  </p>
+  <div class="hero-meta">
+    <div class="hm-badge"><strong>Última actualización</strong> · Septiembre 2026</div>
+    <div class="hm-badge"><strong>Contacto</strong> · altoquecorp@gmail.com</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     BUSCADOR
+     ════════════════════════════════════════ -->
+<div class="faq-search">
+  <div class="faq-search-inner">
+    <svg class="faq-search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <input type="search" id="faqSearch" placeholder="Buscar una pregunta (ej: urgencia, suscripción, pagos)…" aria-label="Buscar en preguntas frecuentes">
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TABS
+     ════════════════════════════════════════ -->
+<div class="faq-tabs" id="preguntas">
+  <button class="faq-tab active" data-cat="all">Todas</button>
+  <button class="faq-tab" data-cat="general">General</button>
+  <button class="faq-tab" data-cat="cliente">Para clientes</button>
+  <button class="faq-tab" data-cat="pro">Para profesionales</button>
+  <button class="faq-tab" data-cat="pagos">Pagos y suscripción</button>
+  <button class="faq-tab" data-cat="seguridad">Seguridad y datos</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     GENERAL
+     ════════════════════════════════════════ -->
+<section class="faq-section" data-cat="general">
+  <div class="faq-cat-title">General</div>
+
+  <details class="faq-item" data-cat="general">
+    <summary>¿Qué es AlToque?</summary>
+    <div class="faq-answer">
+      <p>
+        AlToque es una plataforma web (PWA) que conecta clientes con trabajadores
+        de oficios verificados —plomería, electricidad, cerrajería y gasistas—
+        para trabajos <strong>urgentes</strong> o <strong>agendados</strong>.
+      </p>
+      <p>
+        Cada profesional tiene su identidad validada con DNI, reseñas reales de otros
+        clientes y una ubicación aproximada, para que puedas elegir con confianza.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="general">
+    <summary>¿Cuánto cuesta usar AlToque como cliente?</summary>
+    <div class="faq-answer">
+      <p>
+        Para el cliente, buscar profesionales y contactarse con ellos es <strong>gratis</strong>.
+        AlToque no cobra comisión sobre los trabajos: el pago del servicio se acuerda
+        directamente entre cliente y profesional, la plataforma no interviene en esa
+        transacción.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="general">
+    <summary>¿En qué zonas funciona?</summary>
+    <div class="faq-answer">
+      <p>
+        En esta etapa piloto el foco es el <strong>conurbano bonaerense</strong>. La
+        plataforma está diseñada para escalar a otras zonas, pero el sembrado inicial
+        de profesionales está concentrado ahí porque es donde el problema del boca-a-boca
+        se releva con más fuerza.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="general">
+    <summary>¿Puedo usar AlToque desde el celular?</summary>
+    <div class="faq-answer">
+      <p>
+        Sí, AlToque es una <strong>PWA</strong> (Progressive Web App). Se abre desde el
+        navegador del celular igual que cualquier sitio, y opcionalmente podés
+        instalarla como una app más en tu pantalla de inicio.
+      </p>
+      <p>
+        Está diseñada mobile-first: el flujo entero está pensado para que se use
+        cómodamente desde un teléfono.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="general">
+    <summary>¿Quién puede usar la plataforma?</summary>
+    <div class="faq-answer">
+      <p>
+        Cualquier persona mayor de 18 años con un correo de Google. Los usuarios se
+        registran indicando si son <strong>clientes</strong> (buscan servicios) o
+        <strong>profesionales</strong> (los ofrecen). Un mismo usuario puede tener los
+        dos roles si necesita las dos cosas.
+      </p>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════
+     PARA CLIENTES
+     ════════════════════════════════════════ -->
+<section class="faq-section" data-cat="cliente">
+  <div class="faq-cat-title">Para clientes</div>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Cómo me registro como cliente?</summary>
+    <div class="faq-answer">
+      <p>
+        Entrás a <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">al-toque-eta.vercel.app</a>
+        y elegís uno de los dos métodos: <strong>Google</strong> (tocás "Iniciar
+        sesión con Google" y elegís la cuenta) o <strong>correo y contraseña</strong>
+        (te registrás con tu mail común y una contraseña que definís vos). La primera
+        vez te pide completar datos básicos: nombre, ubicación aproximada y rol
+        (cliente). Listo, ya podés buscar profesionales.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Cómo pido un servicio agendado?</summary>
+    <div class="faq-answer">
+      <p>
+        Desde el inicio elegís la categoría (plomería, electricidad, etc.). Vas a ver
+        una lista de profesionales cerca tuyo, con su reseña, distancia y disponibilidad.
+        Tocás sobre uno, enviás un mensaje con la descripción del trabajo y arreglás
+        directamente con él por el chat.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Qué es una urgencia y cómo la solicito?</summary>
+    <div class="faq-answer">
+      <p>
+        Una urgencia es un pedido que necesita respuesta inmediata (una fuga de agua,
+        una llave rota). Al elegir "urgencia" en vez de agendado, tu pedido se
+        <strong>emite en broadcast</strong> a todos los profesionales activos de esa
+        categoría dentro de tu radio de cercanía, en tiempo real.
+      </p>
+      <p>
+        El primero que acepta se queda con el trabajo. Si nadie acepta en <strong>10
+        minutos</strong>, el pedido expira y podés volver a lanzarlo o pasarlo a
+        agendado.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Cómo elijo un profesional confiable?</summary>
+    <div class="faq-answer">
+      <p>Cada perfil te muestra:</p>
+      <ul>
+        <li><strong>Identidad verificada</strong> — la plataforma valida el DNI</li>
+        <li><strong>Reseñas</strong> de clientes anteriores, con puntaje y comentario</li>
+        <li><strong>Antigüedad</strong> en la plataforma y trabajos completados</li>
+        <li><strong>Distancia</strong> aproximada a tu ubicación</li>
+      </ul>
+      <p>
+        Con esos datos podés comparar antes de contactar. En una urgencia el matching
+        se hace por cercanía y tiempo de respuesta, para que quien acepta primero sea
+        realmente el que puede llegar antes.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Cómo pago al profesional?</summary>
+    <div class="faq-answer">
+      <p>
+        El pago del servicio se acuerda <strong>directamente entre las partes</strong>,
+        fuera de la plataforma. AlToque no cobra comisión al cliente y no procesa
+        transferencias entre cliente y profesional.
+      </p>
+      <p>
+        En el chat podés coordinar efectivo, transferencia o cualquier otro medio que
+        prefieran acordar.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Cómo dejo una reseña?</summary>
+    <div class="faq-answer">
+      <p>
+        Cuando el trabajo se cierra, aparece la opción de dejar una reseña con puntaje
+        (1 a 5 estrellas) y un comentario libre. La reseña queda pública en el perfil
+        del profesional y ayuda a futuros clientes a decidir.
+      </p>
+      <p>
+        Podés editar la reseña dentro de las 48 hs de haberla dejado.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Qué hago si el profesional no aparece o no responde?</summary>
+    <div class="faq-answer">
+      <p>
+        En un pedido <strong>agendado</strong>: si el profesional no responde por chat
+        en un plazo razonable, podés contactar a otro. El pedido no está bloqueado
+        por un profesional en particular.
+      </p>
+      <p>
+        En una <strong>urgencia</strong>: si nadie acepta en 10 minutos, el pedido
+        expira automáticamente y no queda pendiente. Volvé a lanzarlo o probá con
+        agendado.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Puedo cancelar un pedido?</summary>
+    <div class="faq-answer">
+      <p>
+        Sí. Mientras esté en estado "pendiente" o "aceptado" y antes de que arranque el
+        trabajo, podés cancelarlo desde el detalle del pedido. El profesional recibe la
+        notificación en tiempo real.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="cliente">
+    <summary>¿Qué hago si tuve un problema con el servicio?</summary>
+    <div class="faq-answer">
+      <p>
+        Como el pago se acuerda entre las partes, la resolución de disputas queda
+        primero entre cliente y profesional. Si el problema persiste, podés dejar una
+        reseña honesta describiendo lo sucedido, para que futuros clientes tengan la
+        información.
+      </p>
+      <p>
+        En un futuro se prevé un canal de reporte formal desde la app; hoy podés
+        contactar al equipo por los canales del pie de página.
+      </p>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════
+     PARA PROFESIONALES
+     ════════════════════════════════════════ -->
+<section class="faq-section" data-cat="pro">
+  <div class="faq-cat-title">Para profesionales</div>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Cómo me registro como profesional?</summary>
+    <div class="faq-answer">
+      <p>
+        Entrás a <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">al-toque-eta.vercel.app</a>,
+        iniciás sesión (con Google o con correo y contraseña) y en el paso de "elegí
+        tu rol" tocás <strong>profesional</strong>. Después completás tu perfil:
+        oficio, categorías, zonas donde trabajás, un texto de presentación y foto.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Qué documentación necesito para verificarme?</summary>
+    <div class="faq-answer">
+      <p>
+        Necesitás una foto clara del <strong>DNI</strong> (frente y dorso) y una selfie
+        sosteniéndolo. La plataforma valida que las fotos sean legibles, que el DNI
+        sea auténtico y que la persona coincida con la foto del documento.
+      </p>
+      <p>
+        Si trabajás con matrícula (gasista matriculado, electricista con certificación),
+        podés subir esos documentos como respaldo adicional. Suma a la confianza del
+        cliente pero no es obligatorio en esta etapa.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Cuánto tarda la verificación?</summary>
+    <div class="faq-answer">
+      <p>
+        La revisión inicial la hace el equipo de administración. En condiciones
+        normales tarda <strong>hasta 48 hs hábiles</strong>. Recibís una notificación
+        cuando queda aprobada (o si te piden volver a subir alguna foto).
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Cómo funciona la suscripción del profesional?</summary>
+    <div class="faq-answer">
+      <p>
+        Para recibir pedidos en la plataforma hay una <strong>suscripción mensual</strong>
+        que se cobra por Mercado Pago. Incluye:
+      </p>
+      <ul>
+        <li>Aparecer en las búsquedas de clientes</li>
+        <li>Recibir pedidos agendados y urgencias por broadcast</li>
+        <li>Perfil verificado con reseñas visibles</li>
+        <li>Sin comisión sobre el valor de los trabajos</li>
+      </ul>
+      <p>
+        Los profesionales nuevos arrancan con un <strong>período de prueba</strong>
+        (definido por la coordinación del proyecto) para probar la plataforma antes de
+        pagar.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Cuánto cobra AlToque por cada trabajo?</summary>
+    <div class="faq-answer">
+      <p>
+        <strong>Nada.</strong> El único ingreso de AlToque es la suscripción mensual.
+        No cobramos comisión sobre el valor de los trabajos. Todo lo que cobrás por el
+        servicio queda para vos.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Cómo me llegan los pedidos agendados?</summary>
+    <div class="faq-answer">
+      <p>
+        Cuando un cliente cerca tuyo abre un pedido agendado en tu categoría,
+        aparecés en su listado con tu perfil. Si te elige, arranca el chat y recibís
+        una <strong>notificación push</strong> además de verlo en tu inicio.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Cómo funcionan las urgencias (broadcast)?</summary>
+    <div class="faq-answer">
+      <p>
+        Cuando alguien cerca tuyo lanza una urgencia en tu categoría, recibís una
+        <strong>notificación push</strong> con el pedido. Tenés que aceptar rápido:
+        el primer profesional en aceptar se queda con el trabajo. Si nadie acepta en
+        <strong>10 minutos</strong>, el pedido expira.
+      </p>
+      <p>
+        No estás obligado a aceptar todas las urgencias. Podés rechazar una urgencia
+        sin penalización.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Cómo cobro por el trabajo?</summary>
+    <div class="faq-answer">
+      <p>
+        <strong>Directamente al cliente</strong>, por fuera de la plataforma. Podés
+        acordar efectivo, transferencia, Mercado Pago o el método que prefieran. La
+        plataforma no procesa esa transacción.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Qué pasa si tengo un pago fallido de la suscripción?</summary>
+    <div class="faq-answer">
+      <p>
+        Entrás en un <strong>período de gracia</strong> (actualmente 7 días) durante
+        el cual seguís apareciendo en las búsquedas mientras actualizás tu método de
+        pago. Si el período de gracia expira sin que se resuelva el cobro, tu
+        suscripción pasa a "cancelada" y dejás de aparecer, pero podés reactivarla en
+        cualquier momento.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pro">
+    <summary>¿Puedo pausar temporalmente mi suscripción?</summary>
+    <div class="faq-answer">
+      <p>
+        La suscripción no tiene pausa: se cancela (con dos modos, ver la pregunta
+        sobre cancelación en la sección Pagos) y se reactiva cuando quieras. No se
+        pierden reseñas ni trabajos previos: tu perfil vuelve al mismo estado en que
+        estaba.
+      </p>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════
+     PAGOS Y SUSCRIPCIÓN
+     ════════════════════════════════════════ -->
+<section class="faq-section" data-cat="pagos">
+  <div class="faq-cat-title">Pagos y suscripción</div>
+
+  <details class="faq-item" data-cat="pagos">
+    <summary>¿Qué medios de pago se admiten para la suscripción?</summary>
+    <div class="faq-answer">
+      <p>
+        Los que acepta <strong>Mercado Pago</strong> en el flujo de suscripciones:
+        principalmente tarjeta de crédito y débito. El detalle exacto aparece al
+        momento del checkout dentro de Mercado Pago.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagos">
+    <summary>¿Cuándo se cobra la suscripción?</summary>
+    <div class="faq-answer">
+      <p>
+        Al activarla se hace un primer cobro y a partir de ahí se renueva
+        <strong>cada 30 días</strong> automáticamente, mientras la suscripción esté
+        activa. En tu panel del profesional ves siempre la fecha del próximo cobro.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagos">
+    <summary>¿Cómo cambio mi método de pago?</summary>
+    <div class="faq-answer">
+      <p>
+        Desde el panel de suscripción en la app tocás "Actualizar método de pago". Eso
+        te redirige al panel de Mercado Pago, donde gestionás la tarjeta o el método
+        asociado a la suscripción.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagos">
+    <summary>¿Cómo cancelo mi suscripción?</summary>
+    <div class="faq-answer">
+      <p>Desde el panel de suscripción podés cancelar con dos modos:</p>
+      <ul>
+        <li>
+          <strong>Al final del período</strong> — mantenés el acceso hasta la fecha del
+          próximo cobro y a partir de ahí quedás como "cancelado". Recomendado si ya
+          pagaste el mes.
+        </li>
+        <li>
+          <strong>Inmediato</strong> — perdés el acceso ya, sin esperar el fin del
+          período. No hay reembolso por los días no usados.
+        </li>
+      </ul>
+      <p>
+        En los dos modos la cancelación se aplica de inmediato en Mercado Pago para
+        que no te vuelvan a cobrar.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagos">
+    <summary>¿Puedo reactivar una suscripción cancelada?</summary>
+    <div class="faq-answer">
+      <p>
+        Sí, cuando quieras. Desde el panel tocás "Reactivar" y arrancás un nuevo ciclo.
+        Tu perfil y tus reseñas siguen intactos.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagos">
+    <summary>¿Emiten factura por la suscripción?</summary>
+    <div class="faq-answer">
+      <p>
+        La facturación de la suscripción está en coordinación con Legales y
+        Administración conforme a la normativa de AFIP/ARCA. Los detalles se comunican
+        antes del flip a producción del cobro real.
+      </p>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════
+     SEGURIDAD Y DATOS
+     ════════════════════════════════════════ -->
+<section class="faq-section" data-cat="seguridad">
+  <div class="faq-cat-title">Seguridad y datos</div>
+
+  <details class="faq-item" data-cat="seguridad">
+    <summary>¿Cómo se verifica la identidad de los profesionales?</summary>
+    <div class="faq-answer">
+      <p>
+        El profesional sube foto del DNI (ambos lados) y una selfie sosteniéndolo. El
+        equipo de administración valida que las fotos sean legítimas y que la persona
+        coincida con el documento antes de aprobar el perfil.
+      </p>
+      <p>
+        Los perfiles no verificados no aparecen en las búsquedas ni pueden recibir
+        pedidos.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="seguridad">
+    <summary>¿Cómo se protegen mis datos personales?</summary>
+    <div class="faq-answer">
+      <p>
+        Los datos se almacenan en Supabase con <strong>Row Level Security</strong>: cada
+        usuario solo puede ver su propia información. El equipo cumple con la
+        <strong>Ley 25.326 de Protección de Datos Personales</strong> de Argentina.
+      </p>
+      <p>
+        El detalle completo está en la <a href="https://al-toque-eta.vercel.app/privacidad" target="_blank" rel="noopener">Política de Privacidad</a>
+        publicada en la app.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="seguridad">
+    <summary>¿La app accede a mi ubicación?</summary>
+    <div class="faq-answer">
+      <p>
+        Solo con tu permiso explícito. La ubicación se usa para dos cosas:
+      </p>
+      <ul>
+        <li>Mostrarte profesionales cerca (cliente)</li>
+        <li>Enviarte urgencias dentro de tu radio (profesional)</li>
+      </ul>
+      <p>
+        La ubicación exacta no se comparte con la contraparte: solo se muestra una
+        ubicación aproximada (una zona) hasta que se acepta el trabajo.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="seguridad">
+    <summary>¿Qué hago si sospecho de un perfil falso?</summary>
+    <div class="faq-answer">
+      <p>
+        Reportá al equipo por los canales del pie de página. Todos los reportes se
+        revisan; los perfiles con problemas se pausan mientras se investiga.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="seguridad">
+    <summary>¿Cómo funcionan las reseñas? ¿Se pueden manipular?</summary>
+    <div class="faq-answer">
+      <p>
+        Una reseña solo se puede dejar después de que se cierre un trabajo real entre
+        un cliente y un profesional verificados. No hay reseñas anónimas ni de
+        usuarios que no participaron del trabajo, lo que baja bastante el margen para
+        reseñas falsas o compradas.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="seguridad">
+    <summary>¿Puedo eliminar mi cuenta?</summary>
+    <div class="faq-answer">
+      <p>
+        Sí. Contactando al equipo por los canales del pie, se procede a borrar tu
+        cuenta y los datos personales asociados, respetando los plazos de retención
+        que exige la normativa fiscal para la información de facturación (típicamente
+        10 años en Argentina para lo estrictamente contable).
+      </p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="seguridad">
+    <summary>¿La plataforma es responsable por el trabajo del profesional?</summary>
+    <div class="faq-answer">
+      <p>
+        AlToque conecta a las partes y valida la identidad del profesional, pero la
+        relación de servicio (calidad del trabajo, cobros, garantías) es entre cliente
+        y profesional. La plataforma no es parte del contrato de servicio.
+      </p>
+      <p>
+        Las reseñas son la herramienta principal para que el mercado se autoregule y
+        los perfiles poco confiables pierdan visibilidad.
+      </p>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════════════════
+     EMPTY STATE
+     ════════════════════════════════════════ -->
+<div class="faq-empty" id="faqEmpty" style="display:none;">
+  No encontramos preguntas que coincidan con tu búsqueda. Probá con otras palabras o
+  cambiá la categoría.
+</div>
+
+<!-- ════════════════════════════════════════
+     HELP BAND
+     ════════════════════════════════════════ -->
+<div class="help-band">
+  <div class="help-band-inner">
+    <h2>¿No encontraste tu respuesta?</h2>
+    <p>
+      Escribinos y te contestamos por mail. Contanos qué necesitás resolver y desde qué
+      dispositivo estás usando AlToque para poder ayudarte más rápido.
+    </p>
+    <div class="help-band-cta">
+      <a href="mailto:altoquecorp@gmail.com">Escribinos a altoquecorp@gmail.com →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Al<span>Toque</span></div>
+      <div class="footer-desc">La forma más rápida de conseguir un profesional de confianza para plomería, electricidad, cerrajería o gas. Identidad verificada, reseñas reales y respuesta inmediata en urgencias.</div>
+    </div>
+    <div class="footer-col">
+      <h4>AlToque</h4>
+      <a href="https://al-toque-eta.vercel.app"           target="_blank" rel="noopener">Abrir la app</a>
+      <a href="https://altoque-manual.vercel.app"         target="_blank" rel="noopener">Manual de uso</a>
+      <a href="#preguntas">Preguntas frecuentes</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <a href="mailto:altoquecorp@gmail.com">altoquecorp@gmail.com</a>
+      <p style="opacity:.5;">Respuesta en 24-48 hs hábiles.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>AlToque · Servicios de oficios en el conurbano bonaerense</div>
+    <div>&copy; 2026 AlToque · Todos los derechos reservados</div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>
