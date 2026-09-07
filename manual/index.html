@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlToque · Manual de uso</title>
+  <meta name="description" content="Manual de uso de AlToque: guía completa para clientes y profesionales, requisitos, flujos paso a paso, suscripción, solución de problemas y glosario. Conectá con trabajadores de oficios verificados en el conurbano bonaerense.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     NAV
+     ════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Al<span>Toque</span> · Manual</div>
+    <div class="nav-links">
+      <a href="https://altoque-faq.vercel.app"     target="_blank" rel="noopener">FAQ</a>
+      <a href="#introduccion">Manual</a>
+      <a href="https://al-toque-eta.vercel.app"    target="_blank" rel="noopener">Abrir la app</a>
+      <a href="mailto:altoquecorp@gmail.com">Contacto</a>
+    </div>
+    <div class="nav-inst">altoquecorp@gmail.com</div>
+    <button class="nav-burger" id="navBurger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Menú móvil">
+  <a href="https://altoque-faq.vercel.app"     class="mobile-link" target="_blank" rel="noopener">FAQ</a>
+  <a href="#introduccion"                      class="mobile-link">Manual</a>
+  <a href="https://al-toque-eta.vercel.app"    class="mobile-link" target="_blank" rel="noopener">Abrir la app</a>
+  <a href="mailto:altoquecorp@gmail.com"       class="mobile-link">Contacto</a>
+  <div class="mobile-menu-inst">altoquecorp@gmail.com</div>
+</div>
+
+<!-- ════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-eyebrow">
+    <span class="hero-eyebrow-pill">Manual</span>
+    Guía de uso de la plataforma
+  </div>
+  <h1>
+    Cómo <em>usar</em> AlToque,<br>
+    paso a <span class="warm">paso.</span>
+  </h1>
+  <p class="hero-sub">
+    Manual de referencia con los requisitos, los flujos por rol —cliente y
+    profesional—, la administración de la suscripción, la solución de problemas
+    comunes y un glosario técnico. Pensado para usarse desde el celular igual que
+    la aplicación.
+  </p>
+  <div class="hero-meta">
+    <div class="hm-badge"><strong>Última actualización</strong> · Septiembre 2026</div>
+    <div class="hm-badge"><strong>Contacto</strong> · altoquecorp@gmail.com</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     DOC WRAP: TOC + MAIN
+     ════════════════════════════════════════ -->
+<div class="doc-wrap">
+
+  <!-- ── TOC ── -->
+  <aside class="toc">
+    <div class="toc-title">Índice</div>
+    <ol>
+      <li><a href="#introduccion">1 · Introducción</a></li>
+      <li><a href="#requisitos">2 · Requisitos</a></li>
+      <li><a href="#primeros-pasos">3 · Primeros pasos</a></li>
+      <li><a href="#guia-cliente">4 · Guía del cliente</a></li>
+      <li><a href="#guia-profesional">5 · Guía del profesional</a></li>
+      <li><a href="#interfaz">6 · Interfaz y navegación</a></li>
+      <li><a href="#suscripcion">7 · Suscripción del profesional</a></li>
+      <li><a href="#problemas">8 · Solución de problemas</a></li>
+      <li><a href="#glosario">9 · Glosario</a></li>
+      <li><a href="#contacto">10 · Contacto y soporte</a></li>
+    </ol>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="doc-main">
+
+    <!-- ══ 1 · INTRODUCCIÓN ══ -->
+    <article class="doc-section" id="introduccion">
+      <span class="sec-tag">01</span>
+      <h2>Introducción</h2>
+      <p>
+        <strong>AlToque</strong> es una plataforma web (PWA) que conecta clientes con
+        trabajadores de oficios verificados —plomería, electricidad, cerrajería y
+        gasistas— para trabajos urgentes o agendados. Este manual describe cómo usarla
+        desde ambos lados: cliente y profesional.
+      </p>
+
+      <h3 id="introduccion-convenciones">Convenciones</h3>
+      <p>A lo largo del manual se usan estas convenciones:</p>
+      <ul>
+        <li>Los pasos de un flujo aparecen numerados en cards azules.</li>
+        <li>Los avisos importantes aparecen en cajas del color correspondiente:
+          <span class="role-badge cli">azul</span> informativo,
+          <span class="role-badge pro">verde</span> tip,
+          <span class="role-badge adm">naranja</span> atención.
+        </li>
+        <li>Las etiquetas <span class="role-badge cli">Cliente</span> y <span class="role-badge pro">Pro</span> indican a qué rol aplica cada sección.</li>
+        <li>Los términos técnicos que aparecen en <code>este formato</code> están explicados en el <a href="#glosario">glosario</a>.</li>
+      </ul>
+
+    </article>
+
+    <!-- ══ 2 · REQUISITOS ══ -->
+    <article class="doc-section" id="requisitos">
+      <span class="sec-tag">02</span>
+      <h2>Requisitos</h2>
+      <p>
+        AlToque es una <code>PWA</code> pensada para el celular. No hace falta descargar
+        nada de la Play Store o el App Store: se abre desde el navegador.
+      </p>
+
+      <h3 id="requisitos-dispositivo">Dispositivo y navegador</h3>
+      <ul>
+        <li><strong>Móvil recomendado</strong> — Android o iPhone, cualquier modelo de los últimos años.</li>
+        <li><strong>Desktop soportado</strong> — se ve bien, pero el flujo está optimizado para móvil.</li>
+        <li><strong>Navegador</strong> — Chrome, Safari, Edge o Firefox actualizados. Se recomienda la última versión estable.</li>
+      </ul>
+
+      <h3 id="requisitos-cuenta">Cuenta e inicio de sesión</h3>
+      <p>Podés entrar a AlToque de dos formas:</p>
+      <ul>
+        <li>
+          <strong>Con Google</strong> — el más rápido: tocás "Iniciar sesión con Google"
+          y elegís tu cuenta. En este caso Google se encarga de la autenticación y
+          AlToque no ve ni guarda tu contraseña.
+        </li>
+        <li>
+          <strong>Con correo y contraseña</strong> — creás una cuenta con tu correo
+          común (Gmail, Hotmail, Yahoo, un correo corporativo, etc.) y definís una
+          contraseña. AlToque almacena esa contraseña de forma segura (nunca en texto
+          plano) para validarte cuando volvés a entrar.
+        </li>
+      </ul>
+      <p>
+        Podés elegir el método que te resulte más cómodo. Los dos habilitan las mismas
+        funcionalidades dentro de la plataforma.
+      </p>
+
+      <h3 id="requisitos-conexion">Conexión a internet</h3>
+      <p>
+        Conexión de datos móvil o WiFi. Para el chat en tiempo real y las notificaciones
+        de urgencia funciona mejor con buena señal, aunque la PWA guarda el estado
+        básico y permite ver los últimos pedidos aun sin conexión.
+      </p>
+
+      <h3 id="requisitos-permisos">Permisos que pide la app</h3>
+      <ul>
+        <li><strong>Ubicación</strong> — para mostrar profesionales cerca (cliente) o pedidos cerca (profesional). Opcional pero muy recomendado.</li>
+        <li><strong>Notificaciones push</strong> — para avisos de nuevas urgencias, mensajes de chat y cambios de estado. Opcional; sin ellas seguís recibiendo todo dentro de la app.</li>
+      </ul>
+
+      <div class="callout tip">
+        <div class="callout-title">Tip</div>
+        <p>Instalá AlToque como PWA (ver sección <a href="#interfaz-instalar">Instalar como app</a>) para que aparezca en tu pantalla de inicio como una app más y recibas notificaciones cuando la tenés cerrada.</p>
+      </div>
+    </article>
+
+    <!-- ══ 3 · PRIMEROS PASOS ══ -->
+    <article class="doc-section" id="primeros-pasos">
+      <span class="sec-tag">03</span>
+      <h2>Primeros pasos</h2>
+
+      <h3 id="primeros-acceder">Acceder a la plataforma</h3>
+      <ol class="steps">
+        <li><strong>Abrí el navegador</strong> del celular o de la computadora.</li>
+        <li><strong>Entrá a <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">al-toque-eta.vercel.app</a></strong> desde la barra de direcciones.</li>
+        <li><strong>Elegí cómo entrar.</strong> Podés tocar "Iniciar sesión con Google" o "Iniciar sesión con correo" según prefieras.</li>
+        <li><strong>Si vas por Google</strong>, elegís tu cuenta y Google se encarga del resto. Si es la primera vez, autorizás el acceso a nombre, foto y correo.</li>
+        <li><strong>Si vas por correo</strong>, ingresás tu mail y tu contraseña. Si no tenés cuenta todavía, tocás "Registrarme", cargás tus datos y validás el correo.</li>
+      </ol>
+
+      <h3 id="primeros-rol">Elegir tu rol</h3>
+      <p>
+        La primera vez que entrás, la app te pide elegir tu rol:
+      </p>
+      <ul>
+        <li><span class="role-badge cli">Cliente</span> — vas a buscar profesionales para trabajos en tu casa u oficina.</li>
+        <li><span class="role-badge pro">Pro</span> — vas a ofrecer tus servicios como profesional de un oficio.</li>
+      </ul>
+      <p>
+        Podés cambiar de rol más adelante desde tu perfil, o incluso tener los dos roles activos si necesitás las dos cosas.
+      </p>
+
+      <h3 id="primeros-perfil">Completar el perfil</h3>
+      <p>
+        Antes de empezar a usar la plataforma, completá los datos básicos de tu
+        perfil. Los campos requeridos dependen del rol.
+      </p>
+
+      <h4>Cliente</h4>
+      <ul>
+        <li>Nombre y apellido</li>
+        <li>Foto de perfil (opcional pero recomendada)</li>
+        <li>Ubicación aproximada (barrio o zona)</li>
+        <li>Un teléfono de contacto (opcional; se comparte solo cuando aceptás un servicio)</li>
+      </ul>
+
+      <h4>Profesional</h4>
+      <ul>
+        <li>Nombre y apellido</li>
+        <li>Foto de perfil (obligatoria — es lo que ve el cliente)</li>
+        <li>Categoría/s de oficio</li>
+        <li>Zona/s de trabajo (una o varias)</li>
+        <li>Texto de presentación</li>
+        <li>Documentación para verificación (ver <a href="#guia-profesional-verificacion">Verificación</a>)</li>
+      </ul>
+    </article>
+
+    <!-- ══ 4 · GUÍA DEL CLIENTE ══ -->
+    <article class="doc-section" id="guia-cliente">
+      <span class="sec-tag">04</span>
+      <h2><span class="role-badge cli">Cliente</span> Guía del cliente</h2>
+      <p>
+        Todo lo que necesitás saber para pedir un servicio, elegir un profesional y
+        dejar tu reseña.
+      </p>
+
+      <h3 id="guia-cliente-inicio">Pantalla de inicio</h3>
+      <p>Al entrar como cliente ves:</p>
+      <ul>
+        <li>La barra de búsqueda por categoría (plomero, electricista, cerrajero, gasista).</li>
+        <li>Los profesionales <strong>cerca tuyo</strong> ordenados por distancia.</li>
+        <li>El botón grande de <strong>urgencia</strong> para pedidos que no pueden esperar.</li>
+        <li>Tu historial de pedidos activos y anteriores.</li>
+      </ul>
+
+      <h3 id="guia-cliente-agendado">Solicitar un servicio agendado</h3>
+      <ol class="steps">
+        <li><strong>Elegí la categoría.</strong> Desde el inicio tocá el oficio que necesitás (por ejemplo, "Plomero").</li>
+        <li><strong>Revisá los perfiles.</strong> Ves reseñas, distancia y descripción de cada profesional. Tocá sobre uno para ver el detalle.</li>
+        <li><strong>Iniciá el pedido.</strong> Desde el detalle del profesional tocá "Contactar" y describí el trabajo (¿qué pasa?, ¿cuándo?, ¿dirección aproximada?).</li>
+        <li><strong>Esperá la confirmación.</strong> El profesional recibe una notificación y responde por el chat.</li>
+        <li><strong>Coordiná por chat.</strong> Acordá día, horario y forma de pago directamente.</li>
+      </ol>
+
+      <div class="callout">
+        <div class="callout-title">Info</div>
+        <p>El pago del servicio se acuerda entre las partes. AlToque no cobra comisión ni procesa la transferencia entre cliente y profesional.</p>
+      </div>
+
+      <h3 id="guia-cliente-urgencia">Solicitar una urgencia</h3>
+      <p>Una urgencia es un pedido que necesita respuesta inmediata (fuga, corte, llave rota).</p>
+      <ol class="steps">
+        <li><strong>Tocá el botón "Urgencia"</strong> en el inicio.</li>
+        <li><strong>Elegí la categoría</strong> del oficio que necesitás.</li>
+        <li><strong>Describí el problema</strong> en pocas palabras (ej: "Se rompió el caño del baño y está inundando").</li>
+        <li><strong>Confirmá tu ubicación exacta.</strong> Se comparte solo con el profesional que acepta.</li>
+        <li><strong>Enviá el pedido.</strong> AlToque hace un <code>broadcast</code> a todos los profesionales activos de esa categoría dentro de tu radio.</li>
+        <li><strong>Esperá.</strong> El primero que acepta se queda con el trabajo. Vas a recibir su perfil y datos de contacto.</li>
+      </ol>
+
+      <div class="callout warn">
+        <div class="callout-title">Atención</div>
+        <p>Si nadie acepta en <strong>10 minutos</strong> el pedido expira automáticamente. Podés volver a lanzarlo o pasarlo a agendado con un solo toque.</p>
+      </div>
+
+      <h3 id="guia-cliente-chat">Chat con el profesional</h3>
+      <p>
+        Una vez confirmado el trabajo, se abre un chat con el profesional. Es en tiempo
+        real: los mensajes llegan al instante y podés ver cuándo el otro los leyó.
+      </p>
+      <ul>
+        <li>Podés mandar texto y compartir tu ubicación exacta si es necesario.</li>
+        <li>Recibís notificaciones push por cada mensaje nuevo (si diste permiso).</li>
+        <li>El chat queda archivado en tu historial una vez cerrado el trabajo.</li>
+      </ul>
+
+      <h3 id="guia-cliente-resena">Dejar una reseña</h3>
+      <ol class="steps">
+        <li><strong>Cerrá el trabajo</strong> desde el detalle del pedido, cuando esté finalizado.</li>
+        <li><strong>Puntuá</strong> con 1 a 5 estrellas.</li>
+        <li><strong>Escribí un comentario</strong> corto: qué destacás, si volverías a llamarlo, si algo se podría mejorar.</li>
+        <li><strong>Enviá.</strong> La reseña queda pública en el perfil del profesional.</li>
+      </ol>
+      <div class="callout tip">
+        <div class="callout-title">Tip</div>
+        <p>Las reseñas concretas y honestas son lo que mantiene la calidad de la red. Podés editar tu reseña dentro de las 48 hs.</p>
+      </div>
+
+      <h3 id="guia-cliente-historial">Historial y perfil</h3>
+      <p>
+        En tu perfil de cliente ves el listado completo de pedidos (activos y
+        cerrados), podés releer los chats y volver a contactar a un profesional con
+        el que ya trabajaste antes.
+      </p>
+    </article>
+
+    <!-- ══ 5 · GUÍA DEL PROFESIONAL ══ -->
+    <article class="doc-section" id="guia-profesional">
+      <span class="sec-tag">05</span>
+      <h2><span class="role-badge pro">Pro</span> Guía del profesional</h2>
+      <p>
+        Cómo aparecer en las búsquedas, verificarte, activar tu suscripción y recibir
+        pedidos.
+      </p>
+
+      <h3 id="guia-profesional-inicio">Pantalla de inicio</h3>
+      <p>Como profesional ves:</p>
+      <ul>
+        <li>Estado de tu suscripción (activa, en gracia, o inactiva) con un acceso directo al panel.</li>
+        <li>Los pedidos agendados que recibiste y todavía no respondiste.</li>
+        <li>Las urgencias activas cerca tuyo (si tu suscripción está al día).</li>
+        <li>Tu perfil público y las últimas reseñas.</li>
+      </ul>
+
+      <h3 id="guia-profesional-perfil">Completar el perfil profesional</h3>
+      <p>
+        El perfil es tu vidriera. Un perfil incompleto reduce mucho las chances de
+        que un cliente te elija. Mínimos recomendados:
+      </p>
+      <ol class="steps">
+        <li><strong>Foto real</strong> tuya. Que se vea la cara. Es lo que más pesa a la hora de generar confianza.</li>
+        <li><strong>Nombre y apellido completos.</strong></li>
+        <li><strong>Categorías</strong> de los oficios que hacés (una o varias).</li>
+        <li><strong>Zonas</strong> donde trabajás. Podés marcar varios barrios o partidos.</li>
+        <li><strong>Descripción</strong> corta y clara: años de experiencia, qué trabajos hacés, qué te distingue. Sin exageraciones.</li>
+      </ol>
+
+      <h3 id="guia-profesional-verificacion">Proceso de verificación</h3>
+      <p>Para aparecer en las búsquedas necesitás verificar tu identidad.</p>
+      <ol class="steps">
+        <li><strong>Subí una foto del frente del DNI.</strong> Que se lea todo, sin brillos.</li>
+        <li><strong>Subí una foto del dorso del DNI.</strong> Mismo criterio.</li>
+        <li><strong>Sacate una selfie sosteniendo el DNI.</strong> La cara y el documento tienen que verse claramente.</li>
+        <li><strong>Enviá para revisión.</strong> El equipo de administración valida las fotos.</li>
+        <li><strong>Recibí la aprobación.</strong> Llega por notificación en la app.</li>
+      </ol>
+      <div class="callout warn">
+        <div class="callout-title">Atención</div>
+        <p>La verificación puede tardar <strong>hasta 48 hs hábiles</strong>. Si alguna foto no es válida (borrosa, tapada, cortada), te lo indican para que vuelvas a subirla.</p>
+      </div>
+
+      <h3 id="guia-profesional-suscripcion">Activar la suscripción</h3>
+      <p>Con la verificación aprobada, activá tu suscripción para empezar a recibir pedidos.</p>
+      <ol class="steps">
+        <li><strong>Andá al panel</strong> "Plan" en el menú del profesional.</li>
+        <li><strong>Revisá el plan.</strong> Aparece el precio del plan profesional y qué incluye.</li>
+        <li><strong>Tocá "Activar plan".</strong> Se abre Mercado Pago en una nueva pestaña o en la app de MP.</li>
+        <li><strong>Completá el pago</strong> con tu método preferido (tarjeta).</li>
+        <li><strong>Volvé a la app.</strong> El estado de tu suscripción cambia a "activa" automáticamente en el momento en que Mercado Pago confirma.</li>
+      </ol>
+
+      <h3 id="guia-profesional-agendado">Recibir un pedido agendado</h3>
+      <ol class="steps">
+        <li><strong>Recibís una notificación</strong> (push si diste permiso, y siempre dentro de la app).</li>
+        <li><strong>Abrís el detalle.</strong> Ves la descripción del trabajo, la zona aproximada y el perfil del cliente.</li>
+        <li><strong>Aceptás o rechazás</strong>, sin obligación.</li>
+        <li><strong>Si aceptás</strong>, se abre el chat con el cliente y coordinás día, horario y forma de pago.</li>
+      </ol>
+
+      <h3 id="guia-profesional-urgencia">Recibir un pedido urgente (broadcast)</h3>
+      <p>Cuando un cliente cerca lanza una urgencia en tu categoría:</p>
+      <ol class="steps">
+        <li><strong>Recibís una notificación push</strong> con "Urgencia cerca tuyo".</li>
+        <li><strong>Abrís el detalle</strong> para ver la descripción y la distancia aproximada.</li>
+        <li><strong>Aceptás rápido.</strong> El primero en aceptar se queda con el trabajo — no es exclusivo, es competencia sana.</li>
+        <li><strong>Si aceptás y sos el primero</strong>, ves la ubicación exacta del cliente y arranca el chat.</li>
+        <li><strong>Si otro aceptó antes</strong>, la urgencia deja de aparecer en tu app.</li>
+      </ol>
+      <div class="callout">
+        <div class="callout-title">Info</div>
+        <p>No hay penalización por no aceptar una urgencia. Podés recibir varias por día y elegir cuáles atendés según tu disponibilidad.</p>
+      </div>
+
+      <h3 id="guia-profesional-chat">Chat con el cliente</h3>
+      <p>Iguales características que del lado del cliente: tiempo real, mensajes leídos, notificaciones. Usá el chat para coordinar todo lo operativo del trabajo (dirección exacta, horario, precio, medio de pago).</p>
+
+      <h3 id="guia-profesional-cerrar">Cerrar el trabajo</h3>
+      <ol class="steps">
+        <li><strong>Cuando terminaste el trabajo</strong>, abrí el detalle del pedido.</li>
+        <li><strong>Marcalo como "Completado".</strong></li>
+        <li><strong>Esperá la reseña del cliente.</strong> Cuando la deja, aparece en tu perfil público.</li>
+      </ol>
+
+      <h3 id="guia-profesional-resenas">Ver tus reseñas</h3>
+      <p>
+        En tu perfil ves el listado completo de reseñas recibidas, con puntaje
+        promedio y comentarios. Las reseñas son visibles para cualquier cliente que
+        entra a tu perfil, así que constituyen tu reputación en la plataforma.
+      </p>
+    </article>
+
+    <!-- ══ 6 · INTERFAZ Y NAVEGACIÓN ══ -->
+    <article class="doc-section" id="interfaz">
+      <span class="sec-tag">06</span>
+      <h2>Interfaz y navegación</h2>
+
+      <h3 id="interfaz-menu">Menú principal</h3>
+      <p>
+        En móvil el menú aparece en la parte inferior (barra fija) con los accesos más
+        usados: inicio, chats, pedidos, perfil. En desktop está arriba, en la barra
+        de navegación.
+      </p>
+
+      <h3 id="interfaz-instalar">Instalar como app (PWA)</h3>
+      <p>Podés instalar AlToque como una app en tu celular, sin pasar por la tienda:</p>
+      <ul>
+        <li><strong>En Android/Chrome</strong>: menú del navegador → "Agregar a pantalla de inicio" o "Instalar app".</li>
+        <li><strong>En iPhone/Safari</strong>: botón de compartir → "Agregar a pantalla de inicio".</li>
+      </ul>
+      <p>La primera vez que entrás desde el ícono instalado, la app te pide los permisos de notificación y ubicación.</p>
+
+      <h3 id="interfaz-notificaciones">Notificaciones</h3>
+      <p>Las notificaciones push cubren:</p>
+      <ul>
+        <li>Nuevos pedidos (agendados o urgencias) para el profesional.</li>
+        <li>Nuevos mensajes en el chat.</li>
+        <li>Cambios de estado importantes (pedido aceptado, suscripción en gracia, etc).</li>
+      </ul>
+      <p>Podés desactivarlas por completo desde la configuración del navegador, o silenciar categorías puntuales desde tu perfil.</p>
+
+      <h3 id="interfaz-volver">Botón "Volver" y navegación</h3>
+      <p>
+        Cada pantalla interna tiene un botón "Volver" en la esquina superior izquierda,
+        y también respeta el botón físico "Atrás" del sistema operativo. Nunca hace
+        falta cerrar la app para volver al inicio.
+      </p>
+
+      <h3 id="interfaz-cerrar-sesion">Cerrar sesión</h3>
+      <p>
+        Desde tu perfil, al final, tenés el botón "Cerrar sesión". La app olvida tu
+        cuenta activa. Volver a entrar es elegir el mismo método que usaste antes
+        (Google o correo + contraseña) en la pantalla de bienvenida.
+      </p>
+    </article>
+
+    <!-- ══ 7 · SUSCRIPCIÓN ══ -->
+    <article class="doc-section" id="suscripcion">
+      <span class="sec-tag">07</span>
+      <h2><span class="role-badge pro">Pro</span> Suscripción del profesional</h2>
+      <p>
+        La suscripción mensual es lo que te habilita a aparecer en las búsquedas y
+        recibir pedidos. Se cobra por Mercado Pago mediante <code>preapproval</code>.
+      </p>
+
+      <h3 id="suscripcion-plan">Qué incluye el plan profesional</h3>
+      <ul>
+        <li>Aparecer en las búsquedas de clientes cerca tuyo.</li>
+        <li>Recibir pedidos agendados y urgencias por broadcast.</li>
+        <li>Perfil verificado con reseñas visibles.</li>
+        <li>Chat con clientes.</li>
+        <li>Panel de gestión de suscripción.</li>
+        <li><strong>Sin comisión</strong> sobre el valor de los trabajos.</li>
+      </ul>
+
+      <h3 id="suscripcion-trial">Período de prueba</h3>
+      <p>
+        Los profesionales nuevos arrancan con un período de prueba, definido por la
+        coordinación del proyecto (por ejemplo, primeros N trabajos o primer mes). El
+        detalle del trial vigente lo ves en el panel "Plan" al momento de activarlo.
+      </p>
+
+      <h3 id="suscripcion-estados">Estados posibles</h3>
+      <div class="dl-grid">
+        <div class="dl-item">
+          <div class="dl-term">Sin suscripción</div>
+          <div class="dl-def">Nunca la activaste, o expiró hace tiempo. No aparecés en búsquedas ni recibís pedidos.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Activa</div>
+          <div class="dl-def">Todo funcionando. Recibís pedidos, aparecés en búsquedas, y ves la fecha del próximo cobro.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">En período de gracia</div>
+          <div class="dl-def">Hubo un pago fallido. Seguís apareciendo por unos días (actualmente 7) para que actualices tu método de pago sin cortar el servicio.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Baja programada</div>
+          <div class="dl-def">Cancelaste con la opción "al fin del período". Seguís teniendo acceso hasta la fecha del próximo cobro y a partir de ahí pasás a cancelada.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Cancelada</div>
+          <div class="dl-def">La suscripción está inactiva. Podés reactivarla cuando quieras; tu perfil y reseñas siguen intactos.</div>
+        </div>
+      </div>
+
+      <h3 id="suscripcion-renovacion">Renovación</h3>
+      <p>
+        Mientras la suscripción está activa, se renueva automáticamente cada 30 días.
+        No hace falta hacer nada. En tu panel ves siempre la fecha del próximo cobro.
+      </p>
+
+      <h3 id="suscripcion-cambiar-pago">Cambiar método de pago</h3>
+      <ol class="steps">
+        <li><strong>Andá al panel "Plan".</strong></li>
+        <li><strong>Tocá "Actualizar método de pago".</strong></li>
+        <li><strong>Se abre Mercado Pago</strong> en una nueva pestaña, en tu panel de suscripciones.</li>
+        <li><strong>Actualizá la tarjeta</strong> asociada al preapproval.</li>
+        <li><strong>Volvé a la app.</strong> El próximo cobro usa el método actualizado.</li>
+      </ol>
+
+      <h3 id="suscripcion-cancelar">Cancelar la suscripción</h3>
+      <p>Hay dos modos de cancelar, cada uno con una consecuencia distinta.</p>
+
+      <h4>Al final del período</h4>
+      <p>
+        Mantenés el acceso hasta la fecha del próximo cobro. A partir de ahí quedás
+        como "cancelado". Es la opción por defecto y la recomendada: aprovechás lo
+        que ya pagaste.
+      </p>
+
+      <h4>Inmediato</h4>
+      <p>
+        Perdés el acceso ya, sin esperar el fin del período. No hay reembolso por los
+        días no usados. Se usa cuando querés cortar por completo la relación con la
+        plataforma en el momento.
+      </p>
+
+      <div class="callout">
+        <div class="callout-title">En ambos casos</div>
+        <p>La cancelación se aplica en Mercado Pago de inmediato para que no te vuelvan a cobrar. La diferencia está solo en cuándo perdés el acceso a los pedidos.</p>
+      </div>
+
+      <h3 id="suscripcion-reactivar">Reactivar una suscripción cancelada</h3>
+      <ol class="steps">
+        <li><strong>Andá al panel "Plan".</strong></li>
+        <li><strong>Tocá "Reactivar suscripción".</strong></li>
+        <li><strong>Confirmá el método de pago</strong> en Mercado Pago.</li>
+        <li><strong>Tu perfil vuelve a aparecer</strong> en las búsquedas cuando MP confirma el pago.</li>
+      </ol>
+    </article>
+
+    <!-- ══ 8 · SOLUCIÓN DE PROBLEMAS ══ -->
+    <article class="doc-section" id="problemas">
+      <span class="sec-tag">08</span>
+      <h2>Solución de problemas</h2>
+      <p>
+        Los problemas más frecuentes y cómo destrabarlos. Si nada de esto funciona,
+        contactanos por los canales de la sección <a href="#contacto">Contacto y soporte</a>.
+      </p>
+
+      <div class="trouble">
+        <div class="trouble-q">No me llegan notificaciones push.</div>
+        <div class="trouble-a">
+          <strong>Chequeá:</strong> 1) que hayas dado permiso al navegador cuando la app lo pidió; 2) que las notificaciones no estén silenciadas a nivel sistema operativo; 3) que la PWA esté instalada como app (algunas versiones de iOS solo mandan push si está instalada). Si todo eso está OK y siguen sin llegar, cerrá sesión y volvé a entrar.
+        </div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-q"><span class="role-badge pro">Pro</span> No aparezco en las búsquedas.</div>
+        <div class="trouble-a">
+          <strong>Verificá</strong>, en orden: 1) que tu verificación de identidad esté aprobada; 2) que tu suscripción esté activa (no en gracia expirada ni cancelada); 3) que hayas definido al menos una categoría y una zona en tu perfil; 4) que la zona del cliente entre en tu radio de trabajo. Si los 4 puntos están OK y seguís sin aparecer, es un bug — reportalo.
+        </div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-q"><span class="role-badge pro">Pro</span> El pago de la suscripción no se procesó.</div>
+        <div class="trouble-a">
+          Mercado Pago rechaza a veces por saldo insuficiente, tarjeta vencida o límite. Entrás en <strong>período de gracia (7 días)</strong> — actualizá el método de pago desde el panel "Plan" y volvé a intentar. Si sigue fallando, contactá directamente al soporte de Mercado Pago para revisar el estado de la tarjeta.
+        </div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-q">No puedo iniciar sesión.</div>
+        <div class="trouble-a">
+          <strong>Si entrás con Google</strong>: probá con otra cuenta de Google, chequeá que la cuenta que estás usando no esté bloqueada del lado de Google, y borrá cookies del navegador para <code>al-toque-eta.vercel.app</code>. <strong>Si entrás con correo y contraseña</strong>: fijate que estés usando el mismo mail con el que te registraste, revisá mayúsculas y espacios en la contraseña, y si no te acordás usá "Olvidé mi contraseña" para recibir un mail de recuperación.
+        </div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-q">No puedo cargar mi ubicación.</div>
+        <div class="trouble-a">
+          Fijate que hayas dado permiso al navegador cuando lo pidió. Si lo rechazaste antes, tenés que ir a la configuración del navegador → permisos del sitio → habilitar ubicación. En iPhone, también revisá que la ubicación esté habilitada a nivel sistema para el navegador que estés usando.
+        </div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-q">La app se ve rara o no carga bien.</div>
+        <div class="trouble-a">
+          Refrescá con Ctrl+F5 (o cerrando y volviendo a abrir la PWA). Si persiste, borrá el caché del sitio en la configuración del navegador. Como último recurso, desinstalá la PWA y volvé a instalarla desde el navegador.
+        </div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-q">Perdí acceso al correo con el que me registré.</div>
+        <div class="trouble-a">
+          Si entrás con Google, recuperá primero el acceso a la cuenta desde Google — sin eso no podés entrar a AlToque. Si te registraste con correo común, usá "Olvidé mi contraseña" para recibir un mail de recuperación al mismo correo. Si el correo mismo se perdió definitivamente, escribinos a <a href="mailto:altoquecorp@gmail.com">altoquecorp@gmail.com</a> con pruebas de tu identidad para que podamos ayudarte a recuperar tu perfil y tus reseñas.
+        </div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-q"><span class="role-badge cli">Cliente</span> Lancé una urgencia y nadie aceptó.</div>
+        <div class="trouble-a">
+          Es posible en horarios con poca actividad. El pedido expira a los 10 minutos y podés volver a lanzarlo o pasarlo a agendado. En agendado, el cliente elige del listado en vez de esperar a que alguien acepte.
+        </div>
+      </div>
+    </article>
+
+    <!-- ══ 9 · GLOSARIO ══ -->
+    <article class="doc-section" id="glosario">
+      <span class="sec-tag">09</span>
+      <h2>Glosario</h2>
+      <p>Términos técnicos y de negocio usados en la plataforma y en este manual.</p>
+
+      <div class="dl-grid">
+        <div class="dl-item">
+          <div class="dl-term">Agendado</div>
+          <div class="dl-def">Pedido que no es urgente. El cliente elige un profesional del listado y coordinan por chat cuándo hacer el trabajo.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Broadcast</div>
+          <div class="dl-def">Emisión de un pedido urgente a todos los profesionales activos de una categoría dentro del radio del cliente. El primero que acepta se queda con el trabajo.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Categoría</div>
+          <div class="dl-def">El tipo de oficio: plomería, electricidad, cerrajería, gasista. Un profesional puede tener varias categorías.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Chat en tiempo real</div>
+          <div class="dl-def">Sistema de mensajes que llega al instante entre las partes, sin necesidad de refrescar la pantalla. Usa la tecnología Realtime de Supabase.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Estado de la suscripción</div>
+          <div class="dl-def">Cómo está tu plan en un momento dado: sin suscripción, activa, en gracia, baja programada, cancelada.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Google OAuth</div>
+          <div class="dl-def">Mecanismo por el cual iniciás sesión con tu cuenta de Google sin que AlToque conozca tu contraseña. Google le confirma a la app "sí, esta persona es quien dice ser".</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Grace period (período de gracia)</div>
+          <div class="dl-def">Días que la suscripción sigue activa después de un pago fallido, para dar tiempo a corregir el método de pago. Actualmente 7 días.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">PWA (Progressive Web App)</div>
+          <div class="dl-def">Aplicación web que se puede instalar en el celular como si fuera una app nativa, con soporte para notificaciones push y funcionamiento parcial sin conexión.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Preapproval</div>
+          <div class="dl-def">Autorización recurrente en Mercado Pago que le permite a la plataforma cobrar la suscripción mensual sin que el usuario tenga que autorizar cada cobro individualmente.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Radio de trabajo</div>
+          <div class="dl-def">Zona geográfica dentro de la cual el profesional recibe pedidos. Configurable desde el perfil profesional.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Reseña</div>
+          <div class="dl-def">Puntaje (1-5 estrellas) y comentario que un cliente deja después de que se cierra un trabajo. Es pública y forma parte de la reputación del profesional.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Trial (período de prueba)</div>
+          <div class="dl-def">Ventana inicial durante la cual un profesional nuevo aparece en las búsquedas y puede recibir pedidos sin haber activado todavía la suscripción paga.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Urgencia</div>
+          <div class="dl-def">Pedido que no puede esperar. Se emite en broadcast a todos los profesionales cercanos y expira a los 10 minutos si nadie acepta.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Verificación</div>
+          <div class="dl-def">Proceso por el que un profesional prueba su identidad (foto del DNI + selfie con DNI) antes de poder aparecer en las búsquedas.</div>
+        </div>
+        <div class="dl-item">
+          <div class="dl-term">Webhook</div>
+          <div class="dl-def">Aviso que Mercado Pago le manda a AlToque cuando cambia el estado de una suscripción (pago exitoso, fallido, cancelado). Es lo que mantiene sincronizados los estados.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ══ 10 · CONTACTO ══ -->
+    <article class="doc-section" id="contacto">
+      <span class="sec-tag">10</span>
+      <h2>Contacto y soporte</h2>
+      <p>
+        Si algo no está claro en este manual, si encontraste un bug o si querés
+        sugerir una mejora, escribinos por mail y te contestamos.
+      </p>
+
+      <h3 id="contacto-canal">Canal de contacto</h3>
+      <p>
+        <strong>Mail:</strong> <a href="mailto:altoquecorp@gmail.com">altoquecorp@gmail.com</a>.
+        Respondemos en 24 a 48 hs hábiles. Es el canal único para consultas, reportes
+        de problemas y sugerencias.
+      </p>
+
+      <h3 id="contacto-bug">Cómo reportar un bug</h3>
+      <p>Cuando reportes algo, incluí en lo posible:</p>
+      <ul>
+        <li>Qué estabas haciendo cuando pasó.</li>
+        <li>Qué esperabas que pasara.</li>
+        <li>Qué pasó realmente.</li>
+        <li>Desde qué dispositivo y navegador.</li>
+        <li>Si pasa siempre o solo a veces.</li>
+        <li>Capturas de pantalla, si podés.</li>
+      </ul>
+      <p>Cuanto más específico el reporte, más rápido lo podemos reproducir y arreglar.</p>
+
+      <h3 id="contacto-sugerencias">Sugerencias y mejoras</h3>
+      <p>
+        Si querés que agreguemos una funcionalidad o cambiar algo del flujo actual,
+        mandanos el detalle por mail. Todas las sugerencias se leen y se evalúan para
+        priorizar en próximas versiones de la plataforma.
+      </p>
+    </article>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════
+     HELP BAND
+     ════════════════════════════════════════ -->
+<div class="help-band">
+  <div class="help-band-inner">
+    <h2>¿No encontraste lo que buscabas?</h2>
+    <p>
+      Si el manual no cubre tu duda, la sección de Preguntas frecuentes suele tener
+      la respuesta rápida. Si tampoco, escribinos.
+    </p>
+    <div class="help-band-cta">
+      <a href="https://altoque-faq.vercel.app" target="_blank" rel="noopener">Ir a preguntas frecuentes →</a>
+      <a href="mailto:altoquecorp@gmail.com" class="out">Escribinos a altoquecorp@gmail.com</a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Al<span>Toque</span></div>
+      <div class="footer-desc">La forma más rápida de conseguir un profesional de confianza para plomería, electricidad, cerrajería o gas. Identidad verificada, reseñas reales y respuesta inmediata en urgencias.</div>
+    </div>
+    <div class="footer-col">
+      <h4>AlToque</h4>
+      <a href="https://al-toque-eta.vercel.app"    target="_blank" rel="noopener">Abrir la app</a>
+      <a href="https://altoque-faq.vercel.app"     target="_blank" rel="noopener">Preguntas frecuentes</a>
+      <a href="#introduccion">Manual de uso</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <a href="mailto:altoquecorp@gmail.com">altoquecorp@gmail.com</a>
+      <p style="opacity:.5;">Respuesta en 24-48 hs hábiles.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>AlToque · Servicios de oficios en el conurbano bonaerense</div>
+    <div>&copy; 2026 AlToque · Todos los derechos reservados</div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>
