@@ -28,7 +28,7 @@ export default function PrivacidadPage() {
         </p>
         <ul>
           <li>Responsable del tratamiento: AlToque</li>
-          <li>Contacto para consultas de privacidad: [email a definir]</li>
+          <li>Contacto para consultas de privacidad: altoquecorp@gmail.com</li>
           <li>
             Marco normativo: Ley 25.326 de Protección de Datos Personales de
             Argentina y normativa complementaria.
@@ -181,7 +181,7 @@ export default function PrivacidadPage() {
         </ul>
         <p>
           Para ejercer estos derechos escribinos a{" "}
-          <strong>[email a definir]</strong>. Vamos a responder dentro de los
+          <strong>altoquecorp@gmail.com</strong>. Vamos a responder dentro de los
           plazos que fija la Ley 25.326.
         </p>
         <p>
@@ -230,7 +230,7 @@ export default function PrivacidadPage() {
           ejercer tus derechos:
         </p>
         <p>
-          <strong>[email a definir]</strong>
+          <strong>altoquecorp@gmail.com</strong>
         </p>
       </div>
     </section>
