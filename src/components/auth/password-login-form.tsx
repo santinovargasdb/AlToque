@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Loader2, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,8 +59,23 @@ export function PasswordLoginForm({ redirectTo }: { redirectTo: string }) {
 
   if (resetSent) {
     return (
-      <div className="space-y-3 rounded-xl border border-success/30 bg-success/5 p-5 text-center">
-        <MailCheck className="mx-auto size-8 text-success" />
+      <div className="space-y-3 rounded-md border border-success/30 bg-success/5 p-5 text-center">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="mx-auto text-success"
+          aria-hidden="true"
+        >
+          <path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8" />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          <path d="m16 19 2 2 4-4" />
+        </svg>
         <p className="font-medium">Revisá tu email</p>
         <p className="text-sm text-muted-foreground">
           Si existe una cuenta para{" "}
@@ -117,7 +131,12 @@ export function PasswordLoginForm({ redirectTo }: { redirectTo: string }) {
       )}
 
       <Button type="submit" className="w-full" disabled={pending}>
-        {pending && <Loader2 className="size-4 animate-spin" />}
+        {pending && (
+          <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
+        )}
         {resetMode ? "Enviar enlace de recuperación" : "Ingresar"}
       </Button>
 

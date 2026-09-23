@@ -1,4 +1,3 @@
-import { Check, Clock, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { JobStatus } from "@/types";
 
@@ -20,9 +19,12 @@ const ORDER: Record<string, number> = {
 export function JobStatusTimeline({ status }: { status: JobStatus }) {
   if (status === "cancelled" || status === "expired") {
     return (
-      <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
-        <XCircle className="size-5" />
-        <span className="font-medium">
+      <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-4 text-xs font-medium text-destructive">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-4 shrink-0">
+          <circle cx="8" cy="8" r="6" />
+          <path d="m5.5 5.5 5 5M10.5 5.5l-5 5" />
+        </svg>
+        <span>
           {status === "cancelled" ? "Pedido cancelado" : "Pedido vencido"}
         </span>
       </div>
@@ -47,18 +49,23 @@ export function JobStatusTimeline({ status }: { status: JobStatus }) {
               />
               <span
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-xs",
+                  "flex size-7 shrink-0 items-center justify-center rounded-[4px] border font-mono text-xs select-none",
                   done
                     ? "border-primary bg-primary text-primary-foreground"
                     : active
-                      ? "border-primary bg-primary/10 text-primary"
+                      ? "border-primary bg-primary-subtle font-bold text-primary"
                       : "border-border bg-card text-muted-foreground",
                 )}
               >
                 {done ? (
-                  <Check className="size-4" />
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" className="size-3.5">
+                    <path d="M3 8.5 6.5 12 13 4.5" />
+                  </svg>
                 ) : active ? (
-                  <Clock className="size-4" />
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-3.5">
+                    <circle cx="8" cy="8" r="6" />
+                    <path d="M8 4.5V8l2.5 1.5" />
+                  </svg>
                 ) : (
                   i + 1
                 )}
@@ -76,8 +83,8 @@ export function JobStatusTimeline({ status }: { status: JobStatus }) {
             </div>
             <span
               className={cn(
-                "mt-1.5 text-center text-xs",
-                active || done ? "font-medium text-foreground" : "text-muted-foreground",
+                "mt-1.5 text-center text-[11px]",
+                active || done ? "font-semibold text-foreground" : "text-muted-foreground",
               )}
             >
               {step.label}

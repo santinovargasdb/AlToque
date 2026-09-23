@@ -1,13 +1,12 @@
-import { BadgeCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Badge "Verificado": patrón de confianza recurrente del producto.
- * Se muestra en perfiles y cards de profesionales aprobados.
+ * Badge de verificación de identidad oficial (DNI / Matrícula).
+ * Diseño técnico sobrio: borde nítido, sin redondez de píldora ni iconos genéricos.
  */
 export function VerifiedBadge({
   className,
-  label = "Verificado",
+  label = "DNI Verificado",
 }: {
   className?: string;
   label?: string;
@@ -15,12 +14,23 @@ export function VerifiedBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success",
+        "inline-flex items-center gap-1.5 rounded-[4px] border border-success/35 bg-primary-subtle px-2 py-0.5 text-[11px] font-medium text-success select-none",
         className,
       )}
     >
-      <BadgeCheck className="size-3.5" />
-      {label}
+      <svg
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="size-3 shrink-0"
+        aria-hidden="true"
+      >
+        <path d="M2.5 8.5 6 12l7.5-8" />
+      </svg>
+      <span>{label}</span>
     </span>
   );
 }

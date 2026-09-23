@@ -59,7 +59,7 @@ export function IncomingJobCard({
   }
 
   return (
-    <article className="rounded-xl border-2 border-action/40 bg-action/5 p-4">
+    <article className="rounded-md border border-action/40 bg-action/5 p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <Badge variant="warning">Urgente</Badge>

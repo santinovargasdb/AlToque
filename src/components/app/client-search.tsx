@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { MapsProvider } from "@/components/shared/maps-provider";
@@ -37,15 +36,17 @@ export function ClientSearch({ defaultOficio }: { defaultOficio?: string }) {
   return (
     <form
       onSubmit={onSubmit}
-      className="space-y-4 rounded-xl border border-border bg-card p-5 shadow-[0_1px_3px_rgba(15,23,42,0.08)]"
+      className="space-y-4 rounded-md border border-border bg-card p-5"
     >
       <div className="space-y-1.5">
-        <Label htmlFor="oficio">¿Qué oficio necesitás?</Label>
+        <Label htmlFor="oficio" className="text-xs font-semibold text-foreground">
+          ¿Qué oficio necesitás?
+        </Label>
         <select
           id="oficio"
           value={oficio}
           onChange={(e) => setOficio(e.target.value)}
-          className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
         >
           {OFICIOS.map((o) => (
             <option key={o.slug} value={o.slug}>
@@ -63,8 +64,18 @@ export function ClientSearch({ defaultOficio }: { defaultOficio?: string }) {
         />
       </MapsProvider>
 
-      <Button type="submit" size="lg" className="w-full">
-        <Search className="size-4" />
+      <Button type="submit" size="default" className="w-full">
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          className="size-4 shrink-0"
+          aria-hidden="true"
+        >
+          <circle cx="7" cy="7" r="4.5" />
+          <path d="m10.5 10.5 3.5 3.5" />
+        </svg>
         Buscar profesionales
       </Button>
     </form>

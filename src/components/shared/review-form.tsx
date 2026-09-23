@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Loader2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,7 +42,7 @@ export function ReviewForm({
   return (
     <form
       onSubmit={submit}
-      className="space-y-3 rounded-xl border border-border bg-card p-4"
+      className="space-y-3 rounded-md border border-border bg-card p-4"
     >
       <div className="space-y-1.5">
         <Label>¿Cómo fue tu experiencia con {targetLabel}?</Label>
@@ -60,14 +59,25 @@ export function ReviewForm({
               onMouseLeave={() => setHovered(0)}
               className="p-0.5"
             >
-              <Star
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill={value <= (hovered || rating) ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className={cn(
-                  "size-7 transition-colors",
+                  "transition-colors",
                   value <= (hovered || rating)
-                    ? "fill-warning text-warning"
+                    ? "text-amber-400"
                     : "text-border",
                 )}
-              />
+                aria-hidden="true"
+              >
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
             </button>
           ))}
         </div>
@@ -86,9 +96,31 @@ export function ReviewForm({
       </div>
 
       <Button type="submit" className="w-full" disabled={pending || rating < 1}>
-        {pending && <Loader2 className="size-4 animate-spin" />}
+        {pending && (
+          <svg
+            className="size-4 animate-spin"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+        )}
         Enviar reseña
       </Button>
     </form>
   );
 }
+

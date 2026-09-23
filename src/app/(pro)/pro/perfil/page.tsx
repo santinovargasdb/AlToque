@@ -53,7 +53,7 @@ export default async function ProPerfilPage() {
       </header>
 
       {/* La foto se muestra a los clientes en búsquedas y perfil público. */}
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section className="rounded-md border border-border bg-card p-5">
         <AvatarUploader
           userId={uid}
           initialUrl={profile?.avatarUrl ?? null}
@@ -74,7 +74,7 @@ export default async function ProPerfilPage() {
       />
 
       {/* Métodos de acceso de la cuenta (Google + contraseña + sesiones). */}
-      <section className="space-y-4 rounded-xl border border-border bg-card p-5">
+      <section className="space-y-4 rounded-md border border-border bg-card p-5">
         <h2 className="font-heading font-semibold">Métodos de acceso</h2>
         <GoogleAccountLink returnTo="/pro/perfil" />
         <div className="h-px bg-border" />

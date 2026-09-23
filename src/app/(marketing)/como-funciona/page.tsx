@@ -1,46 +1,59 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cómo funciona",
+  title: "Cómo funciona: AlToque",
   description:
     "Cómo encontrar y contratar profesionales de oficios verificados en AlToque, para urgencias o trabajos agendados.",
 };
 
 const PASOS = [
   {
-    t: "1. Elegí el oficio y tu ubicación",
-    d: "Decinos qué necesitás (plomería, cerrajería, etc.) y dónde. Para urgencias, encontramos a los profesionales online más cercanos.",
+    num: "01",
+    t: "Elegí el oficio y tu ubicación",
+    d: "Indicá qué necesitás resolver (plomería, cerrajería, gas, electricidad, etc.) y tu punto de atención. Para urgencias, el sistema busca a los prestadores activos en tu radio cercano.",
   },
   {
-    t: "2. Compará con confianza",
-    d: "Cada profesional está verificado con DNI y selfie. Mirá sus reviews reales y su rating antes de confirmar.",
+    num: "02",
+    t: "Compará antecedentes y verificación",
+    d: "Cada profesional cuenta con validación oficial de DNI y antecedentes. Podés consultar sus calificaciones técnicas, zona habitual y experiencias previas.",
   },
   {
-    t: "3. Coordiná y seguí el trabajo",
-    d: "Chateá dentro de la app y seguí el estado del pedido en vivo: aceptado, en curso, completado.",
+    num: "03",
+    t: "Coordiná y seguí el trabajo",
+    d: "Chateá dentro de la plataforma y visualizá el avance del servicio en tiempo real desde la solicitud hasta la finalización.",
   },
   {
-    t: "4. Acordá el pago directo",
-    d: "El precio y el medio de pago los arreglás directamente con el profesional. Al terminar, dejás tu reseña y ayudás a otros a elegir mejor.",
+    num: "04",
+    t: "Acuerdo directo y sin intermediarios",
+    d: "El valor del trabajo y el medio de cobro se acuerdan libremente entre vos y el técnico. Al concluir, asentás tu calificación para fortalecer la red comunitaria.",
   },
 ];
 
 export default function ComoFuncionaPage() {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="font-heading text-4xl font-bold">Cómo funciona</h1>
-      <p className="mt-3 text-lg text-muted-foreground">
-        Confianza de punta a punta: profesionales verificados, trato directo y
-        seguimiento en vivo.
-      </p>
-      <div className="mt-10 space-y-6">
+    <section className="mx-auto max-w-3xl px-4 py-14">
+      <div className="border-b border-border pb-6">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+          Cómo funciona el servicio
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Estructura de contratación transparente: validación de identidad con DNI, contacto directo y seguimiento en vivo.
+        </p>
+      </div>
+
+      <div className="mt-8 space-y-4">
         {PASOS.map((p) => (
           <div
-            key={p.t}
-            className="rounded-xl border border-border bg-card p-6 shadow-[0_1px_3px_rgba(15,23,42,0.08)]"
+            key={p.num}
+            className="flex gap-4 rounded-md border border-border bg-card p-5 transition-colors duration-150"
           >
-            <h2 className="font-heading text-lg font-semibold">{p.t}</h2>
-            <p className="mt-1.5 text-muted-foreground">{p.d}</p>
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-[4px] border border-primary/30 bg-primary-subtle font-mono text-xs font-bold text-primary">
+              {p.num}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-bold text-foreground">{p.t}</h2>
+              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{p.d}</p>
+            </div>
           </div>
         ))}
       </div>

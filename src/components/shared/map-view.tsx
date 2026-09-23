@@ -1,7 +1,6 @@
 "use client";
 
 import { Map, Marker } from "@vis.gl/react-google-maps";
-import { MapPinned } from "lucide-react";
 import { MapsProvider, HAS_MAPS_KEY } from "./maps-provider";
 
 export type MapMarker = { id: string; lat: number; lng: number };
@@ -23,9 +22,22 @@ export function MapView({
   if (!HAS_MAPS_KEY) {
     return (
       <div
-        className={`flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card text-center text-muted-foreground ${className}`}
+        className={`flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card text-center text-muted-foreground ${className}`}
       >
-        <MapPinned className="size-7" />
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
         <p className="text-sm">
           Configurá <code>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> para ver el
           mapa.
@@ -36,7 +48,7 @@ export function MapView({
 
   return (
     <MapsProvider>
-      <div className={`overflow-hidden rounded-xl border border-border ${className}`}>
+      <div className={`overflow-hidden rounded-md border border-border ${className}`}>
         <Map
           defaultCenter={center}
           defaultZoom={12}

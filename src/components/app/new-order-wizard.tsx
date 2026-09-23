@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft, ArrowRight, Banknote, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,7 +114,7 @@ export function NewOrderWizard({
               id="cat"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -200,14 +199,25 @@ export function NewOrderWizard({
               <PaymentOption
                 active={payment === "cash"}
                 onClick={() => setPayment("cash")}
-                icon={<Banknote className="size-5" />}
+                icon={
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect width="20" height="12" x="2" y="6" rx="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <path d="M6 12h.01M18 12h.01" />
+                  </svg>
+                }
                 title="Efectivo"
                 desc="Le pagás en mano al profesional"
               />
               <PaymentOption
                 active={payment === "transfer"}
                 onClick={() => setPayment("transfer")}
-                icon={<CreditCard className="size-5" />}
+                icon={
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect width="20" height="14" x="2" y="5" rx="2" />
+                    <line x1="2" x2="22" y1="10" y2="10" />
+                  </svg>
+                }
                 title="Transferencia / Tarjeta"
                 desc="Lo acordás directamente con el profesional"
               />
@@ -228,12 +238,18 @@ export function NewOrderWizard({
             onClick={() => setStep((s) => s - 1)}
             disabled={pending}
           >
-            <ArrowLeft className="size-4" /> Atrás
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Atrás
           </Button>
         )}
         {step < 3 ? (
           <Button type="button" className="flex-1" onClick={next}>
-            Continuar <ArrowRight className="size-4" />
+            Continuar
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </Button>
         ) : (
           <Button
@@ -242,7 +258,12 @@ export function NewOrderWizard({
             onClick={submit}
             disabled={pending}
           >
-            {pending && <Loader2 className="size-4 animate-spin" />}
+            {pending && (
+              <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+            )}
             Confirmar pedido
           </Button>
         )}
@@ -267,7 +288,7 @@ function TypeOption({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-xl border p-3 text-left transition-colors",
+        "rounded-md border p-3 text-left transition-colors duration-150",
         active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40",
       )}
     >
@@ -295,7 +316,7 @@ function PaymentOption({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+        "flex items-center gap-3 rounded-md border p-3 text-left transition-colors duration-150",
         active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40",
       )}
     >

@@ -151,11 +151,11 @@ export function NotificationsBell({ userId }: { userId: string }) {
         onClick={toggle}
         aria-label={`Notificaciones${unread > 0 ? ` (${unread} sin leer)` : ""}`}
         aria-expanded={open}
-        className="relative flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        className="relative flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors duration-150 hover:bg-secondary hover:text-foreground"
       >
-        <Bell className="size-5" />
+        <Bell className="size-4" />
         {unread > 0 && (
-          <span className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in duration-200">
+          <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in duration-200">
             {unread > 9 ? "9+" : unread}
           </span>
         )}
@@ -167,7 +167,7 @@ export function NotificationsBell({ userId }: { userId: string }) {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
             ref={panelRef}
-            className="absolute right-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-top-2 rounded-xl border border-border bg-card shadow-lg duration-200"
+            className="absolute right-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-top-2 rounded-md border border-border bg-card duration-150"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
               <p className="text-sm font-semibold">Notificaciones</p>
@@ -188,7 +188,7 @@ export function NotificationsBell({ userId }: { userId: string }) {
                 <div className="space-y-3 p-4" aria-busy="true">
                   {[0, 1, 2].map((i) => (
                     <div key={i} className="flex gap-3">
-                      <Skeleton className="size-8 rounded-full" />
+                      <Skeleton className="size-8 rounded-[4px]" />
                       <div className="flex-1 space-y-1.5">
                         <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-3 w-1/2" />
@@ -217,10 +217,10 @@ export function NotificationsBell({ userId }: { userId: string }) {
                         >
                           <span
                             className={cn(
-                              "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full",
+                              "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-[4px]",
                               isUnread
-                                ? "bg-primary/10 text-primary"
-                                : "bg-secondary text-muted-foreground",
+                                ? "border border-primary/30 bg-primary-subtle text-primary"
+                                : "border border-border bg-secondary text-muted-foreground",
                             )}
                           >
                             <Icon className="size-4" />

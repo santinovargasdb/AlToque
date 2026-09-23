@@ -25,7 +25,7 @@ export default async function PerfilClientePage() {
         <SignOutButton />
       </div>
 
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section className="rounded-md border border-border bg-card p-5">
         <h2 className="font-heading font-semibold">Datos de contacto</h2>
         <p className="mb-4 mt-0.5 text-sm text-muted-foreground">
           {user.email}
@@ -44,7 +44,7 @@ export default async function PerfilClientePage() {
         />
       </section>
 
-      <section className="space-y-4 rounded-xl border border-border bg-card p-5">
+      <section className="space-y-4 rounded-md border border-border bg-card p-5">
         <h2 className="font-heading font-semibold">Métodos de acceso</h2>
         <GoogleAccountLink returnTo="/perfil" />
         <div className="h-px bg-border" />

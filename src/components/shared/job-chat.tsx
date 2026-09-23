@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { Input } from "@/components/ui/input";
@@ -95,7 +94,7 @@ export function JobChat({
   }
 
   return (
-    <section className="rounded-xl border border-border bg-card">
+    <section className="rounded-md border border-border bg-card">
       <p className="border-b border-border px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground">
         Chat
       </p>
@@ -112,10 +111,10 @@ export function JobChat({
               <div
                 key={m.id}
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-3.5 py-2 text-sm",
+                  "max-w-[80%] rounded-md px-3.5 py-2 text-sm",
                   mine
-                    ? "self-end rounded-br-md bg-primary text-primary-foreground"
-                    : "self-start rounded-bl-md bg-secondary text-secondary-foreground",
+                    ? "self-end bg-primary text-primary-foreground"
+                    : "self-start bg-secondary text-secondary-foreground",
                 )}
               >
                 <p className="whitespace-pre-wrap break-words">{m.body}</p>
@@ -153,9 +152,30 @@ export function JobChat({
             aria-label="Enviar"
           >
             {sending ? (
-              <Loader2 className="size-4 animate-spin" />
+              <svg
+                className="size-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
             ) : (
-              <Send className="size-4" />
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="22" x2="11" y1="2" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
             )}
           </Button>
         </form>

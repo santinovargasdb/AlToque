@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import { LocateFixed, MapPin, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,7 +53,9 @@ export function AddressAutocomplete({
 
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id} className="text-xs font-semibold text-foreground">
+        {label}
+      </Label>
       <div className="flex gap-2">
         {HAS_MAPS_KEY ? (
           <PlacesInput
@@ -74,20 +75,31 @@ export function AddressAutocomplete({
           type="button"
           onClick={useMyLocation}
           title="Usar mi ubicación"
-          className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-input text-muted-foreground hover:text-primary"
+          className="flex size-9 shrink-0 items-center justify-center rounded-md border border-input bg-card text-muted-foreground transition-colors duration-150 hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {locating ? (
-            <Loader2 className="size-4 animate-spin" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4 animate-spin opacity-70">
+              <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="12" />
+            </svg>
           ) : (
-            <LocateFixed className="size-4" />
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-4">
+              <circle cx="8" cy="8" r="6" />
+              <circle cx="8" cy="8" r="2" />
+              <path d="M8 0v2M8 14v2M0 8h2M14 8h2" />
+            </svg>
           )}
         </button>
       </div>
 
       {hasCoords ? (
-        <p className="flex items-center gap-1 text-xs text-success">
-          <MapPin className="size-3.5" /> Ubicación lista (
-          {value.lat!.toFixed(4)}, {value.lng!.toFixed(4)})
+        <p className="flex items-center gap-1.5 text-xs text-success">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-3.5 shrink-0">
+            <path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 3.2 4.5 8.5 4.5 8.5s4.5-5.3 4.5-8.5a4.5 4.5 0 0 0-4.5-4.5Z" />
+            <circle cx="8" cy="6" r="1.5" />
+          </svg>
+          <span className="font-mono">
+            Ubicación lista ({value.lat!.toFixed(4)}, {value.lng!.toFixed(4)})
+          </span>
         </p>
       ) : (
         <p className="text-xs text-muted-foreground">
