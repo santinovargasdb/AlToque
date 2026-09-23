@@ -27,18 +27,18 @@ const TRADE_ICONS: Record<string, React.ReactNode> = {
       <path d="M11 10h6M15 10v2M17 10v2" />
     </svg>
   ),
-  electricidad: (
+  electricista: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-5">
       <polygon points="11 2 3 11 10 11 9 18 17 9 10 9 11 2" />
     </svg>
   ),
-  gas: (
+  gasista: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-5">
       <path d="M10 2c-3 4-6 6.5-6 10a6 6 0 0 0 12 0c0-3.5-3-6-6-10Z" />
       <path d="M10 15a2.5 2.5 0 0 0 2.5-2.5c0-1.5-1.5-2.5-2.5-4" />
     </svg>
   ),
-  techos: (
+  techista: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-5">
       <path d="M2 11 10 3l8 8" />
       <path d="M4 10v7h12v-7" />
@@ -50,14 +50,14 @@ const TRADE_ICONS: Record<string, React.ReactNode> = {
       <path d="M6 11 3 14l3 3 3-3" />
     </svg>
   ),
-  pintura: (
+  pintor: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-5">
       <rect x="3" y="3" width="14" height="6" rx="1" />
       <path d="M10 9v5a2 2 0 0 1-2 2H7" />
       <path d="M7 16v2" />
     </svg>
   ),
-  albanileria: (
+  albanil: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-5">
       <rect x="2" y="3" width="16" height="4" rx="0.5" />
       <rect x="2" y="8" width="7" height="4" rx="0.5" />
