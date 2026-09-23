@@ -34,11 +34,10 @@
       <li><a href="#s5"><code>S-05</code>Requisitos específicos</a></li>
       <li><a href="#s6"><code>S-06</code>Oferta de gestión</a></li>
       <li><a href="#s7"><code>S-07</code>Oferta económica</a></li>
-      <li><a href="#s8"><code>S-08</code>Estimación económica</a></li>
-      <li><a href="#s9"><code>S-09</code>Contrato</a></li>
-      <li><a href="#s10"><code>S-10</code>Bitácora del proyecto</a></li>
-      <li><a href="#s11"><code>S-11</code>Garantía y soporte</a></li>
-      <li><a href="#s12"><code>S-12</code>Documentación de uso</a></li>
+      <li><a href="#s8"><code>S-08</code>Contrato</a></li>
+      <li><a href="#s9"><code>S-09</code>Bitácora del proyecto</a></li>
+      <li><a href="#s10"><code>S-10</code>Garantía y soporte</a></li>
+      <li><a href="#s11"><code>S-11</code>Documentación de uso</a></li>
     </ul>
   </aside>
 
@@ -407,7 +406,7 @@
         con acento cálido, tipografía del sistema con monoespaciada para datos, componentes shadcn/ui
         personalizados y verificación/reputación siempre visibles. Las vistas están agrupadas por rol y
         el flujo crítico (crear un pedido urgente) se resuelve en menos de 4 pantallas. El manual de uso
-        (S-12) documenta cada pantalla con su recorrido.
+        (S-11) documenta cada pantalla con su recorrido.
       </p>
 
       <h3><code>5.5</code> Interfaces de hardware</h3>
@@ -592,68 +591,16 @@
 
     <!-- ═══════════ S-08 ═══════════ -->
     <section id="s8">
-      <div class="sec-head"><span class="sec-code">S-08</span><h2>Estimación económica</h2></div>
-      <p class="sec-intro">
-        Valorización del esfuerzo real del proyecto a precios de mercado, como ejercicio de
-        estimación. Supuesto explícito: tarifa horaria de referencia de un desarrollador junior en
-        Argentina de <strong>ARS 12.000/h</strong> (septiembre 2026), contingencia del 10% y margen del 20%.
-      </p>
+      <div class="sec-head"><span class="sec-code">S-08</span><h2>Contrato</h2></div>
 
-      <h3><code>8.1</code> Costes de personal</h3>
-      <p>
-        Horas estimadas a partir del historial del repositorio (14 semanas activas, 63 commits) y de
-        los registros de la bitácora (S-10). Fórmula: <code>coste = horas × tarifa × (1 + contingencia)</code>.
-      </p>
-      <div class="tbl-wrap"><table>
-        <thead><tr><th>Categoría</th><th class="num">Horas</th><th class="num">Tarifa/h</th><th class="num">Conting.</th><th class="num">Coste (ARS)</th></tr></thead>
-        <tbody>
-          <tr><td>Backend y modelo de negocio (SV · LB)</td><td class="num">110</td><td class="num">12.000</td><td class="num">10%</td><td class="num">1.452.000</td></tr>
-          <tr><td>Frontend y rediseño (NR)</td><td class="num">70</td><td class="num">12.000</td><td class="num">10%</td><td class="num">924.000</td></tr>
-          <tr><td>Base de datos y migraciones (NM)</td><td class="num">45</td><td class="num">12.000</td><td class="num">10%</td><td class="num">594.000</td></tr>
-          <tr><td>Despliegue y operación (ML)</td><td class="num">35</td><td class="num">12.000</td><td class="num">10%</td><td class="num">462.000</td></tr>
-          <tr><td>Documentación, pruebas y gestión (equipo)</td><td class="num">40</td><td class="num">12.000</td><td class="num">10%</td><td class="num">528.000</td></tr>
-          <tr class="total"><td>Subtotal personal</td><td class="num">300</td><td></td><td></td><td class="num">3.960.000</td></tr>
-        </tbody>
-      </table></div>
-
-      <h3><code>8.2</code> Costes varios</h3>
-      <div class="tbl-wrap"><table>
-        <thead><tr><th>Concepto</th><th class="num">Costo unit.</th><th class="num">Cant.</th><th class="num">Coste (ARS)</th></tr></thead>
-        <tbody>
-          <tr><td>Infraestructura cloud (etapa académica)</td><td class="num">0</td><td class="num">4 meses</td><td class="num">0</td></tr>
-          <tr><td>Dominio .com.ar (previsión anual)</td><td class="num">~12.000</td><td class="num">1</td><td class="num">12.000</td></tr>
-          <tr><td>Reserva Maps post-crédito (previsión 3 meses)</td><td class="num">~15.000</td><td class="num">3</td><td class="num">45.000</td></tr>
-          <tr class="total"><td>Subtotal varios</td><td></td><td></td><td class="num">57.000</td></tr>
-        </tbody>
-      </table></div>
-
-      <h3><code>8.3</code> Total</h3>
-      <div class="tbl-wrap"><table>
-        <tbody>
-          <tr><td>Costo total del proyecto (personal + varios)</td><td class="num"><strong>ARS 4.017.000</strong></td></tr>
-          <tr><td>Margen (20%)</td><td class="num">ARS 803.400</td></tr>
-          <tr class="total"><td>Precio de venta de referencia</td><td class="num">ARS 4.820.400</td></tr>
-        </tbody>
-      </table></div>
-      <p>
-        Esfuerzo total estimado: <strong>300 horas</strong>. Aclaración académica: el proyecto se desarrolla
-        en el marco de la materia Evaluación de Proyectos; estos valores son un ejercicio de estimación
-        a precios de mercado y no constituyen una factura ni una obligación de pago del cliente.
-      </p>
-    </section>
-
-    <!-- ═══════════ S-09 ═══════════ -->
-    <section id="s9">
-      <div class="sec-head"><span class="sec-code">S-09</span><h2>Contrato</h2></div>
-
-      <h3><code>9.1</code> Objeto</h3>
+      <h3><code>8.1</code> Objeto</h3>
       <p>
         Desarrollo, puesta en producción y documentación de la plataforma AlToque: sistema web
         (PWA) de intermediación entre vecinos del Gran Buenos Aires y profesionales de oficios
         verificados, con los alcances definidos en las secciones S-03.2 y S-05 de este documento.
       </p>
 
-      <h3><code>9.2</code> Partes</h3>
+      <h3><code>8.2</code> Partes</h3>
       <div class="tbl-wrap"><table>
         <thead><tr><th>Parte</th><th>Representada por</th><th>Rol en el acuerdo</th></tr></thead>
         <tbody>
@@ -663,14 +610,14 @@
         </tbody>
       </table></div>
 
-      <h3><code>9.3</code> Alcance</h3>
+      <h3><code>8.3</code> Alcance</h3>
       <p>
         El alcance comprometido es el descripto en S-03.2 (incluye / no incluye) con los requisitos
-        de S-05. Toda modificación de alcance se rige por la cláusula 9.7 y queda registrada en el
+        de S-05. Toda modificación de alcance se rige por la cláusula 8.7 y queda registrada en el
         control de cambios (S-01), como ocurrió con el cambio del modelo de ingresos (v0.6).
       </p>
 
-      <h3><code>9.4</code> Plazos</h3>
+      <h3><code>8.4</code> Plazos</h3>
       <div class="tbl-wrap"><table>
         <thead><tr><th>Hito</th><th>Fecha</th><th>Estado</th></tr></thead>
         <tbody>
@@ -684,7 +631,7 @@
         </tbody>
       </table></div>
 
-      <h3><code>9.5</code> Responsabilidades</h3>
+      <h3><code>8.5</code> Responsabilidades</h3>
       <div class="grid-2">
         <div class="card">
           <h4>Del equipo desarrollador</h4>
@@ -699,14 +646,14 @@
           <h4>Del cliente</h4>
           <ul>
             <li>Participar de las instancias de relevamiento y validación de alcance.</li>
-            <li>Ejecutar las pruebas de aceptación en los plazos acordados y devolver resultados (S-10.5).</li>
+            <li>Ejecutar las pruebas de aceptación en los plazos acordados y devolver resultados (S-09.5).</li>
             <li>Canalizar pedidos de cambio por escrito para su evaluación de impacto.</li>
-            <li>No exigir funcionalidades fuera del alcance sin renegociación (cláusula 9.7).</li>
+            <li>No exigir funcionalidades fuera del alcance sin renegociación (cláusula 8.7).</li>
           </ul>
         </div>
       </div>
 
-      <h3><code>9.6</code> Criterios de aceptación</h3>
+      <h3><code>8.6</code> Criterios de aceptación</h3>
       <ol>
         <li>Un profesional puede registrarse, cargar DNI y selfie, y ser aprobado por un administrador; hasta entonces no aparece en búsquedas.</li>
         <li>Un cliente encuentra profesionales verificados por oficio y cercanía real a su dirección, con mapa y perfil con reputación.</li>
@@ -717,14 +664,14 @@
         <li>El sistema está publicado en producción, con manual de uso, FAQ, términos y política de privacidad accesibles.</li>
       </ol>
 
-      <h3><code>9.7</code> Modificaciones</h3>
+      <h3><code>8.7</code> Modificaciones</h3>
       <p>
         Todo cambio de alcance se solicita por escrito, se evalúa su impacto en plazos y esfuerzo, y
         de aceptarse se registra en el control de cambios (S-01) con fecha y responsable. El precedente
         es la v0.6: la baja del modelo de comisiones se acordó con el cliente antes de implementarse.
       </p>
 
-      <h3><code>9.8</code> Firmas</h3>
+      <h3><code>8.8</code> Firmas</h3>
       <p>
         En el marco académico de la materia, las partes manifiestan su conformidad con este documento
         en la instancia de presentación correspondiente, quedando la versión digital publicada como
@@ -732,11 +679,11 @@
       </p>
     </section>
 
-    <!-- ═══════════ S-10 ═══════════ -->
-    <section id="s10">
-      <div class="sec-head"><span class="sec-code">S-10</span><h2>Bitácora del proyecto</h2></div>
+    <!-- ═══════════ S-09 ═══════════ -->
+    <section id="s9">
+      <div class="sec-head"><span class="sec-code">S-09</span><h2>Bitácora del proyecto</h2></div>
 
-      <h3><code>10.1</code> Registro de reuniones e instancias de relevamiento</h3>
+      <h3><code>9.1</code> Registro de reuniones e instancias de relevamiento</h3>
       <div class="tbl-wrap"><table>
         <thead><tr><th>Período</th><th>Con quién</th><th>Objetivo</th><th>Modalidad</th></tr></thead>
         <tbody>
@@ -749,7 +696,7 @@
         </tbody>
       </table></div>
 
-      <h3><code>10.2</code> Minutas</h3>
+      <h3><code>9.2</code> Minutas</h3>
 
       <h4>Minuta 01 — Autenticación y roadmap (15/07/2026)</h4>
       <div class="tbl-wrap"><table>
@@ -781,7 +728,7 @@
         </tbody>
       </table></div>
 
-      <h3><code>10.3</code> Registro de cambios sobre el producto</h3>
+      <h3><code>9.3</code> Registro de cambios sobre el producto</h3>
       <div class="tbl-wrap"><table>
         <thead><tr><th>Componente</th><th>Modificación</th><th>Justificación</th></tr></thead>
         <tbody>
@@ -793,7 +740,7 @@
         </tbody>
       </table></div>
 
-      <h3><code>10.4</code> Hitos técnicos</h3>
+      <h3><code>9.4</code> Hitos técnicos</h3>
       <div class="tbl-wrap"><table>
         <thead><tr><th>Fecha</th><th>Hito</th></tr></thead>
         <tbody>
@@ -818,7 +765,7 @@
         <li><strong>Zonas horarias:</strong> el formateo de fechas debe fijarse a la zona de Buenos Aires en el servidor para evitar diferencias de hidratación entre servidor y navegador.</li>
       </ul>
 
-      <h3><code>10.5</code> Período de prueba con el cliente</h3>
+      <h3><code>9.5</code> Período de prueba con el cliente</h3>
       <p>
         Con el sistema en producción y una base de 24 profesionales de prueba sembrada para el
         entorno de demostración, el período de prueba formal con el cliente se ejecuta sobre la
@@ -835,15 +782,15 @@
       <p>
         Tipos posibles de devolución: <strong>error</strong> (no funciona según lo especificado),
         <strong>ajuste</strong> (funciona pero se pide un cambio menor) y <strong>cambio de alcance</strong>
-        (funcionalidad nueva, se rige por la cláusula 9.7).
+        (funcionalidad nueva, se rige por la cláusula 8.7).
       </p>
     </section>
 
-    <!-- ═══════════ S-11 ═══════════ -->
-    <section id="s11">
-      <div class="sec-head"><span class="sec-code">S-11</span><h2>Garantía y soporte</h2></div>
+    <!-- ═══════════ S-10 ═══════════ -->
+    <section id="s10">
+      <div class="sec-head"><span class="sec-code">S-10</span><h2>Garantía y soporte</h2></div>
 
-      <h3><code>11.1</code> Alcance de la garantía</h3>
+      <h3><code>10.1</code> Alcance de la garantía</h3>
       <p>
         El equipo garantiza el correcto funcionamiento de las funcionalidades comprometidas en el
         alcance (S-03.2, S-05) desde la puesta en producción y hasta 30 días después de la
@@ -851,7 +798,7 @@
         costo adicional.
       </p>
 
-      <h3><code>11.2</code> Qué cubre y qué no</h3>
+      <h3><code>10.2</code> Qué cubre y qué no</h3>
       <div class="grid-2">
         <div class="card">
           <h4>Cubierto</h4>
@@ -866,7 +813,7 @@
           <h4>No cubierto</h4>
           <ul>
             <li>Caídas o cambios de condiciones de servicios de terceros (Vercel, Supabase, Google, Mercado Pago, Resend).</li>
-            <li>Funcionalidades nuevas o fuera del alcance (se rigen por la cláusula 9.7).</li>
+            <li>Funcionalidades nuevas o fuera del alcance (se rigen por la cláusula 8.7).</li>
             <li>Costos de APIs una vez vencido el crédito promocional (S-07.1).</li>
             <li>Uso indebido de la plataforma o manipulación de datos por fuera del sistema.</li>
             <li>La ejecución del trabajo físico acordado entre cliente y profesional (S-03.2).</li>
@@ -874,7 +821,7 @@
         </div>
       </div>
 
-      <h3><code>11.3</code> Canal y tiempos de respuesta</h3>
+      <h3><code>10.3</code> Canal y tiempos de respuesta</h3>
       <div class="tbl-wrap"><table>
         <thead><tr><th>Severidad</th><th>Definición</th><th>Respuesta esperada</th></tr></thead>
         <tbody>
@@ -888,7 +835,7 @@
         issues del repositorio de GitHub para el seguimiento técnico.
       </p>
 
-      <h3><code>11.4</code> Resguardo de datos</h3>
+      <h3><code>10.4</code> Resguardo de datos</h3>
       <p>
         La base de producción cuenta con los backups automáticos de Supabase; adicionalmente, ante
         toda migración destructiva se realiza y verifica un backup manual previo (práctica aplicada en
@@ -897,9 +844,9 @@
       </p>
     </section>
 
-    <!-- ═══════════ S-12 ═══════════ -->
-    <section id="s12">
-      <div class="sec-head"><span class="sec-code">S-12</span><h2>Documentación de uso</h2></div>
+    <!-- ═══════════ S-11 ═══════════ -->
+    <section id="s11">
+      <div class="sec-head"><span class="sec-code">S-11</span><h2>Documentación de uso</h2></div>
       <p class="sec-intro">
         Toda la documentación de uso es pública y está desplegada como sitios independientes,
         versionados en el mismo repositorio del sistema.
@@ -917,7 +864,7 @@
         </tbody>
       </table></div>
 
-      <h3><code>12.1</code> Resumen del recorrido del cliente</h3>
+      <h3><code>11.1</code> Resumen del recorrido del cliente</h3>
       <ol>
         <li>Se registra con email o Google y completa su perfil (nombre y teléfono).</li>
         <li>Busca por oficio y dirección, o crea una urgencia si no puede esperar.</li>
@@ -927,7 +874,7 @@
         <li>Al completarse el trabajo, califica al profesional (y es calificado).</li>
       </ol>
 
-      <h3><code>12.2</code> Resumen del recorrido del profesional</h3>
+      <h3><code>11.2</code> Resumen del recorrido del profesional</h3>
       <ol>
         <li>Se registra como profesional e indica oficios, zona base y radio de cobertura.</li>
         <li>Sube DNI y selfie; espera la aprobación del administrador.</li>
