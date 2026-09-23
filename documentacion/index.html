@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlToque · Documentación del proyecto</title>
+  <meta name="description" content="Documentación completa del proyecto AlToque: diagnóstico, requisitos, arquitectura, oferta de gestión y económica, contrato, bitácora y garantía. Evaluación de Proyectos · 7mo Informática A · Instituto Leonardo Murialdo." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%234e9b75'/%3E%3Cpath d='M13.5 3 6 13h4.5L10 21l7.5-10H13z' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#top">Al<span>Toque</span> <em>· Documentación</em></a>
+    <div class="nav-links">
+      <a href="https://altoque-landing.vercel.app" target="_blank" rel="noopener">Landing</a>
+      <a href="https://altoque-manual.vercel.app" target="_blank" rel="noopener">Manual</a>
+      <a href="https://altoque-faq.vercel.app" target="_blank" rel="noopener">FAQ</a>
+      <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">Abrir la app</a>
+    </div>
+  </div>
+</nav>
+
+<div class="layout" id="top">
+
+  <aside class="sidebar">
+    <div class="toc-title">Índice</div>
+    <ul class="toc">
+      <li><a href="#s1"><code>S-01</code>Control de cambios</a></li>
+      <li><a href="#s2"><code>S-02</code>Diagnóstico</a></li>
+      <li><a href="#s3"><code>S-03</code>Introducción</a></li>
+      <li><a href="#s4"><code>S-04</code>Descripción general</a></li>
+      <li><a href="#s5"><code>S-05</code>Requisitos específicos</a></li>
+      <li><a href="#s6"><code>S-06</code>Oferta de gestión</a></li>
+      <li><a href="#s7"><code>S-07</code>Oferta económica</a></li>
+      <li><a href="#s8"><code>S-08</code>Estimación económica</a></li>
+      <li><a href="#s9"><code>S-09</code>Contrato</a></li>
+      <li><a href="#s10"><code>S-10</code>Bitácora del proyecto</a></li>
+      <li><a href="#s11"><code>S-11</code>Garantía y soporte</a></li>
+      <li><a href="#s12"><code>S-12</code>Documentación de uso</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- ═══════════ PORTADA ═══════════ -->
+    <header class="hero">
+      <div class="hero-eyebrow">Evaluación de Proyectos · Documentación técnica</div>
+      <h1>Al<span>Toque</span> — plataforma de oficios verificados</h1>
+      <p class="hero-sub">
+        Documentación integral del proyecto: diagnóstico, requisitos, arquitectura, gestión,
+        economía, contrato y bitácora. AlToque conecta vecinos del Gran Buenos Aires con
+        profesionales de oficios verificados con DNI, para urgencias en tiempo real y trabajos agendados.
+      </p>
+      <dl class="hero-meta">
+        <div><dt>Equipo</dt><dd>5 integrantes · 7mo Inf. A</dd></div>
+        <div><dt>Cliente</dt><dd>Javier Colucci</dd></div>
+        <div><dt>Sistema</dt><dd>PWA en producción</dd></div>
+        <div><dt>Versión doc.</dt><dd>1.0</dd></div>
+        <div><dt>Actualización</dt><dd>23/09/2026</dd></div>
+      </dl>
+    </header>
+
+    <!-- ═══════════ S-01 ═══════════ -->
+    <section id="s1">
+      <div class="sec-head"><span class="sec-code">S-01</span><h2>Control de cambios</h2></div>
+      <p class="sec-intro">
+        Registro de las modificaciones de alcance y de los hitos de versión del sistema. Cada fila
+        se corresponde con commits reales del repositorio; el historial completo es auditable en GitHub.
+      </p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Ver.</th><th>Fecha</th><th>Responsable</th><th>Detalle del cambio</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">0.1</span></td><td>16/06/2026</td><td>Equipo completo</td><td>Kickoff técnico: scaffolding Next.js + PWA, schema PostgreSQL/PostGIS, autenticación con roles, búsqueda geográfica, ciclo de pedidos, despacho urgente en tiempo real y Web Push (Steps 1–8 del plan de construcción).</td></tr>
+          <tr><td><span class="id">0.2</span></td><td>17/06/2026</td><td>S. Vargas · L. Begnes</td><td>Módulo de pagos con retención (escrow) sobre Mercado Pago Checkout Pro: preferencia, webhook con firma verificada e idempotencia, reintegros y expiración por cron.</td></tr>
+          <tr><td><span class="id">0.3</span></td><td>15/07/2026</td><td>S. Vargas · N. Reemeerie</td><td>Autenticación ampliada: contraseña + Google OAuth, onboarding de perfil, vinculación de cuentas. Se completan liquidación, reviews, chat en vivo y panel admin (Steps 9b–12).</td></tr>
+          <tr><td><span class="id">0.4</span></td><td>16/07/2026</td><td>L. Begnes</td><td>Registro de auditoría de seguridad, campana de notificaciones in-app y templates de email transaccional (Resend).</td></tr>
+          <tr><td><span class="id">0.5</span></td><td>30/07–04/08</td><td>N. Montes Rojas · M. Ledesma</td><td>Saneo de la base de producción, tooling de migraciones contra Supabase con runbook, navegación contextual y seeds de prueba.</td></tr>
+          <tr><td><span class="id">0.6</span></td><td>27/08/2026</td><td>Equipo + cliente</td><td><strong>Cambio de alcance mayor, validado con el cliente:</strong> baja del modelo de comisiones/escrow. El pago del servicio pasa a acordarse directamente entre cliente y profesional; el modelo de ingresos vigente es la suscripción mensual. Migración destructiva 0002 aplicada en producción con backup previo.</td></tr>
+          <tr><td><span class="id">0.7</span></td><td>28/08–04/09</td><td>S. Vargas · N. Montes Rojas</td><td>SEO técnico (metadata, JSON-LD, sitemap), endpoints cron fail-closed, estabilización del flujo de urgencias en tiempo real (JWT en WebSocket, REPLICA IDENTITY) y migración a la nueva Places API de Google.</td></tr>
+          <tr><td><span class="id">0.8</span></td><td>07–09/09/2026</td><td>Equipo completo</td><td>Documentación pública (manual de uso y FAQ como sitios propios) y páginas legales: Política de Privacidad (Ley 25.326) y Términos y Condiciones.</td></tr>
+          <tr><td><span class="id">1.0</span></td><td>23/09/2026</td><td>N. Reemeerie · S. Vargas</td><td>Rediseño visual completo de la interfaz (paleta, tipografía y componentes), verificado end-to-end contra la versión anterior y desplegado en producción.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ═══════════ S-02 ═══════════ -->
+    <section id="s2">
+      <div class="sec-head"><span class="sec-code">S-02</span><h2>Diagnóstico: árbol de problemas y soluciones</h2></div>
+      <p class="sec-intro">
+        El problema no se supuso: se relevó con clientes y profesionales de oficios reales del
+        Gran Buenos Aires antes de diseñar el sistema, y cada medio implementado neutraliza una causa concreta.
+      </p>
+
+      <h3>Problema central</h3>
+      <p>
+        Los vecinos del Gran Buenos Aires no tienen una forma confiable de encontrar profesionales
+        de oficio ante una urgencia o un trabajo planificado: la contratación se resuelve por boca a
+        boca, sin garantías de identidad ni de calidad. Del otro lado, los profesionales dependen de
+        contactos informales y carecen de una vidriera que muestre su reputación.
+      </p>
+
+      <h3>Causas relevadas</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Causa</th><th>Cómo se manifiesta</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">C1</span></td><td>Búsqueda informal por boca a boca</td><td>Se depende de recomendaciones de conocidos; si nadie conoce un gasista disponible, no hay alternativa sistemática.</td></tr>
+          <tr><td><span class="id">C2</span></td><td>Imposibilidad de verificar identidad</td><td>Se deja entrar a un desconocido al domicilio sin ninguna validación de quién es.</td></tr>
+          <tr><td><span class="id">C3</span></td><td>Urgencias sin canal dedicado</td><td>Ante una pérdida de gas o una cerradura rota de noche, la única opción es llamar a ciegas a números sueltos.</td></tr>
+          <tr><td><span class="id">C4</span></td><td>Profesionales sin presencia digital</td><td>Un oficio bien hecho no deja rastro: el profesional no acumula cartera ni reputación visible.</td></tr>
+          <tr><td><span class="id">C5</span></td><td>Precios y condiciones opacos</td><td>Presupuestos que cambian sobre la marcha; intermediarios que agregan comisiones sorpresa.</td></tr>
+          <tr><td><span class="id">C6</span></td><td>Sin registro de reputación</td><td>No existe historial de trabajos ni calificaciones consultables antes de contratar.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Efectos — línea base</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Efecto</th><th>Consecuencia</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">E1</span></td><td>Demoras críticas en urgencias</td><td>Daños materiales que crecen mientras se consigue a alguien (agua, gas, seguridad).</td></tr>
+          <tr><td><span class="id">E2</span></td><td>Desconfianza generalizada</td><td>Vecinos que postergan arreglos por miedo a estafas o mala praxis.</td></tr>
+          <tr><td><span class="id">E3</span></td><td>Trabajos sin responsables</td><td>Ante un trabajo mal hecho no hay registro ni vía de reclamo.</td></tr>
+          <tr><td><span class="id">E4</span></td><td>Ingresos inestables del profesional</td><td>Semanas sin changas y sin herramientas para conseguir clientes nuevos.</td></tr>
+          <tr><td><span class="id">E5</span></td><td>Intermediación cara</td><td>Plataformas y contactos que cobran comisiones altas por el simple contacto.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Árbol de soluciones</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Medio implementado</th><th>Neutraliza</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">M1</span></td><td>Verificación de identidad con DNI + selfie, aprobada manualmente por un administrador. Solo profesionales aprobados aparecen en búsquedas.</td><td><span class="id ref">C2</span> <span class="id ref">C6</span></td></tr>
+          <tr><td><span class="id">M2</span></td><td>Matching geográfico con PostGIS: búsqueda por oficio y dirección dentro del radio de cobertura de cada profesional.</td><td><span class="id ref">C1</span></td></tr>
+          <tr><td><span class="id">M3</span></td><td>Despacho de urgencias en tiempo real: broadcast a los profesionales online cercanos, el primero que acepta gana, con notificaciones push.</td><td><span class="id ref">C3</span></td></tr>
+          <tr><td><span class="id">M4</span></td><td>Perfil público con reputación: calificaciones bidireccionales por trabajo completado, promedio y cantidad de trabajos visibles.</td><td><span class="id ref">C4</span> <span class="id ref">C6</span></td></tr>
+          <tr><td><span class="id">M5</span></td><td>Acuerdo directo entre las partes: la plataforma no interviene en el pago del servicio ni cobra comisión por operación; el modelo de ingresos es la suscripción mensual.</td><td><span class="id ref">C5</span></td></tr>
+          <tr><td><span class="id">M6</span></td><td>PWA instalable con seguimiento en vivo del pedido y chat interno por trabajo.</td><td><span class="id ref">C1</span> <span class="id ref">C3</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Objetivo general</h3>
+      <p>
+        Construir y poner en producción una plataforma web que conecte de manera confiable a
+        vecinos del Gran Buenos Aires con profesionales de oficio verificados, tanto para urgencias
+        en tiempo real como para trabajos agendados, eliminando la fricción y la desconfianza de la
+        contratación informal.
+      </p>
+
+      <h3>Objetivos específicos y medición</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Objetivo</th><th>Cómo se verifica</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">O1</span></td><td>Verificar la identidad del 100% de los profesionales listados</td><td>Regla de sistema: solo perfiles con estado <code>approved</code> aparecen en búsquedas y despacho (<span class="id ref">M1</span>).</td></tr>
+          <tr><td><span class="id">O2</span></td><td>Resolver la búsqueda por cercanía real</td><td>Función PostGIS <code>find_nearby_providers</code> filtra por radio de cobertura; verificable con datos de prueba (<span class="id ref">M2</span>).</td></tr>
+          <tr><td><span class="id">O3</span></td><td>Notificar urgencias en menos de un minuto</td><td>Broadcast por Supabase Realtime + Web Push al crear el pedido; probado end-to-end en producción (<span class="id ref">M3</span>).</td></tr>
+          <tr><td><span class="id">O4</span></td><td>Registrar reputación por trabajo completado</td><td>Review bidireccional única por trabajo y parte; recálculo transaccional del promedio (<span class="id ref">M4</span>).</td></tr>
+          <tr><td><span class="id">O5</span></td><td>Transparencia de costos para el usuario</td><td>Sin comisiones por operación en todo el flujo; precio final registrado como dato informativo del acuerdo (<span class="id ref">M5</span>).</td></tr>
+          <tr><td><span class="id">O6</span></td><td>Publicar el sistema en producción</td><td>Aplicación desplegada y operativa en Vercel + Supabase, con dominio público y monitoreo de deploys (<span class="id ref">M6</span>).</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ═══════════ S-03 ═══════════ -->
+    <section id="s3">
+      <div class="sec-head"><span class="sec-code">S-03</span><h2>Introducción</h2></div>
+
+      <h3><code>3.1</code> Propósito</h3>
+      <p>
+        Este documento reúne la especificación de requisitos, la descripción técnica y la
+        documentación de gestión del proyecto AlToque. Sus audiencias son: la cátedra de
+        Evaluación de Proyectos (evaluación), el cliente (validación de alcance y criterios de
+        aceptación) y el propio equipo (referencia de decisiones y trazabilidad).
+      </p>
+
+      <h3><code>3.2</code> Alcance</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h4>El sistema incluye</h4>
+          <ul>
+            <li>Registro y autenticación con email (contraseña u OTP) y Google, con roles cliente / profesional / administrador.</li>
+            <li>Verificación de identidad de profesionales (DNI + selfie) con cola de aprobación administrativa.</li>
+            <li>Búsqueda geográfica por oficio y dirección, con radio de cobertura por profesional.</li>
+            <li>Pedidos agendados con ciclo de estados completo y pedidos urgentes con despacho en tiempo real.</li>
+            <li>Chat interno por trabajo, calificaciones bidireccionales y notificaciones (in-app, push y email).</li>
+            <li>Panel de administración con métricas, verificaciones y gestión de trabajos.</li>
+            <li>PWA instalable con soporte de notificaciones push.</li>
+            <li>Modelo de suscripción mensual (planes premium de cliente y profesional).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>El sistema no incluye</h4>
+          <ul>
+            <li>Procesamiento del pago del servicio: precio y medio de pago se acuerdan directamente entre las partes.</li>
+            <li>Aplicaciones nativas iOS/Android (la PWA cubre la instalación en el teléfono).</li>
+            <li>Facturación ni emisión de comprobantes fiscales.</li>
+            <li>Logística de materiales o insumos del trabajo.</li>
+            <li>Seguro o garantía sobre la ejecución del trabajo físico.</li>
+            <li>Mediación formal de disputas entre las partes.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3><code>3.3</code> Personal involucrado</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Rol</th><th>Función</th><th>Responsable</th></tr></thead>
+        <tbody>
+          <tr><td>Project manager · Backend · Despliegue</td><td>Coordinación general, server actions, modelo de negocio, operación de producción</td><td>Santino Vargas</td></tr>
+          <tr><td>Backend</td><td>Lógica de servidor, autenticación, auditoría y notificaciones</td><td>Luciana Begnes</td></tr>
+          <tr><td>Frontend</td><td>Interfaz de usuario, componentes, rediseño visual</td><td>Nicholas Reemeerie</td></tr>
+          <tr><td>Base de datos</td><td>Esquema PostgreSQL/PostGIS, migraciones, RLS y datos de prueba</td><td>Nahuel Montes Rojas</td></tr>
+          <tr><td>Despliegue</td><td>Infraestructura Vercel/Supabase, variables de entorno y monitoreo de deploys</td><td>Mirko Ledesma</td></tr>
+          <tr><td>Cliente</td><td>Validación de alcance, pruebas de aceptación y devoluciones</td><td>Javier Colucci</td></tr>
+          <tr><td>Cátedra</td><td>Seguimiento metodológico y evaluación por entregas (E01–E06)</td><td>Prof. Lourdes Pedaci · Instituto Leonardo Murialdo</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>3.4</code> Definiciones, acrónimos y abreviaturas</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Término</th><th>Significado</th></tr></thead>
+        <tbody>
+          <tr><td><code>PWA</code></td><td>Progressive Web App: aplicación web instalable en el teléfono, con service worker y notificaciones push.</td></tr>
+          <tr><td><code>SSR / RSC</code></td><td>Server-Side Rendering / React Server Components: el HTML se genera en el servidor; los componentes corren por defecto del lado servidor.</td></tr>
+          <tr><td><code>Server Action</code></td><td>Función de mutación que corre en el servidor de Next.js, validada con Zod, sin necesidad de API REST intermedia.</td></tr>
+          <tr><td><code>RLS</code></td><td>Row Level Security: políticas de PostgreSQL que restringen fila por fila qué datos puede leer o escribir cada usuario.</td></tr>
+          <tr><td><code>PostGIS</code></td><td>Extensión geográfica de PostgreSQL; permite calcular distancias reales entre coordenadas para el matching por cercanía.</td></tr>
+          <tr><td><code>JWT / claim</code></td><td>JSON Web Token emitido por Supabase Auth; el rol del usuario viaja como claim <code>user_role</code> dentro del token.</td></tr>
+          <tr><td><code>OTP</code></td><td>One-Time Password: código de 6 dígitos por email como alternativa a la contraseña.</td></tr>
+          <tr><td><code>Realtime</code></td><td>Canal WebSocket de Supabase que empuja cambios de la base (nuevos pedidos, mensajes) a los clientes suscriptos.</td></tr>
+          <tr><td><code>Web Push / VAPID</code></td><td>Notificaciones push del navegador firmadas con claves VAPID; llegan aunque la pestaña esté cerrada.</td></tr>
+          <tr><td><code>Escrow</code></td><td>Retención del pago por un tercero hasta completarse el servicio. Modelo evaluado y dado de baja (ver S-01, v0.6).</td></tr>
+          <tr><td><code>Drizzle</code></td><td>ORM TypeScript utilizado para el esquema, las queries y las migraciones versionadas.</td></tr>
+          <tr><td><code>GBA</code></td><td>Gran Buenos Aires, zona de operación inicial de la plataforma.</td></tr>
+          <tr><td><code>DNI</code></td><td>Documento Nacional de Identidad, base de la verificación de profesionales.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>3.5</code> Referencias</h3>
+      <ul>
+        <li>Repositorio del proyecto: <a href="https://github.com/santinovargasdb/AlToque" target="_blank" rel="noopener"><code>github.com/santinovargasdb/AlToque</code></a> (código + historial completo de 60+ commits).</li>
+        <li>Aplicación en producción: <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener"><code>al-toque-eta.vercel.app</code></a></li>
+        <li>Manual de uso: <a href="https://altoque-manual.vercel.app" target="_blank" rel="noopener"><code>altoque-manual.vercel.app</code></a> · Preguntas frecuentes: <a href="https://altoque-faq.vercel.app" target="_blank" rel="noopener"><code>altoque-faq.vercel.app</code></a></li>
+        <li>Landing de la materia: <a href="https://altoque-landing.vercel.app" target="_blank" rel="noopener"><code>altoque-landing.vercel.app</code></a> · Entregas anteriores: <a href="https://linktr.ee/Altoque247" target="_blank" rel="noopener"><code>linktr.ee/Altoque247</code></a></li>
+        <li>Documentación oficial de referencia: Next.js 15, Supabase, PostGIS, Drizzle ORM, Mercado Pago (suscripciones), Web Push.</li>
+      </ul>
+
+      <h3><code>3.6</code> Resumen ejecutivo</h3>
+      <p>
+        AlToque es un marketplace de oficios en formato PWA, desarrollado entre junio y septiembre
+        de 2026 y publicado en producción. Resuelve dos flujos complementarios: la <strong>urgencia</strong>
+        (el pedido se transmite en vivo a los profesionales verificados y conectados dentro del radio;
+        el primero que acepta se queda con el trabajo) y el <strong>trabajo agendado</strong> (búsqueda por
+        oficio y cercanía, perfil con reputación, coordinación por chat). La confianza se construye con
+        tres piezas: verificación de identidad con DNI aprobada por un administrador, calificaciones
+        bidireccionales por trabajo completado y seguimiento del pedido en tiempo real. La plataforma
+        no participa del pago del servicio: el modelo de ingresos es una suscripción mensual con planes
+        premium para clientes y profesionales. El stack (Next.js 15, Supabase, PostGIS, Vercel) se eligió
+        para operar con costo de infraestructura cero durante la etapa académica sin resignar
+        características de producción: seguridad a nivel de fila, tiempo real, notificaciones push y
+        despliegue continuo.
+      </p>
+    </section>
+
+    <!-- ═══════════ S-04 ═══════════ -->
+    <section id="s4">
+      <div class="sec-head"><span class="sec-code">S-04</span><h2>Descripción general</h2></div>
+
+      <h3><code>4.1</code> Perspectiva del producto</h3>
+      <p>
+        AlToque es un sistema web independiente, sin integraciones con sistemas preexistentes del
+        cliente. La arquitectura se organiza en cuatro capas:
+      </p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Capa</th><th>Tecnología</th><th>Responsabilidad</th></tr></thead>
+        <tbody>
+          <tr><td>Presentación</td><td>Next.js 15 (App Router) · React Server Components · Tailwind CSS v4 · shadcn/ui · Serwist (PWA)</td><td>Interfaz mobile-first, rutas agrupadas por rol (<code>(app)</code> cliente, <code>(pro)</code> profesional, <code>(admin)</code>), instalación como app.</td></tr>
+          <tr><td>Lógica</td><td>Server Actions + Zod · middleware por rol</td><td>Toda mutación corre en el servidor con validación de esquema y doble autorización (middleware + verificación de rol por acción).</td></tr>
+          <tr><td>Datos</td><td>PostgreSQL 15 + PostGIS (Supabase) · Drizzle ORM · RLS</td><td>Esquema versionado por migraciones; búsqueda geográfica por funciones SQL; seguridad a nivel de fila en todas las tablas.</td></tr>
+          <tr><td>Servicios externos</td><td>Supabase (Auth, Storage, Realtime) · Google Maps · Mercado Pago · Resend · Web Push · Vercel</td><td>Identidad y sesiones, archivos (DNI, fotos), canales en vivo, geocodificación, cobro de suscripciones, emails, push y hosting con CI/CD.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>4.2</code> Funcionalidad del producto</h3>
+      <ul>
+        <li><strong>Cuentas y roles:</strong> registro como cliente o profesional, login con contraseña, código por email o Google; sesión con rol embebido en el token.</li>
+        <li><strong>Verificación:</strong> el profesional sube DNI y selfie a un bucket privado; un administrador aprueba o rechaza desde una cola dedicada.</li>
+        <li><strong>Búsqueda:</strong> el cliente indica oficio y dirección; el sistema devuelve profesionales aprobados dentro de su radio, ordenados por cercanía, con mapa.</li>
+        <li><strong>Pedido agendado:</strong> wizard de creación (detalle, fotos, ubicación, modalidad), timeline de estados y acciones de transición para ambas partes.</li>
+        <li><strong>Urgencias:</strong> broadcast en tiempo real a los profesionales online cercanos con cuenta regresiva; aceptación race-safe (el primero gana) y expiración automática por cron.</li>
+        <li><strong>Comunicación:</strong> chat por trabajo, campana de notificaciones in-app, Web Push y emails transaccionales.</li>
+        <li><strong>Reputación:</strong> calificaciones bidireccionales únicas por trabajo, promedio recalculado transaccionalmente y visible en el perfil público.</li>
+        <li><strong>Administración:</strong> dashboard con KPIs, gestión de verificaciones, trabajos y profesionales; registro de auditoría de eventos de seguridad.</li>
+      </ul>
+
+      <h3><code>4.3</code> Características de los usuarios</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Tipo</th><th>Perfil</th><th>Conocimiento técnico</th><th>Uso esperado</th></tr></thead>
+        <tbody>
+          <tr><td>Cliente</td><td>Vecino del GBA con una necesidad puntual (urgente o planificada)</td><td>Básico: usa apps de mensajería y home banking</td><td>Esporádico; entra con una urgencia o para agendar un arreglo</td></tr>
+          <tr><td>Profesional</td><td>Trabajador de oficio (plomería, electricidad, cerrajería, gas, etc.)</td><td>Básico/medio: celular como herramienta de trabajo</td><td>Diario; mantiene su disponibilidad online y responde pedidos</td></tr>
+          <tr><td>Administrador</td><td>Operador de la plataforma (equipo)</td><td>Alto</td><td>Periódico; aprueba verificaciones y supervisa la operación</td></tr>
+        </tbody>
+      </table></div>
+      <h4>Decisión de diseño</h4>
+      <p>
+        Todo el producto es mobile-first: cada vista funciona desde 360&nbsp;px de ancho, porque tanto
+        clientes como profesionales operan casi exclusivamente desde el teléfono. La instalación como
+        PWA y las notificaciones push existen para que el profesional reciba urgencias sin tener la
+        pestaña abierta.
+      </p>
+
+      <h3><code>4.4</code> Restricciones</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Tipo</th><th>Restricción</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">R1</span></td><td>Seguridad</td><td>RLS habilitado en el 100% de las tablas; autorización en dos capas (middleware por rol + verificación explícita en cada server action).</td></tr>
+          <tr><td><span class="id">R2</span></td><td>Seguridad</td><td>Verificación de firma e idempotencia obligatorias en todos los webhooks de Mercado Pago.</td></tr>
+          <tr><td><span class="id">R3</span></td><td>Calidad</td><td>TypeScript estricto, prohibido <code>any</code>; tipos inferidos de Drizzle/Zod como única fuente de verdad.</td></tr>
+          <tr><td><span class="id">R4</span></td><td>Negocio</td><td>Solo profesionales con verificación <code>approved</code> pueden aparecer en búsquedas y recibir despacho de urgencias.</td></tr>
+          <tr><td><span class="id">R5</span></td><td>Negocio</td><td>La plataforma no procesa ni almacena datos del pago del servicio; <code>final_price</code> y <code>payment_method</code> son datos informativos del acuerdo.</td></tr>
+          <tr><td><span class="id">R6</span></td><td>UX</td><td>Mobile-first: toda vista debe operar correctamente en 360 px de ancho.</td></tr>
+          <tr><td><span class="id">R7</span></td><td>Económica</td><td>Presupuesto de infraestructura $0 durante la etapa académica: planes gratuitos de Vercel y Supabase, crédito promocional de Google Maps.</td></tr>
+          <tr><td><span class="id">R8</span></td><td>Legal</td><td>Política de privacidad conforme a la Ley 25.326 de Protección de Datos Personales; secretos nunca versionados en el repositorio.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>4.5</code> Suposiciones y dependencias</h3>
+      <ul>
+        <li>Los planes gratuitos de Vercel (Hobby) y Supabase (Free) permanecen disponibles y suficientes para la carga de la etapa académica.</li>
+        <li>El crédito promocional de Google Cloud (Maps/Places/Geocoding) está vigente hasta el 30/10/2026; superada esa fecha se requiere presupuesto o restricción de cuota.</li>
+        <li>Los usuarios disponen de un smartphone con navegador moderno y conectividad; las notificaciones push requieren aceptar el permiso del navegador.</li>
+        <li>El cobro de suscripciones depende de la API de preapproval de Mercado Pago y de la cuenta de la plataforma.</li>
+      </ul>
+
+      <h3><code>4.6</code> Evolución previsible</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Mejora</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">F1</span></td><td>Cobro recurrente de la suscripción con Mercado Pago preapproval (planes cliente y profesional premium)</td><td><span class="badge wip">En desarrollo</span></td></tr>
+          <tr><td><span class="id">F2</span></td><td>Bandeja de mensajes unificada del profesional (<code>/pro/mensajes</code>)</td><td><span class="badge wip">Pendiente</span></td></tr>
+          <tr><td><span class="id">F3</span></td><td>Dominio propio y assets de marca definitivos (íconos push)</td><td><span class="badge wip">Pendiente</span></td></tr>
+          <tr><td><span class="id">F4</span></td><td>Ampliación del área de cobertura más allá del GBA</td><td><span class="badge baja">Futuro</span></td></tr>
+          <tr><td><span class="id">F5</span></td><td>Aplicaciones nativas si la demanda lo justifica (la PWA cubre el caso actual)</td><td><span class="badge baja">Futuro</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ═══════════ S-05 ═══════════ -->
+    <section id="s5">
+      <div class="sec-head"><span class="sec-code">S-05</span><h2>Requisitos específicos</h2></div>
+
+      <h3><code>5.1</code> Requisitos funcionales</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Requisito</th><th>Prioridad</th><th>Origen</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">RF01</span></td><td>Registro con email y contraseña, código OTP por email o cuenta de Google, con selección de rol (cliente / profesional).</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M1</span></td></tr>
+          <tr><td><span class="id">RF02</span></td><td>Sesión con rol embebido como claim JWT; middleware que protege cada segmento de rutas según el rol.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">R1</span></td></tr>
+          <tr><td><span class="id">RF03</span></td><td>Onboarding del profesional: oficios, zona base con autocompletado de dirección, radio de cobertura y biografía.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M2</span></td></tr>
+          <tr><td><span class="id">RF04</span></td><td>Carga de DNI y selfie a almacenamiento privado; cola de verificación con aprobación o rechazo por administrador.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M1</span></td></tr>
+          <tr><td><span class="id">RF05</span></td><td>Búsqueda por oficio y dirección que devuelve solo profesionales aprobados dentro de su radio, ordenados por distancia, con vista de mapa.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M2</span></td></tr>
+          <tr><td><span class="id">RF06</span></td><td>Perfil público del profesional con verificación visible, oficios, calificación promedio y reseñas.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M4</span></td></tr>
+          <tr><td><span class="id">RF07</span></td><td>Creación de pedido agendado mediante wizard: oficio, descripción y fotos, ubicación, modalidad.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M6</span></td></tr>
+          <tr><td><span class="id">RF08</span></td><td>Ciclo de estados del trabajo con timeline visible y transiciones válidas para cada parte (aceptar, iniciar, completar, cancelar).</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M6</span></td></tr>
+          <tr><td><span class="id">RF09</span></td><td>Pedido urgente: broadcast en tiempo real a profesionales online dentro del radio, con cuenta regresiva de 10 minutos por destinatario.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M3</span></td></tr>
+          <tr><td><span class="id">RF10</span></td><td>Aceptación race-safe de urgencias: el primer profesional que acepta se adjudica el trabajo; el resto de los despachos expira.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M3</span></td></tr>
+          <tr><td><span class="id">RF11</span></td><td>Expiración automática de pedidos urgentes sin respuesta mediante tarea programada (cron) protegida por secreto.</td><td><span class="badge media">Media</span></td><td><span class="id ref">M3</span></td></tr>
+          <tr><td><span class="id">RF12</span></td><td>Chat interno por trabajo entre las partes, en tiempo real, de solo lectura al completarse el trabajo.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M6</span></td></tr>
+          <tr><td><span class="id">RF13</span></td><td>Calificación bidireccional única por trabajo completado, con recálculo transaccional del promedio del profesional.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">M4</span></td></tr>
+          <tr><td><span class="id">RF14</span></td><td>Notificaciones in-app (campana con contador en vivo), Web Push instalable y emails transaccionales.</td><td><span class="badge media">Media</span></td><td><span class="id ref">M3</span> <span class="id ref">M6</span></td></tr>
+          <tr><td><span class="id">RF15</span></td><td>Registro del precio final y medio de pago como datos informativos del acuerdo al completar el trabajo.</td><td><span class="badge media">Media</span></td><td><span class="id ref">M5</span></td></tr>
+          <tr><td><span class="id">RF16</span></td><td>Panel de administración: KPIs, verificaciones pendientes, trabajos globales y estado de profesionales.</td><td><span class="badge alta">Alta</span></td><td><span class="id ref">O1</span></td></tr>
+          <tr><td><span class="id">RF17</span></td><td>Registro de auditoría de eventos de seguridad (logins, cambios de contraseña, vinculación de cuentas) visible para el usuario.</td><td><span class="badge media">Media</span></td><td><span class="id ref">R1</span></td></tr>
+          <tr><td><span class="id">RF18</span></td><td>Suscripción mensual: planes premium de cliente y profesional con cobro recurrente vía Mercado Pago.</td><td><span class="badge media">Media</span></td><td><span class="id ref">M5</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>5.2</code> Requisitos no funcionales</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Requisito</th><th>Prioridad</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">RNF01</span></td><td>Seguridad: RLS en todas las tablas, secretos fuera del repositorio, validación Zod de toda entrada, webhooks con firma verificada e idempotencia.</td><td><span class="badge alta">Alta</span></td></tr>
+          <tr><td><span class="id">RNF02</span></td><td>Compatibilidad: mobile-first desde 360 px; navegadores modernos; instalable como PWA en Android e iOS.</td><td><span class="badge alta">Alta</span></td></tr>
+          <tr><td><span class="id">RNF03</span></td><td>Rendimiento: renderizado en servidor por defecto; revalidación selectiva por ruta tras cada mutación.</td><td><span class="badge media">Media</span></td></tr>
+          <tr><td><span class="id">RNF04</span></td><td>Tiempo real: las urgencias y el chat se propagan por WebSocket sin refrescar la página, con refetch de respaldo.</td><td><span class="badge alta">Alta</span></td></tr>
+          <tr><td><span class="id">RNF05</span></td><td>Mantenibilidad: TypeScript estricto, migraciones versionadas, tests unitarios y de integración (Vitest) y E2E (Playwright).</td><td><span class="badge media">Media</span></td></tr>
+          <tr><td><span class="id">RNF06</span></td><td>Disponibilidad: despliegue continuo en Vercel con preview por commit y rollback inmediato a cualquier deploy anterior.</td><td><span class="badge media">Media</span></td></tr>
+          <tr><td><span class="id">RNF07</span></td><td>Privacidad: datos personales tratados conforme a la Ley 25.326; documentos de identidad en bucket privado con URLs firmadas.</td><td><span class="badge alta">Alta</span></td></tr>
+          <tr><td><span class="id">RNF08</span></td><td>Observabilidad: registro de auditoría de seguridad y logging estructurado de errores de autenticación filtrable en producción.</td><td><span class="badge baja">Baja</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>5.3</code> Limitaciones del alcance</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Limitación</th><th>Motivo</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">LIM01</span></td><td>Sin procesamiento del pago del servicio dentro de la plataforma.</td><td>Decisión de modelo de negocio validada con el cliente (S-01, v0.6): elimina comisiones sorpresa, escrow y carga regulatoria.</td></tr>
+          <tr><td><span class="id">LIM02</span></td><td>Cobertura geográfica inicial limitada al Gran Buenos Aires.</td><td>Foco del relevamiento y de la base de profesionales de prueba.</td></tr>
+          <tr><td><span class="id">LIM03</span></td><td>Verificación de identidad manual (no automatizada contra RENAPER).</td><td>Sin acceso a APIs estatales; la revisión humana es suficiente a esta escala.</td></tr>
+          <tr><td><span class="id">LIM04</span></td><td>Sin mediación formal de disputas.</td><td>Fuera del alcance académico; el registro de reputación desincentiva el mal comportamiento.</td></tr>
+          <tr><td><span class="id">LIM05</span></td><td>Emails transaccionales limitados por la cuota del plan gratuito de Resend.</td><td>Restricción R7 (presupuesto $0); el canal principal es push + in-app.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>5.4</code> Requisitos de interfaz de usuario</h3>
+      <p>
+        La interfaz sigue un design system propio (rediseñado en v1.0): paleta institucional verde
+        con acento cálido, tipografía del sistema con monoespaciada para datos, componentes shadcn/ui
+        personalizados y verificación/reputación siempre visibles. Las vistas están agrupadas por rol y
+        el flujo crítico (crear un pedido urgente) se resuelve en menos de 4 pantallas. El manual de uso
+        (S-12) documenta cada pantalla con su recorrido.
+      </p>
+
+      <h3><code>5.5</code> Interfaces de hardware</h3>
+      <p>
+        No se requiere hardware dedicado. El sistema opera sobre los dispositivos de los usuarios
+        (smartphone o computadora con navegador moderno) y sobre infraestructura cloud administrada.
+      </p>
+
+      <h3><code>5.6</code> Interfaces de software</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Componente</th><th>Tecnología</th><th>Función en el sistema</th></tr></thead>
+        <tbody>
+          <tr><td>Framework web</td><td>Next.js 15 (App Router) + React 19 + TypeScript</td><td>SSR/RSC, rutas por rol, server actions</td></tr>
+          <tr><td>Estilos y UI</td><td>Tailwind CSS v4 + shadcn/ui</td><td>Design system y componentes accesibles</td></tr>
+          <tr><td>Base de datos</td><td>PostgreSQL + PostGIS (Supabase)</td><td>Persistencia y búsqueda geográfica</td></tr>
+          <tr><td>ORM y migraciones</td><td>Drizzle ORM + drizzle-kit</td><td>Esquema tipado y migraciones versionadas</td></tr>
+          <tr><td>Autenticación</td><td>Supabase Auth (email, OTP, Google OAuth)</td><td>Identidad, sesiones y claims de rol</td></tr>
+          <tr><td>Tiempo real</td><td>Supabase Realtime + TanStack Query</td><td>Despacho de urgencias, chat y notificaciones en vivo</td></tr>
+          <tr><td>Archivos</td><td>Supabase Storage (buckets público/privados)</td><td>Avatares, fotos de trabajos, DNI/selfie con URL firmada</td></tr>
+          <tr><td>Geo</td><td>Google Maps Platform (Places, Geocoding, Maps)</td><td>Autocompletado de direcciones y mapas</td></tr>
+          <tr><td>Pagos</td><td>Mercado Pago (suscripciones / preapproval)</td><td>Cobro recurrente de planes premium</td></tr>
+          <tr><td>Email</td><td>Resend</td><td>Emails transaccionales y alertas de seguridad</td></tr>
+          <tr><td>Push</td><td>web-push (VAPID) + Serwist</td><td>Notificaciones aunque la app esté cerrada</td></tr>
+          <tr><td>Hosting y CI/CD</td><td>Vercel (4 proyectos) + GitHub</td><td>Deploy continuo, previews por commit y crons</td></tr>
+          <tr><td>Testing</td><td>Vitest + Playwright</td><td>Tests unitarios, de integración y E2E</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>5.7</code> Interfaces de comunicación</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Interfaz</th><th>Protocolo</th><th>Detalle</th></tr></thead>
+        <tbody>
+          <tr><td>Navegación y mutaciones</td><td>HTTPS</td><td>Todo el tráfico cifrado; mutaciones como server actions con validación Zod</td></tr>
+          <tr><td>Tiempo real</td><td>WSS (WebSocket)</td><td>Canales de Supabase Realtime autenticados con el JWT de la sesión</td></tr>
+          <tr><td>Webhooks</td><td>HTTPS entrante</td><td>Notificaciones de Mercado Pago con verificación de firma HMAC e idempotencia</td></tr>
+          <tr><td>Notificaciones push</td><td>Web Push Protocol</td><td>Mensajes firmados con VAPID, entregados por el push service del navegador</td></tr>
+          <tr><td>Tareas programadas</td><td>HTTPS (Vercel Cron)</td><td>Expiración de urgencias y limpieza, protegidas por <code>CRON_SECRET</code> (fail-closed)</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>5.8</code> Modelo de datos</h3>
+      <p>
+        El esquema vive en <code>src/lib/db/schema.ts</code> (Drizzle) y se aplica por migraciones
+        versionadas. Once tablas con RLS habilitado:
+      </p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Tabla</th><th>Función</th><th>Se relaciona con</th></tr></thead>
+        <tbody>
+          <tr><td><code>profiles</code></td><td>Datos base de todo usuario y su rol (cliente / profesional / admin)</td><td><code>auth.users</code> (1:1), <code>provider_profiles</code></td></tr>
+          <tr><td><code>provider_profiles</code></td><td>Extensión del profesional: ubicación base (geography), radio, bio, verificación, rating, online</td><td><code>profiles</code> (1:1), <code>provider_categories</code></td></tr>
+          <tr><td><code>categories</code></td><td>Catálogo de los 8 oficios</td><td><code>provider_categories</code>, <code>jobs</code></td></tr>
+          <tr><td><code>provider_categories</code></td><td>Oficios que ofrece cada profesional (N:M)</td><td><code>provider_profiles</code>, <code>categories</code></td></tr>
+          <tr><td><code>jobs</code></td><td>El pedido/trabajo: tipo, estado, ubicación, precio final informativo</td><td><code>profiles</code> (cliente y profesional), <code>categories</code></td></tr>
+          <tr><td><code>job_dispatch</code></td><td>Despacho de una urgencia a cada profesional notificado, con estado y expiración</td><td><code>jobs</code>, <code>provider_profiles</code></td></tr>
+          <tr><td><code>reviews</code></td><td>Calificación bidireccional única por trabajo y autor</td><td><code>jobs</code>, <code>profiles</code></td></tr>
+          <tr><td><code>messages</code></td><td>Chat por trabajo entre las partes</td><td><code>jobs</code>, <code>profiles</code></td></tr>
+          <tr><td><code>notifications</code></td><td>Notificaciones in-app con enlace y estado de lectura</td><td><code>profiles</code></td></tr>
+          <tr><td><code>push_subscriptions</code></td><td>Suscripciones Web Push por dispositivo</td><td><code>profiles</code></td></tr>
+          <tr><td><code>audit_logs</code></td><td>Auditoría de eventos de seguridad (sin FK: sobrevive al borrado del usuario)</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Relaciones y cardinalidad</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Relación</th><th>Cardinalidad</th></tr></thead>
+        <tbody>
+          <tr><td>profiles → provider_profiles</td><td>1 : 0..1 (solo si el rol es profesional)</td></tr>
+          <tr><td>provider_profiles ↔ categories</td><td>N : M (vía <code>provider_categories</code>)</td></tr>
+          <tr><td>profiles (cliente) → jobs</td><td>1 : N</td></tr>
+          <tr><td>jobs → job_dispatch</td><td>1 : N (un despacho por profesional notificado)</td></tr>
+          <tr><td>jobs → reviews</td><td>1 : 0..2 (una por cada parte)</td></tr>
+          <tr><td>jobs → messages</td><td>1 : N</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Reglas de negocio en la base</h4>
+      <ul>
+        <li><strong>Aceptación race-safe:</strong> <code>acceptJob</code> ejecuta <code>UPDATE ... WHERE status = 'broadcasting'</code>; la primera transacción que impacta gana y el resto de los despachos pasa a <code>expired</code>.</li>
+        <li><strong>Búsqueda geográfica:</strong> funciones SQL <code>find_nearby_providers</code> y <code>find_nearby_online_providers</code> (PostGIS, índices GIST) filtran por distancia real y radio de cobertura de cada profesional.</li>
+        <li><strong>Defensa en profundidad:</strong> RLS protege el acceso directo desde el navegador; además, cada server action revalida el rol del usuario antes de mutar.</li>
+        <li><strong>Trigger de alta:</strong> al registrarse un usuario, <code>handle_new_user</code> crea su fila en <code>profiles</code> (y <code>provider_profiles</code> si corresponde) y su rol se emite como claim del JWT.</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════ S-06 ═══════════ -->
+    <section id="s6">
+      <div class="sec-head"><span class="sec-code">S-06</span><h2>Oferta de gestión</h2></div>
+
+      <h3><code>6.1</code> Planificación por etapas</h3>
+      <p>
+        El proyecto se ejecutó con un plan de construcción de 14 pasos incrementales, agrupados en
+        8 etapas. Regla de trabajo: <em>cada paso entrega algo funcionando antes de pasar al siguiente</em>.
+        Las fechas provienen del historial real del repositorio (63 commits entre el 16/06 y el 23/09/2026).
+      </p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>#</th><th>Etapa</th><th>Período</th><th>Contenido</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">E-1</span></td><td>Fundaciones</td><td>16/06</td><td>Scaffolding + PWA, esquema PostGIS, auth con roles (Steps 1–3)</td><td><span class="badge done">Completa</span></td></tr>
+          <tr><td><span class="id">E-2</span></td><td>Perfiles y verificación</td><td>16/06</td><td>Onboarding del profesional, verificación DNI, búsqueda geo y perfiles (Steps 4–5)</td><td><span class="badge done">Completa</span></td></tr>
+          <tr><td><span class="id">E-3</span></td><td>Ciclo de pedidos</td><td>16/06</td><td>Wizard de pedido, timeline de estados, transiciones (Step 6)</td><td><span class="badge done">Completa</span></td></tr>
+          <tr><td><span class="id">E-4</span></td><td>Tiempo real</td><td>16/06</td><td>Despacho urgente broadcast, aceptación race-safe, Web Push (Steps 7–8)</td><td><span class="badge done">Completa</span></td></tr>
+          <tr><td><span class="id">E-5</span></td><td>Modelo de ingresos</td><td>17/06 → 27/08</td><td>Pagos con escrow (v0.2), evaluación con el cliente y pivote a suscripción mensual (v0.6)</td><td><span class="badge done">Completa</span></td></tr>
+          <tr><td><span class="id">E-6</span></td><td>Confianza y comunicación</td><td>15/07</td><td>Reviews bidireccionales, chat en vivo, notificaciones y emails (Steps 10–11)</td><td><span class="badge done">Completa</span></td></tr>
+          <tr><td><span class="id">E-7</span></td><td>Administración y seguridad</td><td>15/07 → 04/09</td><td>Panel admin, auditoría, saneo de prod, SEO técnico, hardening de crons (Step 12)</td><td><span class="badge done">Completa</span></td></tr>
+          <tr><td><span class="id">E-8</span></td><td>Lanzamiento</td><td>07/09 → 23/09</td><td>Manual, FAQ, legales, rediseño visual v1.0 en producción (Steps 13–14)</td><td><span class="badge done">Completa</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="ok">
+        Las 8 etapas están completas y desplegadas. Queda en desarrollo el cobro recurrente de la
+        suscripción (<span class="id">F1</span>, sección S-04.6), planificado antes de la presentación final.
+      </p>
+
+      <h3><code>6.2</code> Infraestructura administrativa</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Grupo</th><th>Roles</th><th>Integrantes</th></tr></thead>
+        <tbody>
+          <tr><td>Coordinación y backend</td><td>PM, server actions, modelo de negocio</td><td>Santino Vargas · Luciana Begnes</td></tr>
+          <tr><td>Producto</td><td>Frontend, UI, rediseño</td><td>Nicholas Reemeerie</td></tr>
+          <tr><td>Plataforma</td><td>Base de datos y despliegue</td><td>Nahuel Montes Rojas · Mirko Ledesma</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Herramientas de trabajo</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Herramienta</th><th>Uso</th></tr></thead>
+        <tbody>
+          <tr><td>GitHub</td><td>Repositorio, revisión por pull request e historial auditable</td></tr>
+          <tr><td>Vercel</td><td>Despliegue continuo de los 4 sitios, previews por commit, crons</td></tr>
+          <tr><td>Supabase Studio</td><td>Administración de base de datos, auth, storage y realtime</td></tr>
+          <tr><td>Google Cloud Console</td><td>Claves y cuotas de Maps Platform</td></tr>
+          <tr><td>pnpm + Node.js</td><td>Gestión de dependencias y scripts del monorepo</td></tr>
+          <tr><td>Vitest + Playwright</td><td>Suite de tests unitarios, de integración y E2E</td></tr>
+          <tr><td>Claude Code</td><td>Asistente de IA para desarrollo, revisión y documentación (bajo supervisión del equipo)</td></tr>
+          <tr><td>Google Docs / Sheets</td><td>Documentos de entregas de la cátedra y planificación</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+<!-- ═══════════ S-07 ═══════════ -->
+    <section id="s7">
+      <div class="sec-head"><span class="sec-code">S-07</span><h2>Oferta económica</h2></div>
+
+      <h3><code>7.1</code> Hosting y conectividad</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Proveedor</th><th>Servicio</th><th>Plan</th><th class="num">Costo mensual</th></tr></thead>
+        <tbody>
+          <tr><td>Vercel</td><td>Hosting de la app + 3 sitios de documentación, CI/CD y crons</td><td>Hobby</td><td class="num">$ 0</td></tr>
+          <tr><td>Supabase</td><td>PostgreSQL + PostGIS, Auth, Storage, Realtime</td><td>Free</td><td class="num">$ 0</td></tr>
+          <tr><td>Google Cloud</td><td>Maps Platform (Places, Geocoding, Maps)</td><td>Crédito promocional</td><td class="num">$ 0*</td></tr>
+          <tr><td>Resend</td><td>Emails transaccionales</td><td>Free (100/día)</td><td class="num">$ 0</td></tr>
+          <tr><td>Mercado Pago</td><td>Cobro de suscripciones</td><td>Sin costo fijo</td><td class="num">% por cobro</td></tr>
+          <tr class="total"><td colspan="3">Costo de infraestructura de la etapa académica</td><td class="num">$ 0 / mes</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">
+        <strong>Dato relevante para el cliente:</strong> * el crédito promocional de Google Cloud vence el
+        30/10/2026. Superada esa fecha, Maps Platform pasa a facturación por uso: debe presupuestarse
+        (con la cuota actual, del orden de pocos dólares mensuales) o restringirse la cuota de las APIs.
+        El resto de la infraestructura escala a planes pagos recién con tracción real de usuarios.
+      </p>
+
+      <h3><code>7.2</code> Insumos</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Concepto</th><th>Detalle</th><th class="num">Costo</th></tr></thead>
+        <tbody>
+          <tr><td>Equipos de desarrollo</td><td>Computadoras y teléfonos propios de los integrantes</td><td class="num">$ 0</td></tr>
+          <tr><td>Dispositivos de prueba</td><td>Smartphones Android/iOS del equipo y del cliente para pruebas de PWA y push</td><td class="num">$ 0</td></tr>
+          <tr><td>Dominio propio</td><td>Registro <code>.com.ar</code> (pendiente de decisión, ver F3)</td><td class="num">A presupuestar</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>7.3</code> Componentes electrónicos</h3>
+      <p>No aplica: el proyecto es íntegramente de software y opera sobre infraestructura cloud administrada.</p>
+    </section>
+
+    <!-- ═══════════ S-08 ═══════════ -->
+    <section id="s8">
+      <div class="sec-head"><span class="sec-code">S-08</span><h2>Estimación económica</h2></div>
+      <p class="sec-intro">
+        Valorización del esfuerzo real del proyecto a precios de mercado, como ejercicio de
+        estimación. Supuesto explícito: tarifa horaria de referencia de un desarrollador junior en
+        Argentina de <strong>ARS 12.000/h</strong> (septiembre 2026), contingencia del 10% y margen del 20%.
+      </p>
+
+      <h3><code>8.1</code> Costes de personal</h3>
+      <p>
+        Horas estimadas a partir del historial del repositorio (14 semanas activas, 63 commits) y de
+        los registros de la bitácora (S-10). Fórmula: <code>coste = horas × tarifa × (1 + contingencia)</code>.
+      </p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Categoría</th><th class="num">Horas</th><th class="num">Tarifa/h</th><th class="num">Conting.</th><th class="num">Coste (ARS)</th></tr></thead>
+        <tbody>
+          <tr><td>Backend y modelo de negocio (SV · LB)</td><td class="num">110</td><td class="num">12.000</td><td class="num">10%</td><td class="num">1.452.000</td></tr>
+          <tr><td>Frontend y rediseño (NR)</td><td class="num">70</td><td class="num">12.000</td><td class="num">10%</td><td class="num">924.000</td></tr>
+          <tr><td>Base de datos y migraciones (NM)</td><td class="num">45</td><td class="num">12.000</td><td class="num">10%</td><td class="num">594.000</td></tr>
+          <tr><td>Despliegue y operación (ML)</td><td class="num">35</td><td class="num">12.000</td><td class="num">10%</td><td class="num">462.000</td></tr>
+          <tr><td>Documentación, pruebas y gestión (equipo)</td><td class="num">40</td><td class="num">12.000</td><td class="num">10%</td><td class="num">528.000</td></tr>
+          <tr class="total"><td>Subtotal personal</td><td class="num">300</td><td></td><td></td><td class="num">3.960.000</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>8.2</code> Costes varios</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Concepto</th><th class="num">Costo unit.</th><th class="num">Cant.</th><th class="num">Coste (ARS)</th></tr></thead>
+        <tbody>
+          <tr><td>Infraestructura cloud (etapa académica)</td><td class="num">0</td><td class="num">4 meses</td><td class="num">0</td></tr>
+          <tr><td>Dominio .com.ar (previsión anual)</td><td class="num">~12.000</td><td class="num">1</td><td class="num">12.000</td></tr>
+          <tr><td>Reserva Maps post-crédito (previsión 3 meses)</td><td class="num">~15.000</td><td class="num">3</td><td class="num">45.000</td></tr>
+          <tr class="total"><td>Subtotal varios</td><td></td><td></td><td class="num">57.000</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>8.3</code> Total</h3>
+      <div class="tbl-wrap"><table>
+        <tbody>
+          <tr><td>Costo total del proyecto (personal + varios)</td><td class="num"><strong>ARS 4.017.000</strong></td></tr>
+          <tr><td>Margen (20%)</td><td class="num">ARS 803.400</td></tr>
+          <tr class="total"><td>Precio de venta de referencia</td><td class="num">ARS 4.820.400</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        Esfuerzo total estimado: <strong>300 horas</strong>. Aclaración académica: el proyecto se desarrolla
+        en el marco de la materia Evaluación de Proyectos; estos valores son un ejercicio de estimación
+        a precios de mercado y no constituyen una factura ni una obligación de pago del cliente.
+      </p>
+    </section>
+
+    <!-- ═══════════ S-09 ═══════════ -->
+    <section id="s9">
+      <div class="sec-head"><span class="sec-code">S-09</span><h2>Contrato</h2></div>
+
+      <h3><code>9.1</code> Objeto</h3>
+      <p>
+        Desarrollo, puesta en producción y documentación de la plataforma AlToque: sistema web
+        (PWA) de intermediación entre vecinos del Gran Buenos Aires y profesionales de oficios
+        verificados, con los alcances definidos en las secciones S-03.2 y S-05 de este documento.
+      </p>
+
+      <h3><code>9.2</code> Partes</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Parte</th><th>Representada por</th><th>Rol en el acuerdo</th></tr></thead>
+        <tbody>
+          <tr><td>Equipo desarrollador</td><td>Santino Vargas (PM), Luciana Begnes, Nicholas Reemeerie, Nahuel Montes Rojas, Mirko Ledesma</td><td>Diseña, construye, despliega y documenta el sistema</td></tr>
+          <tr><td>Cliente</td><td>Javier Colucci</td><td>Define necesidades, valida el alcance y realiza las pruebas de aceptación</td></tr>
+          <tr><td>Cátedra</td><td>Prof. Lourdes Pedaci · Instituto Leonardo Murialdo</td><td>Veedora metodológica; evalúa las entregas E01–E06</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>9.3</code> Alcance</h3>
+      <p>
+        El alcance comprometido es el descripto en S-03.2 (incluye / no incluye) con los requisitos
+        de S-05. Toda modificación de alcance se rige por la cláusula 9.7 y queda registrada en el
+        control de cambios (S-01), como ocurrió con el cambio del modelo de ingresos (v0.6).
+      </p>
+
+      <h3><code>9.4</code> Plazos</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Hito</th><th>Fecha</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>Inicio de la construcción (kickoff técnico)</td><td>16/06/2026</td><td><span class="badge done">Cumplido</span></td></tr>
+          <tr><td>Núcleo funcional en producción (auth, búsqueda, pedidos, urgencias)</td><td>16/06/2026</td><td><span class="badge done">Cumplido</span></td></tr>
+          <tr><td>Confianza y comunicación (reviews, chat, admin)</td><td>15/07/2026</td><td><span class="badge done">Cumplido</span></td></tr>
+          <tr><td>Definición del modelo de ingresos con el cliente</td><td>27/08/2026</td><td><span class="badge done">Cumplido</span></td></tr>
+          <tr><td>Documentación pública y páginas legales</td><td>09/09/2026</td><td><span class="badge done">Cumplido</span></td></tr>
+          <tr><td>Rediseño visual v1.0 en producción</td><td>23/09/2026</td><td><span class="badge done">Cumplido</span></td></tr>
+          <tr><td>Presentación final (E06)</td><td>Octubre 2026</td><td><span class="badge wip">Programado</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>9.5</code> Responsabilidades</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Del equipo desarrollador</h4>
+          <ul>
+            <li>Entregar las funcionalidades del alcance funcionando en producción.</li>
+            <li>Custodiar credenciales y datos personales según la política de privacidad (Ley 25.326).</li>
+            <li>Registrar y comunicar todo cambio de alcance en S-01 antes de implementarlo.</li>
+            <li>Mantener la documentación (manual, FAQ y este documento) al día con el sistema.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Del cliente</h4>
+          <ul>
+            <li>Participar de las instancias de relevamiento y validación de alcance.</li>
+            <li>Ejecutar las pruebas de aceptación en los plazos acordados y devolver resultados (S-10.5).</li>
+            <li>Canalizar pedidos de cambio por escrito para su evaluación de impacto.</li>
+            <li>No exigir funcionalidades fuera del alcance sin renegociación (cláusula 9.7).</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3><code>9.6</code> Criterios de aceptación</h3>
+      <ol>
+        <li>Un profesional puede registrarse, cargar DNI y selfie, y ser aprobado por un administrador; hasta entonces no aparece en búsquedas.</li>
+        <li>Un cliente encuentra profesionales verificados por oficio y cercanía real a su dirección, con mapa y perfil con reputación.</li>
+        <li>Un pedido agendado recorre el ciclo completo de estados con timeline visible para ambas partes.</li>
+        <li>Una urgencia se transmite en vivo a los profesionales online cercanos; el primero que acepta se la adjudica y el resto expira.</li>
+        <li>Las partes se comunican por el chat interno del trabajo y se califican mutuamente al completarlo.</li>
+        <li>Las notificaciones llegan por campana in-app y por push con la app cerrada (PWA instalada).</li>
+        <li>El sistema está publicado en producción, con manual de uso, FAQ, términos y política de privacidad accesibles.</li>
+      </ol>
+
+      <h3><code>9.7</code> Modificaciones</h3>
+      <p>
+        Todo cambio de alcance se solicita por escrito, se evalúa su impacto en plazos y esfuerzo, y
+        de aceptarse se registra en el control de cambios (S-01) con fecha y responsable. El precedente
+        es la v0.6: la baja del modelo de comisiones se acordó con el cliente antes de implementarse.
+      </p>
+
+      <h3><code>9.8</code> Firmas</h3>
+      <p>
+        En el marco académico de la materia, las partes manifiestan su conformidad con este documento
+        en la instancia de presentación correspondiente, quedando la versión digital publicada como
+        referencia del compromiso asumido.
+      </p>
+    </section>
+
+    <!-- ═══════════ S-10 ═══════════ -->
+    <section id="s10">
+      <div class="sec-head"><span class="sec-code">S-10</span><h2>Bitácora del proyecto</h2></div>
+
+      <h3><code>10.1</code> Registro de reuniones e instancias de relevamiento</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Período</th><th>Con quién</th><th>Objetivo</th><th>Modalidad</th></tr></thead>
+        <tbody>
+          <tr><td>Mayo 2026</td><td>Clientes y profesionales de oficios reales</td><td>Relevamiento del problema: cómo se contrata hoy, qué falla, qué generaría confianza</td><td>Entrevistas presenciales</td></tr>
+          <tr><td>Mayo–Junio 2026</td><td>Javier Colucci (cliente)</td><td>Validación de casos de uso y priorización del alcance inicial</td><td>Presencial</td></tr>
+          <tr><td>Junio 2026</td><td>Equipo completo</td><td>Definición del blueprint técnico: modelo de datos, arquitectura y plan de 14 pasos</td><td>Reunión de equipo</td></tr>
+          <tr><td>Julio 2026</td><td>Equipo + cátedra</td><td>Seguimiento de entregas y ajuste metodológico</td><td>Clase</td></tr>
+          <tr><td>Agosto 2026</td><td>Javier Colucci (cliente)</td><td>Revisión del modelo de cobro: evaluación del escrow vs. suscripción</td><td>Presencial</td></tr>
+          <tr><td>Septiembre 2026</td><td>Equipo completo</td><td>Cierre de lanzamiento: documentación pública, legales y rediseño</td><td>Reunión de equipo</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>10.2</code> Minutas</h3>
+
+      <h4>Minuta 01 — Autenticación y roadmap (15/07/2026)</h4>
+      <div class="tbl-wrap"><table>
+        <tbody>
+          <tr><td style="width:130px"><strong>Participantes</strong></td><td>Equipo completo</td></tr>
+          <tr><td><strong>Temas</strong></td><td>Estado de la autenticación (contraseña + Google OAuth), onboarding de perfil incompleto tras login social, monitoreo de errores de auth en producción.</td></tr>
+          <tr><td><strong>Decisiones</strong></td><td>Teléfono obligatorio en todo registro; gate de perfil completo antes de operar; registro de auditoría de eventos de seguridad visible para el usuario.</td></tr>
+          <tr><td><strong>Próximos pasos</strong></td><td>Completar notificaciones in-app y emails transaccionales (cerrado el 16/07, v0.4).</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Minuta 02 — Rediseño del modelo de ingresos (31/07/2026)</h4>
+      <div class="tbl-wrap"><table>
+        <tbody>
+          <tr><td style="width:130px"><strong>Participantes</strong></td><td>Equipo + cliente</td></tr>
+          <tr><td><strong>Temas</strong></td><td>El escrow con comisiones por operación (v0.2) agrega fricción al pago, carga operativa (reintegros, liquidaciones, deuda por pagos en efectivo) y desalinea a la plataforma con las partes.</td></tr>
+          <tr><td><strong>Decisiones</strong></td><td>Dar de baja comisiones y escrow. El pago del servicio se acuerda directamente entre cliente y profesional; el ingreso de la plataforma pasa a ser una suscripción mensual con planes premium. Especificación escrita antes de tocar código.</td></tr>
+          <tr><td><strong>Próximos pasos</strong></td><td>Migración destructiva con backup previo y saneo de producción (ejecutada el 27–28/08, v0.6).</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Minuta 03 — Rediseño visual y colaboración por PR (23/09/2026)</h4>
+      <div class="tbl-wrap"><table>
+        <tbody>
+          <tr><td style="width:130px"><strong>Participantes</strong></td><td>S. Vargas · N. Reemeerie</td></tr>
+          <tr><td><strong>Temas</strong></td><td>Propuesta de rediseño visual completo presentada como pull request; revisión técnica detecta regresiones (API de mapas antigua, manejo de errores de sesión, lockfile de otro gestor de paquetes).</td></tr>
+          <tr><td><strong>Decisiones</strong></td><td>Integración selectiva: se toma el rediseño visual (paleta, tipografía, componentes) por cherry-pick, se corrigen los íconos de oficios y se descartan las regresiones con revisión formal en el PR.</td></tr>
+          <tr><td><strong>Próximos pasos</strong></td><td>Verificación end-to-end contra la versión anterior (paridad de elementos) y deploy a producción (cumplido, v1.0).</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>10.3</code> Registro de cambios sobre el producto</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Componente</th><th>Modificación</th><th>Justificación</th></tr></thead>
+        <tbody>
+          <tr><td>Modelo de cobro</td><td>Baja de escrow/comisiones → suscripción mensual</td><td>Menos fricción y carga operativa; validado con el cliente (Minuta 02)</td></tr>
+          <tr><td>Autocompletado de direcciones</td><td>Migración a <code>PlaceAutocompleteElement</code> (nueva Places API)</td><td>Google discontinúa la API legacy para claves nuevas</td></tr>
+          <tr><td>Realtime</td><td>Hook unificado con re-autenticación del WebSocket al refrescar el token</td><td>Los canales en vivo perdían autorización tras el refresh del JWT</td></tr>
+          <tr><td>Interfaz completa</td><td>Rediseño v1.0: paleta verde institucional, tipografía y componentes</td><td>Identidad propia y consistencia entre app y sitios de documentación</td></tr>
+          <tr><td>Landing</td><td>Íconos de oficios alineados a los slugs del catálogo</td><td>Cinco oficios mostraban el ícono genérico por claves desactualizadas</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>10.4</code> Hitos técnicos</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Hito</th></tr></thead>
+        <tbody>
+          <tr><td>16/06/2026</td><td>Núcleo del sistema en un único kickoff: scaffolding, esquema PostGIS aplicado a producción, auth con claims de rol, ciclo de pedidos y despacho urgente en tiempo real con tests de integración.</td></tr>
+          <tr><td>17/06/2026</td><td>Módulo de pagos con retención: webhook firmado e idempotente, reintegros automáticos y expiración por cron.</td></tr>
+          <tr><td>15/07/2026</td><td>Autenticación multiproveedor completa (contraseña, OTP, Google) con onboarding, vinculación de cuentas y logout global.</td></tr>
+          <tr><td>16/07/2026</td><td>Auditoría de seguridad, notificaciones in-app en vivo y emails transaccionales.</td></tr>
+          <tr><td>30/07/2026</td><td>Runbook de migraciones contra producción y saneo de la base (sin <code>db:push</code>: solo migraciones versionadas).</td></tr>
+          <tr><td>27–28/08/2026</td><td>Pivote del modelo de ingresos ejecutado en producción con backup previo; SEO técnico y hardening de crons.</td></tr>
+          <tr><td>01–02/09/2026</td><td>Flujo de urgencias estabilizado end-to-end: JWT en el WebSocket, <code>REPLICA IDENTITY FULL</code> y pantalla de espera del cliente.</td></tr>
+          <tr><td>07–09/09/2026</td><td>Manual de uso y FAQ publicados como sitios propios; Términos y Política de Privacidad en la app.</td></tr>
+          <tr><td>23/09/2026</td><td>Rediseño visual v1.0 verificado y desplegado en los 4 proyectos de Vercel.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Aprendizajes técnicos registrados</h4>
+      <ul>
+        <li><strong>Realtime y JWT:</strong> un canal WebSocket autenticado necesita re-emitir el token en cada refresh; costó tres iteraciones hasta consolidarlo en un hook único reutilizable.</li>
+        <li><strong>Migraciones destructivas:</strong> backup verificado antes de aplicar, y prohibición de <code>db:push</code> contra producción: solo migraciones versionadas revisables.</li>
+        <li><strong>Simplificar es avanzar:</strong> dar de baja el escrow (semanas de trabajo) fue la mejor decisión de producto: menos código, menos riesgo y un modelo de ingresos más honesto.</li>
+        <li><strong>Colaboración por PR:</strong> una contribución grande se integra mejor por partes: revisión técnica, cherry-pick de lo valioso y rechazo documentado de lo que introduce regresiones.</li>
+        <li><strong>Zonas horarias:</strong> el formateo de fechas debe fijarse a la zona de Buenos Aires en el servidor para evitar diferencias de hidratación entre servidor y navegador.</li>
+      </ul>
+
+      <h3><code>10.5</code> Período de prueba con el cliente</h3>
+      <p>
+        Con el sistema en producción y una base de 24 profesionales de prueba sembrada para el
+        entorno de demostración, el período de prueba formal con el cliente se ejecuta sobre la
+        checklist E2E del repositorio (<code>docs/testing-e2e.md</code>). Devoluciones registradas:
+      </p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>N°</th><th>Fecha</th><th>Devolución del cliente</th><th>Tipo</th><th>Decisión</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Ago. 2026</td><td>El cobro dentro de la app agrega fricción; preferible acordar el pago directamente</td><td>Cambio de alcance</td><td><span class="badge done">Implementado (v0.6)</span></td></tr>
+          <tr><td>2</td><td>—</td><td><em>Pendiente de registro durante el período de prueba formal</em></td><td>—</td><td>—</td></tr>
+          <tr><td>3</td><td>—</td><td><em>Pendiente de registro durante el período de prueba formal</em></td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        Tipos posibles de devolución: <strong>error</strong> (no funciona según lo especificado),
+        <strong>ajuste</strong> (funciona pero se pide un cambio menor) y <strong>cambio de alcance</strong>
+        (funcionalidad nueva, se rige por la cláusula 9.7).
+      </p>
+    </section>
+
+    <!-- ═══════════ S-11 ═══════════ -->
+    <section id="s11">
+      <div class="sec-head"><span class="sec-code">S-11</span><h2>Garantía y soporte</h2></div>
+
+      <h3><code>11.1</code> Alcance de la garantía</h3>
+      <p>
+        El equipo garantiza el correcto funcionamiento de las funcionalidades comprometidas en el
+        alcance (S-03.2, S-05) desde la puesta en producción y hasta 30 días después de la
+        presentación final (E06). Dentro de ese período, los errores reproducibles se corrigen sin
+        costo adicional.
+      </p>
+
+      <h3><code>11.2</code> Qué cubre y qué no</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Cubierto</h4>
+          <ul>
+            <li>Errores funcionales reproducibles dentro del alcance comprometido.</li>
+            <li>Problemas de seguridad en el código propio de la plataforma.</li>
+            <li>Errores de configuración de la infraestructura desplegada por el equipo.</li>
+            <li>Correcciones de la documentación (manual, FAQ) que no refleje el sistema.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>No cubierto</h4>
+          <ul>
+            <li>Caídas o cambios de condiciones de servicios de terceros (Vercel, Supabase, Google, Mercado Pago, Resend).</li>
+            <li>Funcionalidades nuevas o fuera del alcance (se rigen por la cláusula 9.7).</li>
+            <li>Costos de APIs una vez vencido el crédito promocional (S-07.1).</li>
+            <li>Uso indebido de la plataforma o manipulación de datos por fuera del sistema.</li>
+            <li>La ejecución del trabajo físico acordado entre cliente y profesional (S-03.2).</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3><code>11.3</code> Canal y tiempos de respuesta</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Severidad</th><th>Definición</th><th>Respuesta esperada</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge alta">Crítica</span></td><td>El sistema está caído o un flujo esencial (registro, urgencias, pedidos) no funciona</td><td>Diagnóstico dentro de las 24 h; corrección prioritaria</td></tr>
+          <tr><td><span class="badge media">Mayor</span></td><td>Una funcionalidad falla pero existe un camino alternativo</td><td>Respuesta dentro de las 72 h; corrección en la semana</td></tr>
+          <tr><td><span class="badge baja">Menor</span></td><td>Defecto cosmético o mejora de usabilidad</td><td>Se agenda para la siguiente iteración</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        Canales: <a href="mailto:altoquecorp@gmail.com"><code>altoquecorp@gmail.com</code></a> (principal) e
+        issues del repositorio de GitHub para el seguimiento técnico.
+      </p>
+
+      <h3><code>11.4</code> Resguardo de datos</h3>
+      <p>
+        La base de producción cuenta con los backups automáticos de Supabase; adicionalmente, ante
+        toda migración destructiva se realiza y verifica un backup manual previo (práctica aplicada en
+        la migración del 28/08/2026). Los documentos de identidad viven en un bucket privado accesible
+        solo mediante URLs firmadas de corta duración.
+      </p>
+    </section>
+
+    <!-- ═══════════ S-12 ═══════════ -->
+    <section id="s12">
+      <div class="sec-head"><span class="sec-code">S-12</span><h2>Documentación de uso</h2></div>
+      <p class="sec-intro">
+        Toda la documentación de uso es pública y está desplegada como sitios independientes,
+        versionados en el mismo repositorio del sistema.
+      </p>
+
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Pieza</th><th>Para qué sirve</th><th>Acceso</th></tr></thead>
+        <tbody>
+          <tr><td>Manual de uso</td><td>Guía completa por rol: requisitos, flujos paso a paso, suscripción, solución de problemas y glosario</td><td><a href="https://altoque-manual.vercel.app" target="_blank" rel="noopener"><code>altoque-manual.vercel.app</code></a></td></tr>
+          <tr><td>Preguntas frecuentes</td><td>Respuestas directas a las dudas más comunes de clientes y profesionales</td><td><a href="https://altoque-faq.vercel.app" target="_blank" rel="noopener"><code>altoque-faq.vercel.app</code></a></td></tr>
+          <tr><td>Aplicación</td><td>El sistema en producción</td><td><a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener"><code>al-toque-eta.vercel.app</code></a></td></tr>
+          <tr><td>Landing de la materia</td><td>Presentación del proyecto para la cátedra: etapas, stack y metodología</td><td><a href="https://altoque-landing.vercel.app" target="_blank" rel="noopener"><code>altoque-landing.vercel.app</code></a></td></tr>
+          <tr><td>Legales</td><td>Términos y Condiciones y Política de Privacidad (Ley 25.326)</td><td><a href="https://al-toque-eta.vercel.app/terminos" target="_blank" rel="noopener"><code>/terminos</code></a> · <a href="https://al-toque-eta.vercel.app/privacidad" target="_blank" rel="noopener"><code>/privacidad</code></a></td></tr>
+          <tr><td>Entregas anteriores</td><td>Materiales de las entregas E01–E05 de la cátedra</td><td><a href="https://linktr.ee/Altoque247" target="_blank" rel="noopener"><code>linktr.ee/Altoque247</code></a></td></tr>
+        </tbody>
+      </table></div>
+
+      <h3><code>12.1</code> Resumen del recorrido del cliente</h3>
+      <ol>
+        <li>Se registra con email o Google y completa su perfil (nombre y teléfono).</li>
+        <li>Busca por oficio y dirección, o crea una urgencia si no puede esperar.</li>
+        <li>Compara profesionales verificados por cercanía, calificación y reseñas.</li>
+        <li>Crea el pedido con descripción y fotos; sigue el estado en la timeline en vivo.</li>
+        <li>Coordina detalles y precio por el chat interno del trabajo.</li>
+        <li>Al completarse el trabajo, califica al profesional (y es calificado).</li>
+      </ol>
+
+      <h3><code>12.2</code> Resumen del recorrido del profesional</h3>
+      <ol>
+        <li>Se registra como profesional e indica oficios, zona base y radio de cobertura.</li>
+        <li>Sube DNI y selfie; espera la aprobación del administrador.</li>
+        <li>Instala la PWA y activa las notificaciones push.</li>
+        <li>Se pone online para recibir urgencias cercanas en tiempo real; el primero que acepta gana.</li>
+        <li>Gestiona sus pedidos agendados y coordina por chat.</li>
+        <li>Completa trabajos y construye su reputación con cada calificación.</li>
+      </ol>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <strong>Al<span>Toque</span></strong> · Documentación del proyecto · versión 1.0 ·
+  Vargas, Begnes, Reemeerie, Montes Rojas, Ledesma · 7mo Informática A ·
+  Evaluación de Proyectos (Prof. L. Pedaci) · Instituto Leonardo Murialdo · Actualizado 23/09/2026
+</footer>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
