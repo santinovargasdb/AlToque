@@ -14,7 +14,7 @@ export default function TerminosPage() {
       <h1 className="font-heading text-4xl font-bold">
         Términos y Condiciones de AlToque
       </h1>
-      <div className="mt-4 rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning-foreground">
+      <div className="mt-4 rounded-md border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning-foreground">
         Versión preliminar sujeta a revisión legal. Última actualización: 9 de
         septiembre de 2026.
       </div>

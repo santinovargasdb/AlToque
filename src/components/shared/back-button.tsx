@@ -1,16 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Contador de navegaciones SPA de ESTA carga del documento (module scope a
-// propósito: una navegación completa (abrir un push, pegar la URL, volver de
-// un sitio externo) lo resetea). history.length no sirve acá: al volver de un
-// sitio externo el historial existe pero back() saldría de la app.
 let inAppNavigations = 0;
 
-/** Lo llama el tracker de ruta del header (HeaderBack) en cada cambio de pathname. */
 export function recordInAppNavigation() {
   inAppNavigations += 1;
 }
@@ -38,11 +32,22 @@ export function BackButton({
         }
       }}
       className={cn(
-        "flex size-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors duration-150 hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className,
       )}
     >
-      <ArrowLeft className="size-5" />
+      <svg
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="size-4"
+        aria-hidden="true"
+      >
+        <path d="M12.5 4.5 7 10l5.5 5.5" />
+      </svg>
     </button>
   );
 }

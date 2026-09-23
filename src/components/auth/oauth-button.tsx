@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { logAuthError } from "@/lib/auth-log";
 import { cn } from "@/lib/utils";
@@ -30,12 +29,12 @@ const PROVIDERS: Record<OAuthProviderId, ProviderBranding> = {
   google: {
     name: "Google",
     buttonClassName:
-      "border border-border bg-white text-[#1f1f1f] hover:bg-slate-50",
+      "border border-border bg-card text-foreground hover:bg-secondary",
     Logo: GoogleLogo,
   },
   apple: {
     name: "Apple",
-    buttonClassName: "bg-black text-white hover:bg-black/85",
+    buttonClassName: "bg-foreground text-background hover:bg-foreground/90",
     Logo: AppleLogo,
   },
   github: {
@@ -105,19 +104,21 @@ export function OAuthButton({
       onClick={signIn}
       disabled={loading}
       className={cn(
-        "flex h-10 w-full items-center justify-center gap-3 rounded-md px-4 text-sm font-medium shadow-sm",
-        "transition-all duration-200 hover:shadow-md active:scale-[0.98]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        "flex h-9 w-full items-center justify-center gap-2.5 rounded-md px-4 text-xs font-medium",
+        "transition-colors duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
         "disabled:pointer-events-none disabled:opacity-70",
         branding.buttonClassName,
       )}
     >
       {loading ? (
-        <Loader2 className="size-4 animate-spin opacity-70" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4 animate-spin opacity-70">
+          <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="12" />
+        </svg>
       ) : (
         <branding.Logo />
       )}
-      <span className="transition-opacity duration-200">
+      <span>
         {loading
           ? `Conectando con ${branding.name}…`
           : (label ?? `Continuar con ${branding.name}`)}

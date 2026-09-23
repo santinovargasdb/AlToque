@@ -9,7 +9,7 @@ export function ReviewSummary({
   comment: string | null;
 }) {
   return (
-    <section className="rounded-xl border border-border bg-card p-4">
+    <section className="rounded-md border border-border bg-card p-4">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">
         Tu reseña
       </p>

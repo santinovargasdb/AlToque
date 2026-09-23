@@ -35,7 +35,7 @@ export function JobDetailView({
     <div className="space-y-5">
       <JobStatusTimeline status={job.status} />
 
-      <section className="rounded-xl border border-border bg-card p-5 shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
+      <section className="rounded-md border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-2">
           <h1 className="font-heading text-xl font-bold">{job.title}</h1>
           <Badge variant="secondary">{job.categoryName}</Badge>
@@ -100,12 +100,12 @@ export function JobDetailView({
       )}
 
       {/* Contraparte */}
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section className="rounded-md border border-border bg-card p-4">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">
           {counterpart.label}
         </p>
         <div className="mt-2 flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center overflow-hidden rounded-full bg-primary/10 font-heading font-bold text-primary">
+          <div className="flex size-11 items-center justify-center overflow-hidden rounded-md border border-border bg-secondary font-mono font-bold text-foreground">
             {counterpart.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -141,7 +141,7 @@ export function JobDetailView({
 
       {/* Precio (al completar) */}
       {job.status === "completed" && job.finalPrice && (
-        <section className="rounded-xl border border-success/30 bg-success/5 p-4">
+        <section className="rounded-md border border-success/30 bg-success/5 p-4">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Precio final</span>
             <span className="font-heading text-lg font-bold">

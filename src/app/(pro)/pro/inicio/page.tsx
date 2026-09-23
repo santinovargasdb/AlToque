@@ -68,7 +68,7 @@ export default async function ProInicioPage() {
       </header>
 
       {!allDone && (
-        <section className="rounded-xl border border-border bg-card p-5 shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
+        <section className="rounded-md border border-border bg-card p-5">
           <h2 className="font-heading text-lg font-semibold">
             Activá tu cuenta
           </h2>
@@ -117,7 +117,7 @@ export default async function ProInicioPage() {
           />
         </>
       ) : (
-        <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
+        <div className="rounded-md border border-border bg-card p-5 text-sm text-muted-foreground">
           Verificá tu identidad para ponerte en línea y recibir pedidos
           urgentes.
         </div>

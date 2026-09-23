@@ -74,7 +74,7 @@ export default async function BuscarPage({
       />
 
       {results.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border py-14 text-center text-muted-foreground">
+        <div className="flex flex-col items-center gap-2 rounded-md border border-dashed border-border py-14 text-center text-muted-foreground">
           <SearchX className="size-8" />
           <p className="font-medium text-foreground">
             No hay {cat.name.toLowerCase()} disponibles en tu zona
@@ -108,7 +108,7 @@ export default async function BuscarPage({
 
 function EmptyPrompt({ title, message }: { title: string; message: string }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border py-16 text-center text-muted-foreground">
+    <div className="flex flex-col items-center gap-2 rounded-md border border-dashed border-border py-16 text-center text-muted-foreground">
       <SearchX className="size-8" />
       <p className="font-medium text-foreground">{title}</p>
       <p className="text-sm">{message}</p>

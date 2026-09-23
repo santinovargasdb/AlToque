@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 
 export default function MarketingLayout({
@@ -8,29 +8,33 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Zap className="size-5" />
-            </span>
-            <span className="font-heading text-lg font-bold">AlToque</span>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            <Link href="/como-funciona" className="hover:text-foreground">
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+      {/* Header técnico, plano, sin liquid glass */}
+      <header className="sticky top-0 z-40 border-b border-border bg-background">
+        <div className="mx-auto flex h-14 max-w-[1160px] items-center justify-between px-4">
+          <Logo href="/" size="default" />
+
+          <nav className="hidden items-center gap-7 text-xs font-medium text-muted-foreground md:flex">
+            <Link
+              href="/como-funciona"
+              className="transition-colors duration-150 hover:text-foreground"
+            >
               Cómo funciona
             </Link>
-            <Link href="/para-profesionales" className="hover:text-foreground">
-              Soy profesional
+            <Link
+              href="/para-profesionales"
+              className="transition-colors duration-150 hover:text-foreground"
+            >
+              Profesionales
             </Link>
           </nav>
+
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">
               <Link href="/ingresar">Ingresar</Link>
             </Button>
             <Button asChild size="sm">
-              <Link href="/registro">Pedir un servicio</Link>
+              <Link href="/registro">Pedir servicio</Link>
             </Button>
           </div>
         </div>
@@ -38,23 +42,48 @@ export default function MarketingLayout({
 
       <main className="flex-1">{children}</main>
 
+      {/* Footer sobrio, estructurado y con enlaces legales reales */}
       <footer className="border-t border-border bg-card">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-4 px-4 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {2026} AlToque · Oficios verificados, al toque.</p>
-          <nav className="flex flex-wrap gap-4">
-            <Link href="/como-funciona" className="hover:text-foreground">
-              Cómo funciona
-            </Link>
-            <Link href="/para-profesionales" className="hover:text-foreground">
-              Para profesionales
-            </Link>
-            <Link href="/registro" className="hover:text-foreground">
-              Registrarse
-            </Link>
-            <Link href="/privacidad" className="hover:text-foreground">
-              Política de Privacidad
-            </Link>
-          </nav>
+        <div className="mx-auto max-w-[1160px] px-4 py-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-1">
+              <Logo href="/" size="sm" />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Plataforma de oficios verificados con DNI para el Gran Buenos Aires.
+              </p>
+            </div>
+
+            <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+              <Link
+                href="/como-funciona"
+                className="transition-colors duration-150 hover:text-foreground"
+              >
+                Cómo funciona
+              </Link>
+              <Link
+                href="/para-profesionales"
+                className="transition-colors duration-150 hover:text-foreground"
+              >
+                Para profesionales
+              </Link>
+              <Link
+                href="/terminos"
+                className="transition-colors duration-150 hover:text-foreground"
+              >
+                Términos y Condiciones
+              </Link>
+              <Link
+                href="/privacidad"
+                className="transition-colors duration-150 hover:text-foreground"
+              >
+                Política de Privacidad
+              </Link>
+            </nav>
+          </div>
+
+          <div className="mt-6 border-t border-border/60 pt-4 text-xs text-muted-foreground">
+            <p>(c) {2026} AlToque. Todos los derechos reservados.</p>
+          </div>
         </div>
       </footer>
     </div>

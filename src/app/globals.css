@@ -3,91 +3,94 @@
 @plugin "@tailwindcss/typography";
 
 /* ────────────────────────────────────────────────────────────
-   AlToque: Design System (Sección 7 del blueprint)
-   Confianza primero: limpio, cálido, mobile-first.
-   Tailwind v4 + tokens shadcn/ui (variables CSS).
+   AlToque: Design System
+   Paleta: Verde pastel, blanco y neutros off-white suaves.
+   Enfoque sobrio, arquitectónico y estructurado (anti-vibecoded).
+   Tailwind v4 + tokens shadcn/ui.
    ──────────────────────────────────────────────────────────── */
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Radios: 10px default, 16px cards, full avatars/badges */
-  --radius: 0.625rem; /* 10px */
+  /* Radios: 6px arquitectónico (0.375rem) */
+  --radius: 0.375rem;
 
-  /* Marca / superficies */
-  --background: #f8fafc; /* slate-50 */
-  --foreground: #0f172a; /* slate-900 */
+  /* Superficies y fondo: Off-white natural suave */
+  --background: #f7faf8;
+  --foreground: #15241b;
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #15241b;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #15241b;
 
-  /* Primary: azul confianza */
-  --primary: #2563eb;
+  /* Primary: Verde pastel sereno y balanceado */
+  --primary: #4e9b75;
   --primary-foreground: #ffffff;
+  --primary-hover: #428665;
+  --primary-subtle: #ebf5f0;
 
-  /* Secondary / muted / accent (subtle hover) */
-  --secondary: #f1f5f9; /* slate-100 */
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b; /* slate-500 */
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  /* Secondary / muted / accent */
+  --secondary: #eef4f0;
+  --secondary-foreground: #15241b;
+  --muted: #eef4f0;
+  --muted-foreground: #5a6e62;
+  --accent: #eef4f0;
+  --accent-foreground: #15241b;
 
   /* Destructive */
-  --destructive: #dc2626;
+  --destructive: #c94a4a;
   --destructive-foreground: #ffffff;
 
-  /* Bordes / inputs / ring */
-  --border: #e2e8f0; /* slate-200 */
-  --input: #e2e8f0;
-  --ring: #2563eb;
+  /* Bordes / inputs / ring: delgados, nítidos (1px) */
+  --border: #e0e8e2;
+  --input: #e0e8e2;
+  --ring: #4e9b75;
 
   /* ── Tokens semánticos de AlToque ── */
-  /* Acción / urgencia: naranja "al toque" (usar con moderación) */
-  --action: #f97316;
+  /* Acción / urgencia: terracota pastel suave, armónico con verde pastel */
+  --action: #d4775d;
   --action-foreground: #ffffff;
-  /* Éxito / verificado: trabajo completado, badge "Verificado" */
-  --success: #16a34a;
+  /* Éxito / verificado: verde pastel certificado */
+  --success: #3d8f66;
   --success-foreground: #ffffff;
-  /* Advertencia: pendiente de verificación */
-  --warning: #f59e0b;
-  --warning-foreground: #0f172a;
+  /* Advertencia */
+  --warning: #d99b38;
+  --warning-foreground: #15241b;
 
-  /* Charts (perfil / métricas admin) */
-  --chart-1: #2563eb;
-  --chart-2: #f97316;
-  --chart-3: #16a34a;
-  --chart-4: #f59e0b;
-  --chart-5: #64748b;
+  /* Charts */
+  --chart-1: #4e9b75;
+  --chart-2: #d4775d;
+  --chart-3: #3d8f66;
+  --chart-4: #d99b38;
+  --chart-5: #5a6e62;
 }
 
 .dark {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --card: #1e293b;
-  --card-foreground: #f8fafc;
-  --popover: #1e293b;
-  --popover-foreground: #f8fafc;
-  --primary: #3b82f6;
-  --primary-foreground: #0f172a;
-  --secondary: #334155;
-  --secondary-foreground: #f8fafc;
-  --muted: #334155;
-  --muted-foreground: #94a3b8;
-  --accent: #334155;
-  --accent-foreground: #f8fafc;
-  --destructive: #ef4444;
-  --destructive-foreground: #f8fafc;
-  --border: #334155;
-  --input: #334155;
-  --ring: #3b82f6;
-  --action: #fb923c;
-  --action-foreground: #0f172a;
-  --success: #22c55e;
-  --success-foreground: #0f172a;
-  --warning: #fbbf24;
-  --warning-foreground: #0f172a;
+  --background: #111a14;
+  --foreground: #f4f8f5;
+  --card: #18241c;
+  --card-foreground: #f4f8f5;
+  --popover: #18241c;
+  --popover-foreground: #f4f8f5;
+  --primary: #5ba882;
+  --primary-foreground: #111a14;
+  --secondary: #1f3025;
+  --secondary-foreground: #f4f8f5;
+  --muted: #1f3025;
+  --muted-foreground: #8aa092;
+  --accent: #1f3025;
+  --accent-foreground: #f4f8f5;
+  --destructive: #e06666;
+  --destructive-foreground: #ffffff;
+  --border: #23362a;
+  --input: #23362a;
+  --ring: #5ba882;
+  --action: #e28c74;
+  --action-foreground: #111a14;
+  --success: #4ea878;
+  --success-foreground: #111a14;
+  --warning: #e2b35a;
+  --warning-foreground: #111a14;
 }
 
 /* Mapeo de tokens → utilidades Tailwind (bg-primary, text-muted-foreground, etc.) */
@@ -100,6 +103,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-subtle: var(--primary-subtle);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -125,11 +129,11 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* Radios derivados (cards 16px ≈ radius + 6px) */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 6px);
+  /* Radios derivados */
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
 
   /* Fuentes: inyectadas por next/font en el layout raíz */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -157,21 +161,17 @@
   h6 {
     font-family: var(--font-heading);
     font-weight: 700;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
 
-  /* Sombras suaves del blueprint */
+  /* Elevación precisa basada en bordes y micro-sombra nítida */
   :root {
-    --shadow-soft: 0 1px 3px rgba(15, 23, 42, 0.08);
-    --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-soft: 0 1px 2px rgba(21, 36, 27, 0.04);
+    --shadow-card: 0 1px 3px rgba(21, 36, 27, 0.05);
   }
 }
 
-/* ── PlaceAutocompleteElement (nueva Places API) ──────────────────────────
-   gmp-place-autocomplete es un Web Component con shadow DOM. Los estilos
-   del input interno se aplican via ::part(input). Matchea visualmente el
-   componente <Input> de shadcn/ui (h-10, rounded-lg, border-input, text-sm).
-   ──────────────────────────────────────────────────────────────────────── */
+/* ── PlaceAutocompleteElement (Google Places API) ────────────────────────── */
 gmp-place-autocomplete {
   display: block;
   flex: 1 1 0%;
@@ -189,16 +189,16 @@ gmp-place-autocomplete::part(input) {
   line-height: 1.25rem;
   color: var(--foreground);
   font-family: var(--font-sans);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition-property: color, background-color, border-color, box-shadow;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition-property: color, background-color, border-color;
   transition-duration: 150ms;
-  transition-timing-function: ease;
+  transition-timing-function: ease-out;
   outline: none;
 }
 
 gmp-place-autocomplete::part(input):focus {
   border-color: var(--ring);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 25%, transparent);
 }
 
 gmp-place-autocomplete::part(input)::placeholder {

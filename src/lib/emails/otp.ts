@@ -14,10 +14,10 @@ export function otpEmail(code: string): EmailContent {
   const bodyHtml = `
     <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">Tu código de acceso</h1>
     <p style="margin:0 0 20px;">Usalo para entrar a AlToque. Vence en unos minutos y solo sirve una vez.</p>
-    <div style="background-color:#F8FAFC;border:1px dashed #2563EB;border-radius:10px;padding:20px;text-align:center;margin:0 0 20px;">
-      <span style="font-size:34px;font-weight:700;letter-spacing:10px;color:#2563EB;font-family:'Courier New',monospace;">${code}</span>
+    <div style="background-color:#F7FAF8;border:1px dashed #4E9B75;border-radius:6px;padding:20px;text-align:center;margin:0 0 20px;">
+      <span style="font-size:34px;font-weight:700;letter-spacing:10px;color:#4E9B75;font-family:'Courier New',monospace;">${code}</span>
     </div>
-    <p style="margin:0;color:#64748B;font-size:14px;">Si no pediste este código, ignorá este email: nadie puede entrar sin él.</p>
+    <p style="margin:0;color:#5A6E62;font-size:14px;">Si no pediste este código, ignorá este email: nadie puede entrar sin él.</p>
   `;
 
   return {
