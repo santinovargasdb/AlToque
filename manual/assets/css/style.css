@@ -1,24 +1,25 @@
 /* ═══════════════════════════════════════════════════════════════
    AlToque · Manual de uso
-   style.css (Rediseño Pastel Green & Neutral Clean)
+   style.css (Design System v2)
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── TOKENS ── */
 :root {
-  --background: #f7faf8;
-  --foreground: #15241b;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --primary: #4e9b75;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --primary-subtle: #ebf5f0;
-  --secondary: #eef4f0;
-  --muted-foreground: #5a6e62;
-  --border: #e0e8e2;
-  --border-subtle: #ebf0ec;
-  --action: #d4775d;
-  --success: #3d8f66;
-  --radius: 6px;
-  --rsm: 4px;
+  --primary-subtle: #eff6ff;
+  --secondary: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --border-subtle: #eef2f7;
+  --action: #f97316;
+  --action-subtle: #fff7ed;
+  --success: #16a34a;
+  --radius: 10px;
+  --rsm: 6px;
 }
 
 /* ── RESET ── */
@@ -32,12 +33,17 @@ html {
   font-size: 16px;
 }
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--background);
   color: var(--foreground);
   line-height: 1.65;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6,
+.nav-logo,
+.footer-brand {
+  font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
 }
 a {
   color: inherit;
@@ -131,7 +137,7 @@ nav {
 .nav-inst {
   font-size: 12px;
   color: var(--muted-foreground);
-  font-family: ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .mobile-menu {
@@ -176,7 +182,7 @@ nav {
   padding: 10px 12px 0;
   margin-top: 4px;
   border-top: 1px solid var(--border);
-  font-family: ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* ══════════════════════════════════════════
@@ -210,7 +216,7 @@ nav {
 .hero-eyebrow-pill {
   background: var(--primary-subtle);
   color: var(--primary);
-  border: 1px solid rgba(78, 155, 117, 0.25);
+  border: 1px solid rgba(37, 99, 235, 0.25);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -282,7 +288,7 @@ nav {
   color: var(--primary-foreground);
 }
 .btn-primary:hover {
-  background: #438865;
+  background: #1d4ed8;
 }
 .btn-sec {
   background: var(--card);
@@ -384,7 +390,7 @@ nav {
   background: var(--primary-subtle);
   border-radius: var(--rsm);
   margin-bottom: 0.75rem;
-  font-family: ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 .doc-section h2 {
   font-weight: 700;
@@ -448,7 +454,7 @@ nav {
   padding: 2px 6px;
   border-radius: var(--rsm);
   font-size: 0.84em;
-  font-family: ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* ══════════════════════════════════════════
@@ -483,10 +489,10 @@ nav {
   border-radius: var(--rsm);
   background: var(--primary-subtle);
   color: var(--primary);
-  border: 1px solid rgba(78, 155, 117, 0.25);
+  border: 1px solid rgba(37, 99, 235, 0.25);
   font-weight: 700;
   font-size: 11px;
-  font-family: ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -526,14 +532,14 @@ nav {
 }
 .callout.warn {
   border-left-color: var(--action);
-  background: #fdf3ef;
+  background: var(--action-subtle);
 }
 .callout.warn .callout-title {
   color: var(--action);
 }
 .callout.tip {
   border-left-color: var(--success);
-  background: #f0f7f3;
+  background: #f0fdf4;
 }
 .callout.tip .callout-title {
   color: var(--success);
@@ -560,7 +566,7 @@ nav {
   color: var(--primary);
 }
 .role-badge.pro {
-  background: #fdf3ef;
+  background: var(--action-subtle);
   color: var(--action);
 }
 .role-badge.adm {
@@ -626,7 +632,7 @@ nav {
    ══════════════════════════════════════════ */
 .help-band {
   background: var(--primary-subtle);
-  border: 1px solid rgba(78, 155, 117, 0.25);
+  border: 1px solid rgba(37, 99, 235, 0.25);
   border-radius: var(--radius);
   color: var(--foreground);
   padding: 36px 1.5rem;
@@ -668,7 +674,7 @@ nav {
   transition: background 0.15s ease;
 }
 .help-band-cta a:hover {
-  background: #438865;
+  background: #1d4ed8;
 }
 .help-band-cta a.out {
   background: var(--card);

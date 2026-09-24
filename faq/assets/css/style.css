@@ -1,39 +1,41 @@
 /* ═══════════════════════════════════════════════════════════════
    AlToque · FAQ · Preguntas frecuentes
-   style.css — design system AlToque v1.0 (Pastel Green & Neutral Clean)
+   style.css — design system AlToque v2
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── TOKENS ── */
 :root {
-  --background: #f7faf8;
-  --foreground: #15241b;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --primary: #4e9b75;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --primary-subtle: #ebf5f0;
-  --secondary: #eef4f0;
-  --muted-foreground: #5a6e62;
-  --border: #e0e8e2;
-  --border-subtle: #ebf0ec;
-  --action: #d4775d;
-  --action-subtle: #faf0ec;
-  --success: #3d8f66;
-  --radius: 6px;
-  --rsm: 4px;
-  --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  --primary-subtle: #eff6ff;
+  --secondary: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --border-subtle: #eef2f7;
+  --action: #f97316;
+  --action-subtle: #fff7ed;
+  --success: #16a34a;
+  --radius: 10px;
+  --rsm: 6px;
+  --heading: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
 }
 
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; scroll-padding-top: 72px; }
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--background);
   color: var(--foreground);
   line-height: 1.65;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
+h1, h2, h3, .sec-title, .nav-logo, .footer-brand { font-family: var(--heading); }
 a { color: inherit; text-decoration: none; }
 a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
@@ -256,7 +258,7 @@ nav {
 }
 .help-band p {
   margin: 12px auto 0; max-width: 52ch;
-  font-size: 14px; color: rgba(234, 242, 237, 0.75);
+  font-size: 14px; color: rgba(226, 232, 240, 0.75);
 }
 .help-band-cta { margin-top: 24px; }
 .help-band-cta a {
@@ -266,26 +268,26 @@ nav {
   border-radius: var(--radius); padding: 11px 22px;
   transition: background 0.15s ease;
 }
-.help-band-cta a:hover { background: var(--success); }
+.help-band-cta a:hover { background: #1d4ed8; }
 .help-band-cta a.out { background: transparent; border: 1px solid rgba(255, 255, 255, 0.25); }
 .help-band-cta a.out:hover { background: rgba(255, 255, 255, 0.08); }
 
 /* ══════════════════════════════════════════
    FOOTER
    ══════════════════════════════════════════ */
-footer { background: var(--foreground); color: rgba(234, 242, 237, 0.75); border-top: 1px solid rgba(255, 255, 255, 0.08); }
+footer { background: var(--foreground); color: rgba(226, 232, 240, 0.75); border-top: 1px solid rgba(255, 255, 255, 0.08); }
 .footer-inner {
   max-width: 1160px; margin: 0 auto;
   padding: 48px 1.5rem 32px;
   display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px;
 }
 .footer-brand { font-weight: 700; font-size: 17px; color: #ffffff; margin-bottom: 10px; }
-.footer-brand span { color: #8fd0af; }
+.footer-brand span { color: #93c5fd; }
 .footer-desc { font-size: 13px; line-height: 1.7; max-width: 42ch; }
 .footer-col h4 {
   font-family: var(--mono); font-size: 10.5px; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: #8fd0af; margin-bottom: 12px;
+  color: #93c5fd; margin-bottom: 12px;
 }
 .footer-col a { display: block; font-size: 13px; padding: 4px 0; }
 .footer-col a:hover { color: #ffffff; }
@@ -296,7 +298,7 @@ footer { background: var(--foreground); color: rgba(234, 242, 237, 0.75); border
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 10px;
-  font-size: 12px; color: rgba(234, 242, 237, 0.55);
+  font-size: 12px; color: rgba(226, 232, 240, 0.55);
 }
 
 /* divider genérico (por si se usa) */
@@ -316,7 +318,7 @@ footer { background: var(--foreground); color: rgba(234, 242, 237, 0.75); border
   background: var(--primary); border-radius: var(--radius); padding: 10px 20px;
   transition: background 0.15s ease;
 }
-.btn-primary:hover { background: var(--success); }
+.btn-primary:hover { background: #1d4ed8; }
 .btn-sec {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 14px; font-weight: 600; color: var(--foreground);

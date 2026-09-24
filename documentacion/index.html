@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AlToque · Documentación del proyecto</title>
-  <meta name="description" content="Documentación completa del proyecto AlToque: diagnóstico, requisitos, arquitectura, oferta de gestión y económica, contrato, bitácora y garantía. Evaluación de Proyectos · 7mo Informática A · Instituto Leonardo Murialdo." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%234e9b75'/%3E%3Cpath d='M13.5 3 6 13h4.5L10 21l7.5-10H13z' fill='%23fff'/%3E%3C/svg%3E" />
+  <meta name="description" content="Documentación completa del proyecto AlToque: diagnóstico, requisitos, arquitectura, oferta de gestión y económica, contrato, bitácora y garantía. Plataforma de oficios verificados del Gran Buenos Aires." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%232563eb'/%3E%3Cpath d='M13.5 3 6 13h4.5L10 21l7.5-10H13z' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
@@ -14,7 +17,6 @@
   <div class="nav-inner">
     <a class="nav-logo" href="#top">Al<span>Toque</span> <em>· Documentación</em></a>
     <div class="nav-links">
-      <a href="https://altoque-landing.vercel.app" target="_blank" rel="noopener">Landing</a>
       <a href="https://altoque-manual.vercel.app" target="_blank" rel="noopener">Manual</a>
       <a href="https://altoque-faq.vercel.app" target="_blank" rel="noopener">FAQ</a>
       <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener">Abrir la app</a>
@@ -45,7 +47,7 @@
 
     <!-- ═══════════ PORTADA ═══════════ -->
     <header class="hero">
-      <div class="hero-eyebrow">Evaluación de Proyectos · Documentación técnica</div>
+      <div class="hero-eyebrow">Documentación técnica del proyecto</div>
       <h1>Al<span>Toque</span> — plataforma de oficios verificados</h1>
       <p class="hero-sub">
         Documentación integral del proyecto: diagnóstico, requisitos, arquitectura, gestión,
@@ -53,7 +55,7 @@
         profesionales de oficios verificados con DNI, para urgencias en tiempo real y trabajos agendados.
       </p>
       <dl class="hero-meta">
-        <div><dt>Equipo</dt><dd>5 integrantes · 7mo Inf. A</dd></div>
+        <div><dt>Equipo</dt><dd>5 integrantes</dd></div>
         <div><dt>Cliente</dt><dd>Javier Colucci</dd></div>
         <div><dt>Sistema</dt><dd>PWA en producción</dd></div>
         <div><dt>Versión doc.</dt><dd>1.0</dd></div>
@@ -167,9 +169,9 @@
       <h3><code>3.1</code> Propósito</h3>
       <p>
         Este documento reúne la especificación de requisitos, la descripción técnica y la
-        documentación de gestión del proyecto AlToque. Sus audiencias son: la cátedra de
-        Evaluación de Proyectos (evaluación), el cliente (validación de alcance y criterios de
-        aceptación) y el propio equipo (referencia de decisiones y trazabilidad).
+        documentación de gestión del proyecto AlToque. Sus audiencias son: el cliente y los
+        usuarios de la plataforma (validación de alcance y criterios de aceptación) y el propio
+        equipo de AlToque (referencia de decisiones y trazabilidad).
       </p>
 
       <h3><code>3.2</code> Alcance</h3>
@@ -210,7 +212,6 @@
           <tr><td>Base de datos</td><td>Esquema PostgreSQL/PostGIS, migraciones, RLS y datos de prueba</td><td>Nahuel Montes Rojas</td></tr>
           <tr><td>Despliegue</td><td>Infraestructura Vercel/Supabase, variables de entorno y monitoreo de deploys</td><td>Mirko Ledesma</td></tr>
           <tr><td>Cliente</td><td>Validación de alcance, pruebas de aceptación y devoluciones</td><td>Javier Colucci</td></tr>
-          <tr><td>Cátedra</td><td>Seguimiento metodológico y evaluación por entregas (E01–E06)</td><td>Prof. Lourdes Pedaci · Instituto Leonardo Murialdo</td></tr>
         </tbody>
       </table></div>
 
@@ -239,7 +240,6 @@
         <li>Repositorio del proyecto: <a href="https://github.com/santinovargasdb/AlToque" target="_blank" rel="noopener"><code>github.com/santinovargasdb/AlToque</code></a> (código + historial completo de 60+ commits).</li>
         <li>Aplicación en producción: <a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener"><code>al-toque-eta.vercel.app</code></a></li>
         <li>Manual de uso: <a href="https://altoque-manual.vercel.app" target="_blank" rel="noopener"><code>altoque-manual.vercel.app</code></a> · Preguntas frecuentes: <a href="https://altoque-faq.vercel.app" target="_blank" rel="noopener"><code>altoque-faq.vercel.app</code></a></li>
-        <li>Landing de la materia: <a href="https://altoque-landing.vercel.app" target="_blank" rel="noopener"><code>altoque-landing.vercel.app</code></a> · Entregas anteriores: <a href="https://linktr.ee/Altoque247" target="_blank" rel="noopener"><code>linktr.ee/Altoque247</code></a></li>
         <li>Documentación oficial de referencia: Next.js 15, Supabase, PostGIS, Drizzle ORM, Mercado Pago (suscripciones), Web Push.</li>
       </ul>
 
@@ -254,7 +254,7 @@
         bidireccionales por trabajo completado y seguimiento del pedido en tiempo real. La plataforma
         no participa del pago del servicio: el modelo de ingresos es una suscripción mensual con planes
         premium para clientes y profesionales. El stack (Next.js 15, Supabase, PostGIS, Vercel) se eligió
-        para operar con costo de infraestructura cero durante la etapa académica sin resignar
+        para operar con costo de infraestructura cero durante la etapa inicial sin resignar
         características de producción: seguridad a nivel de fila, tiempo real, notificaciones push y
         despliegue continuo.
       </p>
@@ -318,14 +318,14 @@
           <tr><td><span class="id">R4</span></td><td>Negocio</td><td>Solo profesionales con verificación <code>approved</code> pueden aparecer en búsquedas y recibir despacho de urgencias.</td></tr>
           <tr><td><span class="id">R5</span></td><td>Negocio</td><td>La plataforma no procesa ni almacena datos del pago del servicio; <code>final_price</code> y <code>payment_method</code> son datos informativos del acuerdo.</td></tr>
           <tr><td><span class="id">R6</span></td><td>UX</td><td>Mobile-first: toda vista debe operar correctamente en 360 px de ancho.</td></tr>
-          <tr><td><span class="id">R7</span></td><td>Económica</td><td>Presupuesto de infraestructura $0 durante la etapa académica: planes gratuitos de Vercel y Supabase, crédito promocional de Google Maps.</td></tr>
+          <tr><td><span class="id">R7</span></td><td>Económica</td><td>Presupuesto de infraestructura $0 durante la etapa inicial: planes gratuitos de Vercel y Supabase, crédito promocional de Google Maps.</td></tr>
           <tr><td><span class="id">R8</span></td><td>Legal</td><td>Política de privacidad conforme a la Ley 25.326 de Protección de Datos Personales; secretos nunca versionados en el repositorio.</td></tr>
         </tbody>
       </table></div>
 
       <h3><code>4.5</code> Suposiciones y dependencias</h3>
       <ul>
-        <li>Los planes gratuitos de Vercel (Hobby) y Supabase (Free) permanecen disponibles y suficientes para la carga de la etapa académica.</li>
+        <li>Los planes gratuitos de Vercel (Hobby) y Supabase (Free) permanecen disponibles y suficientes para la carga de la etapa actual.</li>
         <li>El crédito promocional de Google Cloud (Maps/Places/Geocoding) está vigente hasta el 30/10/2026; superada esa fecha se requiere presupuesto o restricción de cuota.</li>
         <li>Los usuarios disponen de un smartphone con navegador moderno y conectividad; las notificaciones push requieren aceptar el permiso del navegador.</li>
         <li>El cobro de suscripciones depende de la API de preapproval de Mercado Pago y de la cuenta de la plataforma.</li>
@@ -395,14 +395,14 @@
           <tr><td><span class="id">LIM01</span></td><td>Sin procesamiento del pago del servicio dentro de la plataforma.</td><td>Decisión de modelo de negocio validada con el cliente (S-01, v0.6): elimina comisiones sorpresa, escrow y carga regulatoria.</td></tr>
           <tr><td><span class="id">LIM02</span></td><td>Cobertura geográfica inicial limitada al Gran Buenos Aires.</td><td>Foco del relevamiento y de la base de profesionales de prueba.</td></tr>
           <tr><td><span class="id">LIM03</span></td><td>Verificación de identidad manual (no automatizada contra RENAPER).</td><td>Sin acceso a APIs estatales; la revisión humana es suficiente a esta escala.</td></tr>
-          <tr><td><span class="id">LIM04</span></td><td>Sin mediación formal de disputas.</td><td>Fuera del alcance académico; el registro de reputación desincentiva el mal comportamiento.</td></tr>
+          <tr><td><span class="id">LIM04</span></td><td>Sin mediación formal de disputas.</td><td>Fuera del alcance actual; el registro de reputación desincentiva el mal comportamiento.</td></tr>
           <tr><td><span class="id">LIM05</span></td><td>Emails transaccionales limitados por la cuota del plan gratuito de Resend.</td><td>Restricción R7 (presupuesto $0); el canal principal es push + in-app.</td></tr>
         </tbody>
       </table></div>
 
       <h3><code>5.4</code> Requisitos de interfaz de usuario</h3>
       <p>
-        La interfaz sigue un design system propio (rediseñado en v1.0): paleta institucional verde
+        La interfaz sigue un design system propio (rediseñado en v1.0): paleta institucional
         con acento cálido, tipografía del sistema con monoespaciada para datos, componentes shadcn/ui
         personalizados y verificación/reputación siempre visibles. Las vistas están agrupadas por rol y
         el flujo crítico (crear un pedido urgente) se resuelve en menos de 4 pantallas. El manual de uso
@@ -516,7 +516,7 @@
       </table></div>
       <p class="ok">
         Las 8 etapas están completas y desplegadas. Queda en desarrollo el cobro recurrente de la
-        suscripción (<span class="id">F1</span>, sección S-04.6), planificado antes de la presentación final.
+        suscripción (<span class="id">F1</span>, sección S-04.6), planificado como próximo hito del producto.
       </p>
 
       <h3><code>6.2</code> Infraestructura administrativa</h3>
@@ -540,7 +540,7 @@
           <tr><td>pnpm + Node.js</td><td>Gestión de dependencias y scripts del monorepo</td></tr>
           <tr><td>Vitest + Playwright</td><td>Suite de tests unitarios, de integración y E2E</td></tr>
           <tr><td>Claude Code</td><td>Asistente de IA para desarrollo, revisión y documentación (bajo supervisión del equipo)</td></tr>
-          <tr><td>Google Docs / Sheets</td><td>Documentos de entregas de la cátedra y planificación</td></tr>
+          <tr><td>Google Docs / Sheets</td><td>Documentos internos del equipo y planificación</td></tr>
         </tbody>
       </table></div>
     </section>
@@ -558,7 +558,7 @@
           <tr><td>Google Cloud</td><td>Maps Platform (Places, Geocoding, Maps)</td><td>Crédito promocional</td><td class="num">$ 0*</td></tr>
           <tr><td>Resend</td><td>Emails transaccionales</td><td>Free (100/día)</td><td class="num">$ 0</td></tr>
           <tr><td>Mercado Pago</td><td>Procesamiento del cobro recurrente de las suscripciones premium</td><td>Sin costo fijo</td><td class="num">Comisión de MP por suscripción cobrada</td></tr>
-          <tr class="total"><td colspan="3">Costo de infraestructura de la etapa académica</td><td class="num">$ 0 / mes</td></tr>
+          <tr class="total"><td colspan="3">Costo de infraestructura de la etapa actual</td><td class="num">$ 0 / mes</td></tr>
         </tbody>
       </table></div>
       <p class="note">
@@ -606,7 +606,6 @@
         <tbody>
           <tr><td>Equipo desarrollador</td><td>Santino Vargas (PM), Luciana Begnes, Nicholas Reemeerie, Nahuel Montes Rojas, Mirko Ledesma</td><td>Diseña, construye, despliega y documenta el sistema</td></tr>
           <tr><td>Cliente</td><td>Javier Colucci</td><td>Define necesidades, valida el alcance y realiza las pruebas de aceptación</td></tr>
-          <tr><td>Cátedra</td><td>Prof. Lourdes Pedaci · Instituto Leonardo Murialdo</td><td>Veedora metodológica; evalúa las entregas E01–E06</td></tr>
         </tbody>
       </table></div>
 
@@ -627,7 +626,6 @@
           <tr><td>Definición del modelo de ingresos con el cliente</td><td>27/08/2026</td><td><span class="badge done">Cumplido</span></td></tr>
           <tr><td>Documentación pública y páginas legales</td><td>09/09/2026</td><td><span class="badge done">Cumplido</span></td></tr>
           <tr><td>Rediseño visual v1.0 en producción</td><td>23/09/2026</td><td><span class="badge done">Cumplido</span></td></tr>
-          <tr><td>Presentación final (E06)</td><td>Octubre 2026</td><td><span class="badge wip">Programado</span></td></tr>
         </tbody>
       </table></div>
 
@@ -673,8 +671,8 @@
 
       <h3><code>8.8</code> Firmas</h3>
       <p>
-        En el marco académico de la materia, las partes manifiestan su conformidad con este documento
-        en la instancia de presentación correspondiente, quedando la versión digital publicada como
+        Las partes manifiestan su conformidad con este documento como acuerdo interno de trabajo
+        entre el equipo de AlToque y el cliente, quedando la versión digital publicada como
         referencia del compromiso asumido.
       </p>
     </section>
@@ -690,7 +688,6 @@
           <tr><td>Mayo 2026</td><td>Clientes y profesionales de oficios reales</td><td>Relevamiento del problema: cómo se contrata hoy, qué falla, qué generaría confianza</td><td>Entrevistas presenciales</td></tr>
           <tr><td>Mayo–Junio 2026</td><td>Javier Colucci (cliente)</td><td>Validación de casos de uso y priorización del alcance inicial</td><td>Presencial</td></tr>
           <tr><td>Junio 2026</td><td>Equipo completo</td><td>Definición del blueprint técnico: modelo de datos, arquitectura y plan de 14 pasos</td><td>Reunión de equipo</td></tr>
-          <tr><td>Julio 2026</td><td>Equipo + cátedra</td><td>Seguimiento de entregas y ajuste metodológico</td><td>Clase</td></tr>
           <tr><td>Agosto 2026</td><td>Javier Colucci (cliente)</td><td>Revisión del modelo de cobro: evaluación del escrow vs. suscripción</td><td>Presencial</td></tr>
           <tr><td>Septiembre 2026</td><td>Equipo completo</td><td>Cierre de lanzamiento: documentación pública, legales y rediseño</td><td>Reunión de equipo</td></tr>
         </tbody>
@@ -735,7 +732,7 @@
           <tr><td>Modelo de cobro</td><td>Baja de escrow/comisiones → suscripción mensual</td><td>Menos fricción y carga operativa; validado con el cliente (Minuta 02)</td></tr>
           <tr><td>Autocompletado de direcciones</td><td>Migración a <code>PlaceAutocompleteElement</code> (nueva Places API)</td><td>Google discontinúa la API legacy para claves nuevas</td></tr>
           <tr><td>Realtime</td><td>Hook unificado con re-autenticación del WebSocket al refrescar el token</td><td>Los canales en vivo perdían autorización tras el refresh del JWT</td></tr>
-          <tr><td>Interfaz completa</td><td>Rediseño v1.0: paleta verde institucional, tipografía y componentes</td><td>Identidad propia y consistencia entre app y sitios de documentación</td></tr>
+          <tr><td>Interfaz completa</td><td>Rediseño v1.0: nueva paleta institucional, tipografía y componentes</td><td>Identidad propia y consistencia entre app y sitios de documentación</td></tr>
           <tr><td>Landing</td><td>Íconos de oficios alineados a los slugs del catálogo</td><td>Cinco oficios mostraban el ícono genérico por claves desactualizadas</td></tr>
         </tbody>
       </table></div>
@@ -794,8 +791,8 @@
       <p>
         El equipo garantiza el correcto funcionamiento de las funcionalidades comprometidas en el
         alcance (S-03.2, S-05) desde la puesta en producción y hasta 30 días después de la
-        presentación final (E06). Dentro de ese período, los errores reproducibles se corrigen sin
-        costo adicional.
+        publicación de cada versión registrada en el control de cambios (S-01). Dentro de ese
+        período, los errores reproducibles se corrigen sin costo adicional.
       </p>
 
       <h3><code>10.2</code> Qué cubre y qué no</h3>
@@ -858,9 +855,7 @@
           <tr><td>Manual de uso</td><td>Guía completa por rol: requisitos, flujos paso a paso, suscripción, solución de problemas y glosario</td><td><a href="https://altoque-manual.vercel.app" target="_blank" rel="noopener"><code>altoque-manual.vercel.app</code></a></td></tr>
           <tr><td>Preguntas frecuentes</td><td>Respuestas directas a las dudas más comunes de clientes y profesionales</td><td><a href="https://altoque-faq.vercel.app" target="_blank" rel="noopener"><code>altoque-faq.vercel.app</code></a></td></tr>
           <tr><td>Aplicación</td><td>El sistema en producción</td><td><a href="https://al-toque-eta.vercel.app" target="_blank" rel="noopener"><code>al-toque-eta.vercel.app</code></a></td></tr>
-          <tr><td>Landing de la materia</td><td>Presentación del proyecto para la cátedra: etapas, stack y metodología</td><td><a href="https://altoque-landing.vercel.app" target="_blank" rel="noopener"><code>altoque-landing.vercel.app</code></a></td></tr>
           <tr><td>Legales</td><td>Términos y Condiciones y Política de Privacidad (Ley 25.326)</td><td><a href="https://al-toque-eta.vercel.app/terminos" target="_blank" rel="noopener"><code>/terminos</code></a> · <a href="https://al-toque-eta.vercel.app/privacidad" target="_blank" rel="noopener"><code>/privacidad</code></a></td></tr>
-          <tr><td>Entregas anteriores</td><td>Materiales de las entregas E01–E05 de la cátedra</td><td><a href="https://linktr.ee/Altoque247" target="_blank" rel="noopener"><code>linktr.ee/Altoque247</code></a></td></tr>
         </tbody>
       </table></div>
 
@@ -890,8 +885,7 @@
 
 <footer>
   <strong>Al<span>Toque</span></strong> · Documentación del proyecto · versión 1.0 ·
-  Vargas, Begnes, Reemeerie, Montes Rojas, Ledesma · 7mo Informática A ·
-  Evaluación de Proyectos (Prof. L. Pedaci) · Instituto Leonardo Murialdo · Actualizado 23/09/2026
+  Equipo AlToque · Actualizado 23/09/2026
 </footer>
 
 <script src="assets/js/app.js"></script>

@@ -208,6 +208,6 @@ Si algo del checklist no lo podés hacer porque falta funcionalidad (ej: no est�
 ## Después del testing
 
 Con el resultado en la mano decidimos qué sigue:
-- Si todo funciona: lanzás el testing a más gente cercana (family & friends) y vamos con la landing de la tecnicatura
+- Si todo funciona: lanzás el testing a más gente cercana (family & friends) y seguimos con la difusión pública
 - Si hay bugs críticos: los arreglamos primero
 - Si hay bugs menores: los priorizamos y los metemos en la cola
