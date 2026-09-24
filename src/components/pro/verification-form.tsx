@@ -8,12 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { uploadVerification } from "@/lib/actions/provider";
 
-export function VerificationForm() {
+export function VerificationForm({
+  licenseRequired = false,
+  regulatedTrades = [],
+}: {
+  licenseRequired?: boolean;
+  regulatedTrades?: string[];
+}) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, startTransition] = useTransition();
-  const [dniName, setDniName] = useState("");
-  const [selfieName, setSelfieName] = useState("");
+  const [names, setNames] = useState<Record<string, string>>({});
+
+  function pick(field: string) {
+    return (n: string) => setNames((prev) => ({ ...prev, [field]: n }));
+  }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,8 +35,7 @@ export function VerificationForm() {
       }
       toast.success("¡Documentos enviados! Un admin va a revisarlos.");
       formRef.current?.reset();
-      setDniName("");
-      setSelfieName("");
+      setNames({});
       router.refresh();
     });
   }
@@ -35,19 +43,35 @@ export function VerificationForm() {
   return (
     <form ref={formRef} onSubmit={onSubmit} className="space-y-5">
       <FileField
-        name="dni"
-        label="Foto del DNI"
-        hint="Frente del documento, legible."
-        fileName={dniName}
-        onPick={setDniName}
+        name="dniFront"
+        label="DNI: frente"
+        hint="La cara del documento con tu foto, legible."
+        fileName={names.dniFront ?? ""}
+        onPick={pick("dniFront")}
+      />
+      <FileField
+        name="dniBack"
+        label="DNI: dorso"
+        hint="La parte de atrás del documento."
+        fileName={names.dniBack ?? ""}
+        onPick={pick("dniBack")}
       />
       <FileField
         name="selfie"
         label="Selfie"
         hint="Tu cara, con buena luz."
-        fileName={selfieName}
-        onPick={setSelfieName}
+        fileName={names.selfie ?? ""}
+        onPick={pick("selfie")}
       />
+      {licenseRequired && (
+        <FileField
+          name="license"
+          label="Matrícula habilitante"
+          hint={`Obligatoria para ${regulatedTrades.join(" y ") || "tu oficio"}: credencial o certificado vigente.`}
+          fileName={names.license ?? ""}
+          onPick={pick("license")}
+        />
+      )}
       <p className="text-xs text-muted-foreground">
         Tus documentos se guardan en un bucket privado y solo los ve el equipo
         de verificación. JPG, PNG, WEBP o PDF (máx. 6 MB).

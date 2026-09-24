@@ -3,15 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { sql, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { providerProfiles, providerCategories } from "@/lib/db/schema";
+import {
+  providerProfiles,
+  providerCategories,
+  categories,
+} from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import { geocodeAddress } from "@/lib/maps/geocode";
 import { createServiceClient } from "@/lib/supabase/server";
 import { BUCKETS } from "@/lib/storage-buckets";
 import {
   providerProfileSchema,
-  ACCEPTED_DOC_TYPES,
-  MAX_DOC_BYTES,
+  requiresLicense,
+  validateVerificationFiles,
 } from "@/lib/validations/provider";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -83,7 +87,11 @@ export async function updateProviderProfile(
   return { ok: true };
 }
 
-/** Sube DNI + selfie al bucket privado y deja el perfil en estado `pending`. */
+/**
+ * Sube DNI (frente + dorso) + selfie, y matrícula si el oficio la exige,
+ * al bucket privado. Deja el perfil en `pending` y limpia el motivo del
+ * rechazo anterior (si lo hubo).
+ */
 export async function uploadVerification(
   formData: FormData,
 ): Promise<ActionResult> {
@@ -93,57 +101,64 @@ export async function uploadVerification(
   }
   const uid = session.user.id;
 
-  const dni = formData.get("dni");
-  const selfie = formData.get("selfie");
+  // ¿Exige matrícula? Depende de los oficios cargados en el perfil.
+  const trades = await db
+    .select({ slug: categories.slug })
+    .from(providerCategories)
+    .innerJoin(categories, eq(categories.id, providerCategories.categoryId))
+    .where(eq(providerCategories.providerId, uid));
+  const licenseRequired = requiresLicense(trades.map((t) => t.slug));
 
-  const validation = validateFile(dni, "DNI") ?? validateFile(selfie, "selfie");
+  const files = {
+    dniFront: formData.get("dniFront"),
+    dniBack: formData.get("dniBack"),
+    selfie: formData.get("selfie"),
+    license: formData.get("license"),
+  };
+  const validation = validateVerificationFiles(files, { licenseRequired });
   if (validation) return { ok: false, error: validation };
 
-  const dniFile = dni as File;
-  const selfieFile = selfie as File;
   const supabase = createServiceClient();
   const stamp = Date.now();
 
-  const dniPath = `${uid}/dni-${stamp}.${EXT[dniFile.type]}`;
-  const selfiePath = `${uid}/selfie-${stamp}.${EXT[selfieFile.type]}`;
-
-  const up1 = await supabase.storage
-    .from(BUCKETS.verification)
-    .upload(dniPath, dniFile, { contentType: dniFile.type, upsert: true });
-  const up2 = await supabase.storage
-    .from(BUCKETS.verification)
-    .upload(selfiePath, selfieFile, {
-      contentType: selfieFile.type,
-      upsert: true,
+  const uploads: Array<{ file: File; path: string }> = [
+    { file: files.dniFront as File, path: `${uid}/dni-frente-${stamp}` },
+    { file: files.dniBack as File, path: `${uid}/dni-dorso-${stamp}` },
+    { file: files.selfie as File, path: `${uid}/selfie-${stamp}` },
+  ];
+  const hasLicense = files.license instanceof File && files.license.size > 0;
+  if (hasLicense) {
+    uploads.push({
+      file: files.license as File,
+      path: `${uid}/matricula-${stamp}`,
     });
+  }
 
-  if (up1.error || up2.error) {
-    return { ok: false, error: "No se pudieron subir los archivos." };
+  const paths: string[] = [];
+  for (const u of uploads) {
+    const fullPath = `${u.path}.${EXT[u.file.type]}`;
+    const { error } = await supabase.storage
+      .from(BUCKETS.verification)
+      .upload(fullPath, u.file, { contentType: u.file.type, upsert: true });
+    if (error) {
+      return { ok: false, error: "No se pudieron subir los archivos." };
+    }
+    paths.push(fullPath);
   }
 
   await db
     .update(providerProfiles)
     .set({
-      idDocumentUrl: dniPath,
-      selfieUrl: selfiePath,
+      idDocumentUrl: paths[0],
+      idDocumentBackUrl: paths[1],
+      selfieUrl: paths[2],
+      licenseUrl: hasLicense ? paths[3] : null,
       verificationStatus: "pending",
+      rejectionReason: null,
     })
     .where(eq(providerProfiles.profileId, uid));
 
   revalidatePath("/pro/verificacion");
   revalidatePath("/pro/inicio");
   return { ok: true };
-}
-
-function validateFile(file: FormDataEntryValue | null, label: string) {
-  if (!(file instanceof File) || file.size === 0) {
-    return `Subí el archivo de ${label}.`;
-  }
-  if (!ACCEPTED_DOC_TYPES.includes(file.type)) {
-    return `El ${label} debe ser JPG, PNG, WEBP o PDF.`;
-  }
-  if (file.size > MAX_DOC_BYTES) {
-    return `El ${label} supera el tamaño máximo (6 MB).`;
-  }
-  return null;
 }

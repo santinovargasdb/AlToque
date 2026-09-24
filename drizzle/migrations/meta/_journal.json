@@ -22,6 +22,13 @@
       "when": 1787832974093,
       "tag": "0002_harsh_microbe",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790253797573,
+      "tag": "0003_parallel_bullseye",
+      "breakpoints": true
     }
   ]
 }

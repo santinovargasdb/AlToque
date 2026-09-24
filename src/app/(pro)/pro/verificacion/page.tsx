@@ -3,25 +3,45 @@ import { eq } from "drizzle-orm";
 import { ShieldCheck, Clock, ShieldX } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { providerProfiles } from "@/lib/db/schema";
+import {
+  providerProfiles,
+  providerCategories,
+  categories,
+} from "@/lib/db/schema";
+import { requiresLicense, REGULATED_TRADE_SLUGS } from "@/lib/validations/provider";
 import { Badge } from "@/components/ui/badge";
 import { VerificationForm } from "@/components/pro/verification-form";
 
 export default async function VerificacionPage() {
   const { user } = await requireRole("provider");
 
-  const [pp] = await db
-    .select({
-      status: providerProfiles.verificationStatus,
-      dni: providerProfiles.idDocumentUrl,
-      selfie: providerProfiles.selfieUrl,
-    })
-    .from(providerProfiles)
-    .where(eq(providerProfiles.profileId, user.id))
-    .limit(1);
+  const [[pp], trades] = await Promise.all([
+    db
+      .select({
+        status: providerProfiles.verificationStatus,
+        dni: providerProfiles.idDocumentUrl,
+        dniBack: providerProfiles.idDocumentBackUrl,
+        selfie: providerProfiles.selfieUrl,
+        rejectionReason: providerProfiles.rejectionReason,
+      })
+      .from(providerProfiles)
+      .where(eq(providerProfiles.profileId, user.id))
+      .limit(1),
+    db
+      .select({ slug: categories.slug, name: categories.name })
+      .from(providerCategories)
+      .innerJoin(categories, eq(categories.id, providerCategories.categoryId))
+      .where(eq(providerCategories.providerId, user.id)),
+  ]);
 
   const status = pp?.status ?? "pending";
   const hasDocs = !!pp?.dni && !!pp?.selfie;
+  const licenseRequired = requiresLicense(trades.map((t) => t.slug));
+  const regulatedTrades = trades
+    .filter((t) =>
+      (REGULATED_TRADE_SLUGS as readonly string[]).includes(t.slug),
+    )
+    .map((t) => t.name);
 
   return (
     <div className="space-y-6">
@@ -61,18 +81,26 @@ export default async function VerificacionPage() {
             </div>
           )}
           {status === "rejected" && (
-            <div className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5">
-              <ShieldX className="size-6 text-destructive" />
+            <div className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5">
+              <ShieldX className="size-6 shrink-0 text-destructive" />
               <div>
                 <p className="font-medium">Verificación rechazada</p>
-                <p className="text-sm text-muted-foreground">
-                  Revisá que las fotos sean legibles y volvé a enviarlas.
+                {pp?.rejectionReason ? (
+                  <p className="mt-1 text-sm text-foreground">
+                    Motivo: {pp.rejectionReason}
+                  </p>
+                ) : null}
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Corregilo y volvé a enviar los documentos.
                 </p>
               </div>
             </div>
           )}
           <div className="rounded-xl border border-border bg-card p-5 shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
-            <VerificationForm />
+            <VerificationForm
+              licenseRequired={licenseRequired}
+              regulatedTrades={regulatedTrades}
+            />
           </div>
         </>
       )}

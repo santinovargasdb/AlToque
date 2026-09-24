@@ -77,8 +77,11 @@ export const providerProfiles = pgTable(
     verificationStatus: verificationStatusEnum("verification_status")
       .notNull()
       .default("pending"),
-    idDocumentUrl: text("id_document_url"), // bucket privado (DNI)
+    idDocumentUrl: text("id_document_url"), // bucket privado (DNI frente)
+    idDocumentBackUrl: text("id_document_back_url"), // bucket privado (DNI dorso)
     selfieUrl: text("selfie_url"), // bucket privado
+    licenseUrl: text("license_url"), // bucket privado (matrícula, oficios regulados)
+    rejectionReason: text("rejection_reason"), // último motivo de rechazo (admin)
     baseLocation: geographyPoint("base_location"), // punto base p/ matching
     serviceRadiusKm: integer("service_radius_km").notNull().default(10),
     isOnline: boolean("is_online").notNull().default(false),

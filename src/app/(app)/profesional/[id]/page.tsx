@@ -37,6 +37,7 @@ export default async function ProviderPublicProfile({
       jobsCompleted: providerProfiles.jobsCompleted,
       ratingAvg: providerProfiles.ratingAvg,
       status: providerProfiles.verificationStatus,
+      licenseUrl: providerProfiles.licenseUrl,
     })
     .from(providerProfiles)
     .innerJoin(profiles, eq(profiles.id, providerProfiles.profileId))
@@ -91,7 +92,8 @@ export default async function ProviderPublicProfile({
               <h1 className="font-heading text-2xl font-bold">
                 {prov.fullName ?? "Profesional"}
               </h1>
-              <VerifiedBadge />
+              <VerifiedBadge label="DNI verificado" />
+              {prov.licenseUrl && <VerifiedBadge label="Matrícula verificada" />}
             </div>
             <div className="mt-1">
               <RatingStars

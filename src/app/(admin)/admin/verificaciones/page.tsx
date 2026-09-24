@@ -16,7 +16,9 @@ export default async function AdminVerificacionesPage() {
       phone: profiles.phone,
       bio: providerProfiles.bio,
       dni: providerProfiles.idDocumentUrl,
+      dniBack: providerProfiles.idDocumentBackUrl,
       selfie: providerProfiles.selfieUrl,
+      license: providerProfiles.licenseUrl,
     })
     .from(providerProfiles)
     .innerJoin(profiles, eq(profiles.id, providerProfiles.profileId))
@@ -31,7 +33,9 @@ export default async function AdminVerificacionesPage() {
     pending.map(async (p) => ({
       ...p,
       dniUrl: p.dni ? await signedVerificationUrl(p.dni) : null,
+      dniBackUrl: p.dniBack ? await signedVerificationUrl(p.dniBack) : null,
       selfieUrl: p.selfie ? await signedVerificationUrl(p.selfie) : null,
+      licenseUrl: p.license ? await signedVerificationUrl(p.license) : null,
     })),
   );
 
@@ -69,9 +73,17 @@ export default async function AdminVerificacionesPage() {
                       {p.bio}
                     </p>
                   )}
-                  <div className="mt-3 flex gap-4 text-sm">
-                    <DocLink href={p.dniUrl} icon="doc" label="Ver DNI" />
-                    <DocLink href={p.selfieUrl} icon="img" label="Ver selfie" />
+                  <div className="mt-3 flex flex-wrap gap-4 text-sm">
+                    <DocLink href={p.dniUrl} icon="doc" label="DNI frente" />
+                    <DocLink href={p.dniBackUrl} icon="doc" label="DNI dorso" />
+                    <DocLink href={p.selfieUrl} icon="img" label="Selfie" />
+                    {p.license && (
+                      <DocLink
+                        href={p.licenseUrl}
+                        icon="doc"
+                        label="Matrícula"
+                      />
+                    )}
                   </div>
                 </div>
                 <VerificationActions providerId={p.id} />

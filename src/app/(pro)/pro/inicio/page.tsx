@@ -47,7 +47,7 @@ export default async function ProInicioPage() {
         ? "Aprobado"
         : docsSent
           ? "Documentos en revisión"
-          : "Subí tu DNI y selfie",
+          : "Subí tu DNI, selfie y matrícula si tu oficio la exige",
       href: "/pro/verificacion",
     },
   ];
