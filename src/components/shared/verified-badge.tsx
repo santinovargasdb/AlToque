@@ -14,7 +14,7 @@ export function VerifiedBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-[4px] border border-success/35 bg-primary-subtle px-2 py-0.5 text-[11px] font-medium text-success select-none",
+        "inline-flex items-center gap-1.5 rounded-md border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success select-none",
         className,
       )}
     >

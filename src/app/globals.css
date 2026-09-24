@@ -3,94 +3,100 @@
 @plugin "@tailwindcss/typography";
 
 /* ────────────────────────────────────────────────────────────
-   AlToque: Design System
-   Paleta: Verde pastel, blanco y neutros off-white suaves.
-   Enfoque sobrio, arquitectónico y estructurado (anti-vibecoded).
+   AlToque: Design System v2
+   Identidad original evolucionada: azul confianza + naranja "al toque".
+   Regla semántica: azul = confianza/verificación · naranja = urgencia/acción.
    Tailwind v4 + tokens shadcn/ui.
    ──────────────────────────────────────────────────────────── */
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Radios: 6px arquitectónico (0.375rem) */
-  --radius: 0.375rem;
+  /* Radio base 10px (cards 16px vía radius-xl) */
+  --radius: 0.625rem;
 
-  /* Superficies y fondo: Off-white natural suave */
-  --background: #f7faf8;
-  --foreground: #15241b;
+  /* Superficies: fondo slate frío muy claro, cards blancas */
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #15241b;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #15241b;
+  --popover-foreground: #0f172a;
 
-  /* Primary: Verde pastel sereno y balanceado */
-  --primary: #4e9b75;
+  /* Primary: azul confianza */
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --primary-hover: #428665;
-  --primary-subtle: #ebf5f0;
+  --primary-hover: #1d4ed8;
+  --primary-subtle: #eff6ff;
 
   /* Secondary / muted / accent */
-  --secondary: #eef4f0;
-  --secondary-foreground: #15241b;
-  --muted: #eef4f0;
-  --muted-foreground: #5a6e62;
-  --accent: #eef4f0;
-  --accent-foreground: #15241b;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
 
   /* Destructive */
-  --destructive: #c94a4a;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  /* Bordes / inputs / ring: delgados, nítidos (1px) */
-  --border: #e0e8e2;
-  --input: #e0e8e2;
-  --ring: #4e9b75;
+  /* Bordes / inputs / ring */
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
 
   /* ── Tokens semánticos de AlToque ── */
-  /* Acción / urgencia: terracota pastel suave, armónico con verde pastel */
-  --action: #d4775d;
+  /* Acción / urgencia: naranja "al toque" */
+  --action: #f97316;
   --action-foreground: #ffffff;
-  /* Éxito / verificado: verde pastel certificado */
-  --success: #3d8f66;
+  --action-hover: #ea580c;
+  --action-subtle: #fff7ed;
+  /* Éxito / verificado */
+  --success: #16a34a;
   --success-foreground: #ffffff;
   /* Advertencia */
-  --warning: #d99b38;
-  --warning-foreground: #15241b;
+  --warning: #f59e0b;
+  --warning-foreground: #0f172a;
 
   /* Charts */
-  --chart-1: #4e9b75;
-  --chart-2: #d4775d;
-  --chart-3: #3d8f66;
-  --chart-4: #d99b38;
-  --chart-5: #5a6e62;
+  --chart-1: #2563eb;
+  --chart-2: #f97316;
+  --chart-3: #16a34a;
+  --chart-4: #f59e0b;
+  --chart-5: #64748b;
 }
 
 .dark {
-  --background: #111a14;
-  --foreground: #f4f8f5;
-  --card: #18241c;
-  --card-foreground: #f4f8f5;
-  --popover: #18241c;
-  --popover-foreground: #f4f8f5;
-  --primary: #5ba882;
-  --primary-foreground: #111a14;
-  --secondary: #1f3025;
-  --secondary-foreground: #f4f8f5;
-  --muted: #1f3025;
-  --muted-foreground: #8aa092;
-  --accent: #1f3025;
-  --accent-foreground: #f4f8f5;
-  --destructive: #e06666;
+  --background: #0b1120;
+  --foreground: #f1f5f9;
+  --card: #111a2e;
+  --card-foreground: #f1f5f9;
+  --popover: #111a2e;
+  --popover-foreground: #f1f5f9;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --primary-hover: #2563eb;
+  --primary-subtle: #152547;
+  --secondary: #1e293b;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #f1f5f9;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #23362a;
-  --input: #23362a;
-  --ring: #5ba882;
-  --action: #e28c74;
-  --action-foreground: #111a14;
-  --success: #4ea878;
-  --success-foreground: #111a14;
-  --warning: #e2b35a;
-  --warning-foreground: #111a14;
+  --border: #233149;
+  --input: #233149;
+  --ring: #3b82f6;
+  --action: #fb923c;
+  --action-foreground: #0b1120;
+  --action-hover: #f97316;
+  --action-subtle: #33200f;
+  --success: #22c55e;
+  --success-foreground: #0b1120;
+  --warning: #fbbf24;
+  --warning-foreground: #0b1120;
 }
 
 /* Mapeo de tokens → utilidades Tailwind (bg-primary, text-muted-foreground, etc.) */
@@ -103,6 +109,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-subtle: var(--primary-subtle);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -118,6 +125,8 @@
 
   --color-action: var(--action);
   --color-action-foreground: var(--action-foreground);
+  --color-action-hover: var(--action-hover);
+  --color-action-subtle: var(--action-subtle);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
@@ -130,14 +139,14 @@
   --color-chart-5: var(--chart-5);
 
   /* Radios derivados */
-  --radius-sm: calc(var(--radius) - 2px);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
 
   /* Fuentes: inyectadas por next/font en el layout raíz */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
@@ -164,10 +173,48 @@
     letter-spacing: -0.02em;
   }
 
-  /* Elevación precisa basada en bordes y micro-sombra nítida */
+  /* Elevación: sombras suaves con tinte slate */
   :root {
-    --shadow-soft: 0 1px 2px rgba(21, 36, 27, 0.04);
-    --shadow-card: 0 1px 3px rgba(21, 36, 27, 0.05);
+    --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.05);
+    --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.07), 0 4px 12px rgba(15, 23, 42, 0.05);
+    --shadow-float: 0 24px 48px -12px rgba(15, 23, 42, 0.22);
+  }
+}
+
+/* ── Utilidades de marketing ──────────────────────────────────────────────── */
+
+/* Marquee de oficios: la pista duplica su contenido y se desplaza el 50% */
+@keyframes altoque-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: altoque-marquee 32s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Pulso "en vivo" del despacho urgente */
+@keyframes altoque-ping {
+  75%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+.animate-live-ping {
+  animation: altoque-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-live-ping {
+    animation: none;
   }
 }
 

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import {
   Inter,
-  Plus_Jakarta_Sans,
+  Bricolage_Grotesque,
   JetBrains_Mono,
 } from "next/font/google";
 import { Toaster } from "sonner";
@@ -14,10 +14,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["600", "700"],
-  variable: "--font-jakarta",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#4E9B75",
+  themeColor: "#2563EB",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -73,7 +73,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} antialiased`}
+        className={`${inter.variable} ${bricolage.variable} ${jetbrains.variable} antialiased`}
       >
         <Providers>{children}</Providers>
         <Toaster richColors position="top-center" />
