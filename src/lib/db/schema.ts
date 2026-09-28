@@ -15,6 +15,19 @@ import {
 import { relations } from "drizzle-orm";
 import { geographyPoint } from "./geography";
 
+// ── Enums de suscripción ──
+export const subscriptionPlanEnum = pgEnum("subscription_plan", [
+  "provider_monthly",
+  "client_monthly",
+]);
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "pending",
+  "active",
+  "past_due",
+  "paused",
+  "cancelled",
+]);
+
 /* ────────────────────────────────────────────────────────────
    AlToque: Schema Drizzle (Sección 4 del blueprint)
    Tras `db:migrate`, correr drizzle/postgis.sql (PostGIS, índices
@@ -89,6 +102,7 @@ export const providerProfiles = pgTable(
       .notNull()
       .default("0.0"),
     jobsCompleted: integer("jobs_completed").notNull().default(0),
+    subscriptionActive: boolean("subscription_active").notNull().default(false),
   },
   (t) => [
     index("idx_provider_online").on(t.isOnline, t.verificationStatus),
@@ -230,6 +244,36 @@ export const messages = pgTable(
   (t) => [index("idx_messages_job").on(t.jobId)],
 );
 
+// ── subscriptions (suscripciones mensuales vía Mercado Pago Preapproval) ──
+// Un registro por usuario por plan. Se upsertea al crear o renovar.
+// `mp_preapproval_id` tiene índice UNIQUE parcial (ver migración) para
+// garantizar idempotencia en el handler del webhook.
+export const subscriptions = pgTable(
+  "subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    profileId: uuid("profile_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    plan: subscriptionPlanEnum("plan").notNull(),
+    status: subscriptionStatusEnum("status").notNull().default("pending"),
+    mpPreapprovalId: text("mp_preapproval_id"),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    unique("subscriptions_profile_id_plan_unique").on(t.profileId, t.plan),
+    index("idx_subscriptions_mp_preapproval").on(t.mpPreapprovalId),
+    index("idx_subscriptions_profile").on(t.profileId),
+  ],
+);
+
 // ── push_subscriptions ──
 export const pushSubscriptions = pgTable("push_subscriptions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -358,6 +402,13 @@ export const messagesRelations = relations(messages, ({ one }) => ({
   job: one(jobs, { fields: [messages.jobId], references: [jobs.id] }),
   sender: one(profiles, {
     fields: [messages.senderId],
+    references: [profiles.id],
+  }),
+}));
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [subscriptions.profileId],
     references: [profiles.id],
   }),
 }));

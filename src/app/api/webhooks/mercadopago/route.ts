@@ -1,26 +1,39 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isValidWebhookSignature } from "@/lib/mercadopago/webhook";
+import { fetchPreApprovalStatus } from "@/lib/mercadopago/subscriptions";
+import { processPreapprovalEvent } from "@/lib/actions/subscription";
+
+type WebhookBody = {
+  type?: string;
+  topic?: string;
+  data?: { id?: string | number };
+};
 
 /**
- * Webhook de Mercado Pago. Verifica la firma HMAC (regla #2) y responde 200.
- * El procesamiento de eventos de pago por operación (escrow) se dio de baja
- * con el cambio al modelo de suscripción (spec 2026-07-31-modelo-suscripcion);
- * acá se van a procesar los eventos de suscripción (`preapproval`) cuando se
- * implemente ese modelo. El endpoint queda activo para no perder la URL
- * registrada en MP ni el mecanismo de seguridad.
+ * Webhook de Mercado Pago.
+ * Verificación: HMAC-SHA256 sobre el manifest `id:<data.id>;request-id:<x-request-id>;ts:<ts>;`
+ * usando la cabecera `x-signature` y el secreto `MP_WEBHOOK_SECRET`.
+ * Ver implementación en lib/mercadopago/webhook.ts → WebhookSignatureValidator (SDK oficial).
+ *
+ * @pagokit:signature-verified — verificación delegada a isValidWebhookSignature (lib/mercadopago/webhook.ts)
  */
+// @pagokit:signature-verified
 export async function POST(request: NextRequest) {
+  // Leer body como texto crudo; JSON.parse DESPUÉS de verificar la firma
+  const rawBody = await request.text();
   const url = new URL(request.url);
-  let dataId = url.searchParams.get("data.id");
+  const queryDataId = url.searchParams.get("data.id");
 
-  // MP suele mandar `data.id` en la query, pero según el evento puede venir
-  // sólo en el body JSON ({ type, data: { id } }). Caemos al body.
-  if (!dataId) {
-    const body = (await request.json().catch(() => null)) as
-      | { data?: { id?: string | number } }
-      | null;
-    dataId = body?.data?.id != null ? String(body.data.id) : null;
+  let body: WebhookBody | null = null;
+  try {
+    body = JSON.parse(rawBody) as WebhookBody;
+  } catch {
+    // body permanece null — dataId se tomará de la query si existe
   }
+
+  const dataId =
+    queryDataId ??
+    (body?.data?.id != null ? String(body.data.id) : null);
 
   if (
     !isValidWebhookSignature({
@@ -30,6 +43,16 @@ export async function POST(request: NextRequest) {
     })
   ) {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
+  }
+
+  const topic = body?.type ?? body?.topic ?? "";
+  const isSubscriptionEvent =
+    topic === "subscription_preapproval" || topic === "preapproval";
+
+  if (isSubscriptionEvent && dataId) {
+    fetchPreApprovalStatus(dataId)
+      .then((mpStatus) => processPreapprovalEvent(dataId, mpStatus))
+      .catch(console.error);
   }
 
   return NextResponse.json({ ok: true });

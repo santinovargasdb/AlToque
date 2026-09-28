@@ -37,6 +37,23 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/suscripcion",
+    label: "Premium",
+    svg: (
+      <svg
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        className="size-5"
+      >
+        <path d="M10 2.5 11.8 7.6 17.1 7.7 12.9 10.9 14.4 16.1 10 13 5.6 16.1 7.1 10.9 2.9 7.7 8.2 7.6Z" />
+      </svg>
+    ),
+  },
+  {
     href: "/perfil",
     label: "Perfil",
     svg: (
@@ -78,7 +95,7 @@ export default async function AppLayout({
 
       {/* Barra de navegación inferior móvil */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card">
-        <div className="mx-auto grid max-w-2xl grid-cols-4">
+        <div className="mx-auto grid max-w-2xl grid-cols-5">
           {NAV_ITEMS.map(({ href, label, svg }) => (
             <Link
               key={href}
