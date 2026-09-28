@@ -21,14 +21,9 @@ const FREE_FEATURES = [
 
 const PREMIUM_FEATURES = [
   "Todo lo incluido en el plan gratuito",
-  "Pedidos urgentes con despacho inmediato",
-  "Prioridad en el matching (primero en la cola)",
-  "Tiempo de respuesta garantizado en 15 minutos",
-  "Historial completo de trabajos + re-booking",
-  "Gestión de múltiples propiedades (hasta 10)",
-  "Calendario de mantenimiento preventivo",
-  "Rangos de tarifa pre-acordados (sin sorpresas)",
-  "Soporte dedicado en disputas",
+  "Pedidos urgentes, no solo agendados",
+  "Despacho en tiempo real a los profesionales cercanos disponibles",
+  "Aviso al instante cuando un profesional acepta tu urgencia",
 ];
 
 function formatDate(d: Date) {

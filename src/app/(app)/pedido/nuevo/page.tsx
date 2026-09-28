@@ -10,6 +10,7 @@ import {
   providerCategories,
   categories,
 } from "@/lib/db/schema";
+import { hasActiveClientSubscription } from "@/lib/subscriptions/status";
 import { Button } from "@/components/ui/button";
 import { NewOrderWizard } from "@/components/app/new-order-wizard";
 
@@ -44,6 +45,8 @@ export default async function NuevoPedidoPage({
     .where(eq(providerCategories.providerId, providerId))
     .orderBy(categories.name);
 
+  const canUrgent = await hasActiveClientSubscription(user.id);
+
   return (
     <div className="space-y-6">
       <h1 className="font-heading text-2xl font-bold">Nuevo pedido</h1>
@@ -52,6 +55,7 @@ export default async function NuevoPedidoPage({
         providerId={providerId}
         providerName={prov.name ?? "el profesional"}
         categories={provCats}
+        canUrgent={canUrgent}
       />
     </div>
   );

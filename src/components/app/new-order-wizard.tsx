@@ -27,6 +27,7 @@ export function NewOrderWizard({
   categories,
   defaultCategoryId,
   initialAddress,
+  canUrgent = false,
 }: {
   userId: string;
   mode?: "direct" | "broadcast";
@@ -35,6 +36,7 @@ export function NewOrderWizard({
   categories: Category[];
   defaultCategoryId?: string;
   initialAddress?: AddressValue;
+  canUrgent?: boolean;
 }) {
   const router = useRouter();
   const isBroadcast = mode === "broadcast";
@@ -86,6 +88,11 @@ export function NewOrderWizard({
         providerId: isBroadcast ? undefined : providerId,
       });
       if (!res.ok) {
+        if (res.code === "premium_required") {
+          toast.error("Las urgencias son parte de AlToque Premium.");
+          router.push("/suscripcion");
+          return;
+        }
         toast.error(res.error);
         return;
       }
@@ -178,9 +185,14 @@ export function NewOrderWizard({
                 />
                 <TypeOption
                   active={type === "urgent"}
-                  onClick={() => setType("urgent")}
+                  onClick={
+                    canUrgent
+                      ? () => setType("urgent")
+                      : () => router.push("/suscripcion")
+                  }
                   title="Urgente"
-                  desc="Lo antes posible"
+                  desc={canUrgent ? "Lo antes posible" : "Con AlToque Premium"}
+                  badge={canUrgent ? undefined : "Premium"}
                 />
               </div>
               {type === "scheduled" && (
@@ -277,11 +289,13 @@ function TypeOption({
   onClick,
   title,
   desc,
+  badge,
 }: {
   active: boolean;
   onClick: () => void;
   title: string;
   desc: string;
+  badge?: string;
 }) {
   return (
     <button
@@ -292,7 +306,14 @@ function TypeOption({
         active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40",
       )}
     >
-      <span className="block font-medium">{title}</span>
+      <span className="flex items-center gap-2">
+        <span className="font-medium">{title}</span>
+        {badge && (
+          <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+            {badge}
+          </span>
+        )}
+      </span>
       <span className="block text-xs text-muted-foreground">{desc}</span>
     </button>
   );

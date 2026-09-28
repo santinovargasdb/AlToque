@@ -7,6 +7,7 @@ import { jobs, jobDispatch, providerProfiles } from "@/lib/db/schema";
 import { findNearbyProviders } from "@/lib/db/queries";
 import { dispatchNewUrgentJob } from "@/lib/notifications/dispatch";
 import { getSession } from "@/lib/auth";
+import { hasActiveClientSubscription } from "@/lib/subscriptions/status";
 import { geocodeAddress } from "@/lib/maps/geocode";
 import { createJobSchema, setFinalPriceSchema } from "@/lib/validations/job";
 import type { ActionResult } from "./provider";
@@ -15,7 +16,7 @@ const URGENT_BROADCAST_LIMIT = 10;
 
 export type CreateJobResult =
   | { ok: true; jobId: string }
-  | { ok: false; error: string };
+  | { ok: false; error: string; code?: "premium_required" };
 
 /**
  * Crea un pedido (agendado o urgente). El pago del servicio se acuerda entre
@@ -36,6 +37,20 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
     };
   }
   const data = parsed.data;
+
+  // Los pedidos urgentes son exclusivos de AlToque Premium (client_monthly).
+  // Gate server-side: no puede saltearse desde el cliente.
+  if (data.type === "urgent") {
+    const isPremium = await hasActiveClientSubscription(session.user.id);
+    if (!isPremium) {
+      return {
+        ok: false,
+        code: "premium_required",
+        error:
+          "Los pedidos urgentes son parte de AlToque Premium. Activá tu suscripción para despachar urgencias.",
+      };
+    }
+  }
 
   let { lat, lng } = data;
   if (lat == null || lng == null) {
