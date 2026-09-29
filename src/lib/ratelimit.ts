@@ -18,14 +18,28 @@ const token = env.UPSTASH_REDIS_REST_TOKEN;
 const redis = url && token ? new Redis({ url, token }) : null;
 
 /**
- * Límite de auth: 5 intentos cada 15 minutos por clave (ip+email).
- * Se usa en login, registro y reset de contraseña. `null` si no hay Redis.
+ * Login: 10 intentos cada 15 min por (ip+email). Más tolerante: un usuario
+ * legítimo puede tipear mal la contraseña varias veces (sobre todo en mobile)
+ * sin quedar bloqueado, y 10/15min igual frena la fuerza bruta en seco.
  */
-export const authLimiter = redis
+export const loginLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, "15 m"),
+      prefix: "rl:login",
+      analytics: false,
+    })
+  : null;
+
+/**
+ * Registro y reset de contraseña: 5 cada 15 min por (ip+email). Más ajustado:
+ * no hay razón legítima para repetirlos tanto, y evita spam de emails.
+ */
+export const sensitiveLimiter = redis
   ? new Ratelimit({
       redis,
       limiter: Ratelimit.slidingWindow(5, "15 m"),
-      prefix: "rl:auth",
+      prefix: "rl:sensitive",
       analytics: false,
     })
   : null;

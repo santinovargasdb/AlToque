@@ -9,9 +9,10 @@ las env de Upstash, `allow()` es **no-op** (deja pasar todo) → la app funciona
 igual. Apenas cargás las 2 variables, se activa el límite **sin tocar más código
 ni redeployar código** (solo un redeploy para tomar las env vars).
 
-Límite actual: **5 intentos cada 15 minutos** por `ip + email`, con buckets
-separados para login / registro / reset (prefijos `login:` / `signup:` /
-`reset:`). Fail-open: si Redis se cae, no bloquea a usuarios legítimos.
+Límites por `ip + email` (buckets separados): **login 10 / 15 min**,
+**registro y reset 5 / 15 min**. El login es más tolerante para no bloquear a
+un usuario que tipea mal la contraseña; registro/reset van más ajustados.
+Fail-open: si Redis se cae, no bloquea a usuarios legítimos.
 
 ## Para activarlo (5 minutos, una vez)
 
@@ -35,18 +36,18 @@ Ya están declaradas en `src/lib/env.ts` (opcionales, validadas con Zod) y en
 ## Cómo verificar que quedó activo
 
 Después de setear las env vars y redeployar, en `/ingresar` meté mal la
-contraseña 6 veces seguidas con el mismo email: a partir del 6º intento tenés
+contraseña 11 veces seguidas con el mismo email: a partir del 11º intento tenés
 que ver **"Demasiados intentos. Esperá unos minutos y volvé a probar."** (antes
 de eso, "Email o contraseña incorrectos"). En el dashboard de Upstash vas a ver
-las keys `rl:auth:login:...` con su contador.
+las keys `rl:login:...` con su contador.
 
 ## Ajustar el límite
 
-En `src/lib/ratelimit.ts`, `authLimiter` usa
-`Ratelimit.slidingWindow(5, "15 m")`. Cambiá esos números para endurecer o
-aflojar. Para agregar el límite a otro endpoint (ej. `POST /api/push/subscribe`),
-importá `allow` + un limiter nuevo y llamalo al inicio del handler con una clave
-(`userId`, `ip`, etc.).
+En `src/lib/ratelimit.ts`, `loginLimiter` usa `slidingWindow(10, "15 m")` y
+`sensitiveLimiter` usa `slidingWindow(5, "15 m")`. Cambiá esos números para
+endurecer o aflojar. Para agregar el límite a otro endpoint (ej.
+`POST /api/push/subscribe`), importá `allow` + un limiter nuevo y llamalo al
+inicio del handler con una clave (`userId`, `ip`, etc.).
 
 ## Alternativa sin código: Vercel Firewall
 

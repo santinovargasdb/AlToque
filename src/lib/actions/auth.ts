@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
 import { getSession, homeForRole, isProfileComplete } from "@/lib/auth";
-import { allow, authLimiter, clientIp } from "@/lib/ratelimit";
+import { allow, clientIp, loginLimiter, sensitiveLimiter } from "@/lib/ratelimit";
 import { getRequestOrigin } from "@/lib/url";
 import { logAuthError } from "@/lib/auth-log";
 import { logSecurityEvent, isNewLoginContext } from "@/lib/audit";
@@ -67,7 +67,7 @@ export async function signUpWithPassword(
   const data = parsed.data;
 
   const ip = await clientIp();
-  if (!(await allow(authLimiter, `signup:${ip}:${data.email}`))) {
+  if (!(await allow(sensitiveLimiter, `signup:${ip}:${data.email}`))) {
     return {
       ok: false,
       error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
@@ -127,7 +127,7 @@ export async function signInWithPassword(
   }
 
   const ip = await clientIp();
-  if (!(await allow(authLimiter, `login:${ip}:${parsed.data.email}`))) {
+  if (!(await allow(loginLimiter, `login:${ip}:${parsed.data.email}`))) {
     return {
       ok: false,
       error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
@@ -180,7 +180,7 @@ export async function requestPasswordReset(
   }
 
   const ip = await clientIp();
-  if (!(await allow(authLimiter, `reset:${ip}:${parsed.data.email}`))) {
+  if (!(await allow(sensitiveLimiter, `reset:${ip}:${parsed.data.email}`))) {
     return {
       ok: false,
       error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
