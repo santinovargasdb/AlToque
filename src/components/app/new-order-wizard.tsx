@@ -2,12 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { ease, spring } from "@/lib/motion";
 import { MapsProvider } from "@/components/shared/maps-provider";
 import {
   AddressAutocomplete,
@@ -39,9 +41,11 @@ export function NewOrderWizard({
   canUrgent?: boolean;
 }) {
   const router = useRouter();
+  const reduce = useReducedMotion();
   const isBroadcast = mode === "broadcast";
   const [pending, startTransition] = useTransition();
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1);
 
   const [categoryId, setCategoryId] = useState(
     defaultCategoryId ?? categories[0]?.id ?? "",
@@ -66,6 +70,7 @@ export function NewOrderWizard({
     if (step === 2 && (address.lat == null || address.lng == null)) {
       return toast.error("Indicá dónde es el trabajo.");
     }
+    setDirection(1);
     setStep((s) => Math.min(3, s + 1));
   }
 
@@ -113,7 +118,19 @@ export function NewOrderWizard({
         <span className="ml-auto">Paso {step} de 3</span>
       </div>
 
-      {step === 1 && (
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={step}
+          initial={
+            reduce ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? 24 : -24 }
+          }
+          animate={{ opacity: 1, x: 0 }}
+          exit={
+            reduce ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? -24 : 24 }
+          }
+          transition={{ duration: 0.26, ease: ease.move }}
+        >
+          {step === 1 && (
         <div className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="cat">Oficio</Label>
@@ -240,14 +257,19 @@ export function NewOrderWizard({
             </p>
           </div>
         </div>
-      )}
+          )}
+        </motion.div>
+      </AnimatePresence>
 
       <div className="flex gap-2">
         {step > 1 && (
           <Button
             type="button"
             variant="outline"
-            onClick={() => setStep((s) => s - 1)}
+            onClick={() => {
+              setDirection(-1);
+              setStep((s) => s - 1);
+            }}
             disabled={pending}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -298,9 +320,11 @@ function TypeOption({
   badge?: string;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      whileTap={{ scale: 0.98 }}
+      transition={spring.snappy}
       className={cn(
         "rounded-md border p-3 text-left transition-colors duration-150",
         active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40",
@@ -315,7 +339,7 @@ function TypeOption({
         )}
       </span>
       <span className="block text-xs text-muted-foreground">{desc}</span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -333,9 +357,11 @@ function PaymentOption({
   desc: string;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      whileTap={{ scale: 0.98 }}
+      transition={spring.snappy}
       className={cn(
         "flex items-center gap-3 rounded-md border p-3 text-left transition-colors duration-150",
         active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40",
@@ -346,6 +372,6 @@ function PaymentOption({
         <span className="block font-medium">{title}</span>
         <span className="block text-xs text-muted-foreground">{desc}</span>
       </span>
-    </button>
+    </motion.button>
   );
 }

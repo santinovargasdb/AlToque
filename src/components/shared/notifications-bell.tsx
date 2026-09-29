@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { useRouter } from "next/navigation";
 import {
@@ -14,6 +15,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatDateTime } from "@/lib/utils";
+import { ease, spring } from "@/lib/motion";
 
 /** Fila de `notifications` (snake_case, como llega de supabase-js/Realtime). */
 type NotificationRow = {
@@ -52,6 +54,7 @@ const TYPE_ICON: Record<string, typeof Bell> = {
  */
 export function NotificationsBell({ userId }: { userId: string }) {
   const router = useRouter();
+  const reduce = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationRow[] | null>(null);
   const [unread, setUnread] = useState(0);
@@ -155,9 +158,15 @@ export function NotificationsBell({ userId }: { userId: string }) {
       >
         <Bell className="size-4" />
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground animate-in zoom-in duration-200">
+          <motion.span
+            key={unread}
+            initial={reduce ? false : { scale: 0.4 }}
+            animate={{ scale: 1 }}
+            transition={spring.snappy}
+            className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground"
+          >
             {unread > 9 ? "9+" : unread}
-          </span>
+          </motion.span>
         )}
       </button>
 
@@ -202,11 +211,21 @@ export function NotificationsBell({ userId }: { userId: string }) {
                 </p>
               ) : (
                 <ul>
-                  {items.map((n) => {
+                  {items.map((n, idx) => {
                     const Icon = TYPE_ICON[n.type] ?? Bell;
                     const isUnread = !n.read_at;
                     return (
-                      <li key={n.id} className="border-b border-border last:border-0">
+                      <motion.li
+                        key={n.id}
+                        initial={reduce ? false : { opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.2,
+                          ease: ease.enter,
+                          delay: reduce ? 0 : Math.min(idx * 0.03, 0.24),
+                        }}
+                        className="border-b border-border last:border-0"
+                      >
                         <button
                           type="button"
                           onClick={() => onItemClick(n)}
@@ -250,7 +269,7 @@ export function NotificationsBell({ userId }: { userId: string }) {
                             />
                           )}
                         </button>
-                      </li>
+                      </motion.li>
                     );
                   })}
                 </ul>

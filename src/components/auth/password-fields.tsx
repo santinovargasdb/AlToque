@@ -1,9 +1,11 @@
 "use client";
 
+import { motion, useReducedMotion } from "motion/react";
 import { Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { spring } from "@/lib/motion";
 import { PASSWORD_RULES } from "@/lib/validations/auth";
 
 /**
@@ -25,6 +27,7 @@ export function PasswordFields({
   autoFocus?: boolean;
 }) {
   const mismatch = confirmPassword.length > 0 && password !== confirmPassword;
+  const reduce = useReducedMotion();
 
   return (
     <>
@@ -52,7 +55,14 @@ export function PasswordFields({
                 )}
               >
                 {passed ? (
-                  <Check className="size-3.5" />
+                  <motion.span
+                    className="inline-flex"
+                    initial={reduce ? false : { scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={spring.snappy}
+                  >
+                    <Check className="size-3.5" />
+                  </motion.span>
                 ) : (
                   <X className="size-3.5" />
                 )}

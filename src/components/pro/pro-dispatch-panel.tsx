@@ -2,8 +2,10 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { spring } from "@/lib/motion";
 import { toggleOnline, getIncomingJobs } from "@/lib/actions/dispatch";
 import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { IncomingJobCard } from "./incoming-job-card";
@@ -21,6 +23,7 @@ export function ProDispatchPanel({
   initialOnline: boolean;
 }) {
   const qc = useQueryClient();
+  const reduce = useReducedMotion();
   const [online, setOnline] = useState(initialOnline);
   const [pending, startTransition] = useTransition();
 
@@ -125,11 +128,10 @@ export function ProDispatchPanel({
             online ? "bg-success" : "bg-muted",
           )}
         >
-          <span
-            className={cn(
-              "inline-block size-5 transform rounded-full bg-white transition-transform duration-150",
-              online ? "translate-x-5" : "translate-x-0.5",
-            )}
+          <motion.span
+            className="inline-block size-5 rounded-full bg-white shadow-sm"
+            animate={{ x: online ? 20 : 2 }}
+            transition={reduce ? { duration: 0 } : spring.snappy}
           />
         </button>
       </div>
