@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { Camera, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { BUCKETS } from "@/lib/storage-buckets";
+import { ease } from "@/lib/motion";
 import { updateAvatar } from "@/lib/actions/profile";
 import {
   AVATAR_MAX_BYTES,
@@ -44,6 +46,7 @@ export function AvatarUploader({
   name: string | null;
 }) {
   const router = useRouter();
+  const reduce = useReducedMotion();
   const inputRef = useRef<HTMLInputElement>(null);
   const objectUrlRef = useRef<string | null>(null);
   const [preview, setPreview] = useState<string | null>(initialUrl);
@@ -135,10 +138,14 @@ export function AvatarUploader({
         <div className="flex size-24 items-center justify-center overflow-hidden rounded-full border border-border bg-primary/10 font-heading text-3xl font-bold text-primary">
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <motion.img
+              key={preview}
               src={preview}
               alt="Foto de perfil"
               className="size-full object-cover"
+              initial={reduce ? false : { opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.25, ease: ease.enter }}
             />
           ) : (
             fallbackInitial
