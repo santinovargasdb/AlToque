@@ -140,7 +140,7 @@ export function LiveMatch() {
           aria-hidden="true"
           className="absolute -right-[3px] top-[150px] h-16 w-[3px] rounded-r bg-slate-700"
         />
-        <div className="relative flex min-h-[588px] flex-col overflow-hidden rounded-[1.9rem] bg-background">
+        <div className="relative flex min-h-[500px] flex-col overflow-hidden rounded-[1.9rem] bg-background">
           {/* Reflejo sutil de pantalla */}
           <span
             aria-hidden="true"
@@ -412,7 +412,7 @@ export function LiveMatch() {
 
       {/* Tarjeta flotante: reseña real (desktop), abajo-izquierda del teléfono */}
       <motion.div
-        className="absolute -left-16 bottom-20 hidden w-48 rounded-xl border border-border bg-card/95 p-2.5 backdrop-blur [box-shadow:var(--shadow-card)] lg:block"
+        className="absolute -left-16 bottom-3 hidden w-48 rounded-xl border border-border bg-card/95 p-2.5 backdrop-blur [box-shadow:var(--shadow-card)] lg:block"
         animate={active ? { y: [0, 6, 0] } : { y: 0 }}
         transition={
           active
