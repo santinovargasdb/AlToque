@@ -1,4 +1,5 @@
 import { emailLayout, emailButton } from "./layout";
+import { escapeHtml } from "./escape";
 import type { EmailContent } from "./welcome";
 
 const DATE_FMT = new Intl.DateTimeFormat("es-AR", {
@@ -27,11 +28,11 @@ export function securityAlertEmail(params: {
 }): EmailContent {
   const bodyHtml = `
     <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">🔒 Alerta de seguridad</h1>
-    <p style="margin:0 0 16px;">Hola ${params.name}: detectamos <strong>${params.eventLabel}</strong> en tu cuenta de AlToque.</p>
+    <p style="margin:0 0 16px;">Hola ${escapeHtml(params.name)}: detectamos <strong>${params.eventLabel}</strong> en tu cuenta de AlToque.</p>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;margin:0 0 16px;">
       <tr><td style="padding:12px 16px;font-size:14px;color:#64748B;">Fecha</td><td style="padding:12px 16px;font-size:14px;text-align:right;font-weight:600;">${DATE_FMT.format(params.date)} (AR)</td></tr>
-      <tr><td style="padding:0 16px 12px;font-size:14px;color:#64748B;">Dispositivo</td><td style="padding:0 16px 12px;font-size:14px;text-align:right;font-weight:600;">${params.browser} · ${params.os}</td></tr>
-      <tr><td style="padding:0 16px 12px;font-size:14px;color:#64748B;">Dirección IP</td><td style="padding:0 16px 12px;font-size:14px;text-align:right;font-weight:600;">${params.ipAddress ?? "No disponible"}</td></tr>
+      <tr><td style="padding:0 16px 12px;font-size:14px;color:#64748B;">Dispositivo</td><td style="padding:0 16px 12px;font-size:14px;text-align:right;font-weight:600;">${escapeHtml(params.browser)} · ${escapeHtml(params.os)}</td></tr>
+      <tr><td style="padding:0 16px 12px;font-size:14px;color:#64748B;">Dirección IP</td><td style="padding:0 16px 12px;font-size:14px;text-align:right;font-weight:600;">${escapeHtml(params.ipAddress ?? "No disponible")}</td></tr>
     </table>
     <p style="margin:0 0 4px;"><strong>¿Fuiste vos?</strong> No hace falta que hagas nada.</p>
     <p style="margin:0 0 16px;color:#64748B;">Si no reconocés esta actividad, cambiá tu contraseña ahora y cerrá la sesión en todos los dispositivos desde tu perfil.</p>

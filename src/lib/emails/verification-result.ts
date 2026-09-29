@@ -1,4 +1,5 @@
 import { emailLayout, emailButton } from "./layout";
+import { escapeHtml } from "./escape";
 import type { EmailContent } from "./welcome";
 
 /**
@@ -14,7 +15,7 @@ export function verificationResultEmail(params: {
 }): EmailContent {
   if (params.status === "approved") {
     const bodyHtml = `
-      <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">¡Tu verificación fue aprobada, ${params.name}!</h1>
+      <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">¡Tu verificación fue aprobada, ${escapeHtml(params.name)}!</h1>
       <p style="margin:0 0 16px;">Ya aparecés en las búsquedas de tu zona. Ponete en línea para empezar a recibir pedidos urgentes, o esperá los agendados de tus oficios.</p>
       ${emailButton("Ir a mi panel", `${params.appUrl}/pro/inicio`)}
     `;
@@ -29,7 +30,7 @@ export function verificationResultEmail(params: {
   }
 
   const bodyHtml = `
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">Necesitamos que revises tus documentos, ${params.name}</h1>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">Necesitamos que revises tus documentos, ${escapeHtml(params.name)}</h1>
     <p style="margin:0 0 12px;">Tu verificación fue rechazada por este motivo:</p>
     <blockquote style="margin:0 0 16px;padding:12px 16px;border-left:3px solid #DC2626;background:#FEF2F2;color:#0F172A;">${escapeHtml(params.reason ?? "Documentos ilegibles o incompletos.")}</blockquote>
     <p style="margin:0 0 16px;">Corregilo y volvé a enviar los documentos: la revisión es rápida.</p>
@@ -43,12 +44,4 @@ export function verificationResultEmail(params: {
       bodyHtml,
     }),
   };
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

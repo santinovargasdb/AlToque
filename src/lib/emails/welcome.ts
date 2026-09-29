@@ -1,4 +1,5 @@
 import { emailLayout, emailButton } from "./layout";
+import { escapeHtml } from "./escape";
 
 export type EmailContent = { subject: string; html: string };
 
@@ -16,7 +17,7 @@ export function welcomeEmail(params: {
   const home = `${params.appUrl}${isPro ? "/pro/inicio" : "/inicio"}`;
 
   const bodyHtml = `
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">¡Bienvenido a AlToque, ${params.name}! 👋</h1>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;">¡Bienvenido a AlToque, ${escapeHtml(params.name)}! 👋</h1>
     <p style="margin:0 0 16px;">Tu cuenta ya está lista.</p>
     ${
       isPro

@@ -106,6 +106,7 @@ alter table reviews             enable row level security;
 alter table messages            enable row level security;
 alter table push_subscriptions  enable row level security;
 alter table notifications       enable row level security;
+alter table subscriptions       enable row level security;
 
 -- profiles: cada uno lee/edita el suyo; los perfiles son visibles para mostrar.
 drop policy if exists profiles_self_rw on profiles;
@@ -200,6 +201,14 @@ create policy push_self_rw on push_subscriptions
 drop policy if exists notif_self_rw on notifications;
 create policy notif_self_rw on notifications
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- subscriptions: cada uno LEE la suya. Sin policies de escritura a propósito:
+-- el browser (anon/authenticated) no puede insertar/editar/borrar suscripciones;
+-- las mutaciones van server-side por Drizzle (rol owner, que bypassa RLS) tras
+-- validar rol en las Server Actions. Cierra el hueco de la tabla sin RLS.
+drop policy if exists subscriptions_self_read on subscriptions;
+create policy subscriptions_self_read on subscriptions
+  for select using (auth.uid() = profile_id);
 
 -- ════════════════════════════════════════════════════════════
 -- Realtime: publicar cambios de jobs, job_dispatch y messages
