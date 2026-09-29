@@ -140,7 +140,7 @@ export function LiveMatch() {
           aria-hidden="true"
           className="absolute -right-[3px] top-[150px] h-16 w-[3px] rounded-r bg-slate-700"
         />
-        <div className="relative flex min-h-[500px] flex-col overflow-hidden rounded-[1.9rem] bg-background">
+        <div className="relative flex min-h-[470px] flex-col overflow-hidden rounded-[1.9rem] bg-background">
           {/* Reflejo sutil de pantalla */}
           <span
             aria-hidden="true"
