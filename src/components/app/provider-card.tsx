@@ -1,16 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { RatingStars } from "@/components/shared/rating-stars";
 import { Button } from "@/components/ui/button";
 import { formatDistance } from "@/lib/utils";
+import { spring } from "@/lib/motion";
 import type { ProviderSearchResult } from "@/lib/db/queries";
 
 /** Ficha de resultado de búsqueda: técnica, nítida y sin sombras difusas */
 export function ProviderCard({ provider }: { provider: ProviderSearchResult }) {
   const initial = (provider.fullName ?? "?").charAt(0).toUpperCase();
+  const reduce = useReducedMotion();
 
   return (
-    <article className="flex gap-4 rounded-md border border-border bg-card p-4 transition-colors duration-150 hover:border-primary/40">
+    <motion.article
+      whileHover={reduce ? undefined : { y: -2 }}
+      transition={spring.smooth}
+      className="flex gap-4 rounded-md border border-border bg-card p-4 transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:[box-shadow:var(--shadow-card)]"
+    >
       <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-secondary font-mono text-base font-bold text-foreground">
         {provider.avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -65,6 +74,6 @@ export function ProviderCard({ provider }: { provider: ProviderSearchResult }) {
           </Button>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }
