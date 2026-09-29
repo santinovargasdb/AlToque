@@ -1,4 +1,5 @@
 import { Camera, Users, Handshake } from "lucide-react";
+import { Reveal } from "@/components/shared/reveal";
 
 const PASOS = [
   {
@@ -25,14 +26,14 @@ export function ComoFunciona() {
   return (
     <section className="border-b border-border bg-card py-16">
       <div className="mx-auto max-w-[1200px] px-4">
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             Así de fácil
           </h2>
           <p className="mt-2 text-muted-foreground">
             Tres pasos entre &quot;se rompió&quot; y &quot;ya está&quot;.
           </p>
-        </div>
+        </Reveal>
 
         <ol className="relative mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
           {/* Conector punteado entre pasos (solo desktop) */}

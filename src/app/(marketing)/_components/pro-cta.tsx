@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Wallet, MapPin, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/shared/reveal";
 
 const BENEFICIOS = [
   {
@@ -27,7 +28,7 @@ export function ProCta() {
   return (
     <section className="bg-background py-16">
       <div className="mx-auto max-w-[1200px] px-4">
-        <div className="rounded-2xl border border-primary/20 bg-primary-subtle p-8 md:p-12">
+        <Reveal className="rounded-2xl border border-primary/20 bg-primary-subtle p-8 md:p-12">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div>
               <span className="font-mono text-xs font-bold uppercase tracking-widest text-primary">
@@ -69,7 +70,7 @@ export function ProCta() {
               ))}
             </ul>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

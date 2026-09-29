@@ -218,6 +218,62 @@
   }
 }
 
+/* ── Reveals on-scroll (clases toggleadas por components/shared/reveal.tsx) ──
+   Sólo con movimiento permitido: si el usuario pide reducirlo, el contenido
+   queda visible (sin opacidad 0). */
+@media (prefers-reduced-motion: no-preference) {
+  .altq-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(6px);
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .altq-reveal.is-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .altq-stagger > * {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .altq-stagger.is-in > * {
+    opacity: 1;
+    transform: none;
+  }
+  .altq-stagger.is-in > *:nth-child(1) {
+    transition-delay: 0.03s;
+  }
+  .altq-stagger.is-in > *:nth-child(2) {
+    transition-delay: 0.08s;
+  }
+  .altq-stagger.is-in > *:nth-child(3) {
+    transition-delay: 0.13s;
+  }
+  .altq-stagger.is-in > *:nth-child(4) {
+    transition-delay: 0.18s;
+  }
+  .altq-stagger.is-in > *:nth-child(5) {
+    transition-delay: 0.23s;
+  }
+  .altq-stagger.is-in > *:nth-child(6) {
+    transition-delay: 0.28s;
+  }
+  .altq-stagger.is-in > *:nth-child(7) {
+    transition-delay: 0.33s;
+  }
+  .altq-stagger.is-in > *:nth-child(8) {
+    transition-delay: 0.38s;
+  }
+}
+
 /* ── PlaceAutocompleteElement (Google Places API) ────────────────────────── */
 gmp-place-autocomplete {
   display: block;

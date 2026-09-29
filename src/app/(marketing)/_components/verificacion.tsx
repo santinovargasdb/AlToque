@@ -1,5 +1,6 @@
 import { ShieldCheck, IdCard, Star } from "lucide-react";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
+import { Reveal } from "@/components/shared/reveal";
 
 const CONTROLES = [
   {
@@ -27,13 +28,15 @@ export function Verificacion() {
     <section className="border-y border-border bg-card py-16">
       <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 lg:grid-cols-2">
         <div>
-          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-            Personas verificadas, no perfiles anónimos
-          </h2>
-          <p className="mt-3 max-w-lg text-muted-foreground">
-            Le abrís la puerta de tu casa a alguien que no conocés. Por eso la
-            verificación no es una promesa: es la entrada a la plataforma.
-          </p>
+          <Reveal>
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+              Personas verificadas, no perfiles anónimos
+            </h2>
+            <p className="mt-3 max-w-lg text-muted-foreground">
+              Le abrís la puerta de tu casa a alguien que no conocés. Por eso la
+              verificación no es una promesa: es la entrada a la plataforma.
+            </p>
+          </Reveal>
 
           <ul className="mt-8 space-y-6">
             {CONTROLES.map((c) => (
@@ -55,7 +58,7 @@ export function Verificacion() {
         </div>
 
         {/* Credencial del profesional: cómo se ve un perfil aprobado */}
-        <div className="mx-auto w-full max-w-sm">
+        <Reveal className="mx-auto w-full max-w-sm">
           <div className="rounded-2xl border border-border bg-background p-6 [box-shadow:var(--shadow-card)]">
             <div className="flex items-center justify-between border-b border-dashed border-border pb-4">
               <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -114,7 +117,7 @@ export function Verificacion() {
             Así se ve un perfil aprobado. Si no pasa la verificación, no
             aparece en las búsquedas.
           </p>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
