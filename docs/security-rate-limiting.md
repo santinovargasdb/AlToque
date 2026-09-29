@@ -1,81 +1,56 @@
-# Rate limiting — PENDIENTE de implementar
+# Rate limiting — PRE-CABLEADO (falta solo la instancia de Upstash)
 
-**Estado:** ❌ No implementado. Hoy la única barrera contra fuerza bruta es el
-rate limit propio de **Supabase Auth** (del lado de Supabase, fuera del control
-de la app). Los endpoints propios y las Server Actions de auth no tienen límite.
+**Estado:** ✅ Código listo, 🔌 **desconectado hasta cargar 2 env vars.**
 
-Requiere infraestructura (una instancia de Redis) que hay que crear una vez.
+El rate limiting ya está integrado en el código (`src/lib/ratelimit.ts` +
+enganchado en `signInWithPassword`, `signUpWithPassword` y
+`requestPasswordReset` de `src/lib/actions/auth.ts`). Mientras NO estén seteadas
+las env de Upstash, `allow()` es **no-op** (deja pasar todo) → la app funciona
+igual. Apenas cargás las 2 variables, se activa el límite **sin tocar más código
+ni redeployar código** (solo un redeploy para tomar las env vars).
 
-## Qué proteger (prioridad)
+Límite actual: **5 intentos cada 15 minutos** por `ip + email`, con buckets
+separados para login / registro / reset (prefijos `login:` / `signup:` /
+`reset:`). Fail-open: si Redis se cae, no bloquea a usuarios legítimos.
 
-| Dónde | Archivo | Clave sugerida | Límite sugerido |
-|---|---|---|---|
-| Login con contraseña | `src/lib/actions/auth.ts` → `signInWithPassword` | `ip + email` | 5 / 15 min |
-| Reset de contraseña | `src/lib/actions/auth.ts` → `requestPasswordReset` | `ip + email` | 3 / 15 min |
-| Reenvío de OTP / signup | `signUpWithPassword`, envío de OTP | `ip + email` | 5 / 15 min |
-| `POST /api/push/subscribe` | `src/app/api/push/subscribe/route.ts` | `userId` | 30 / min |
+## Para activarlo (5 minutos, una vez)
 
-El webhook de Mercado Pago y los crons **no** necesitan rate limit propio
-(ya están protegidos por firma HMAC y `CRON_SECRET`).
+1. Crear una base gratis en https://upstash.com → **Redis** (región cercana, ej.
+   `us-east-1`).
+2. En la página de la base, copiar **REST URL** y **REST TOKEN**.
+3. Cargarlas en **Vercel → Settings → Environment Variables** (Production +
+   Preview) y, para probar local, en `.env.local`:
 
-## Opción A — Upstash Redis + `@upstash/ratelimit` (recomendada)
-
-1. Crear una base gratis en https://upstash.com (Redis) y copiar
-   `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN`.
-2. Agregarlas a Vercel (Production/Preview) y a `.env.local` + validarlas en
-   `src/lib/env.ts` (como el resto).
-3. `pnpm add @upstash/ratelimit @upstash/redis`
-4. Crear `src/lib/ratelimit.ts`:
-
-   ```ts
-   import "server-only";
-   import { Ratelimit } from "@upstash/ratelimit";
-   import { Redis } from "@upstash/redis";
-   import { env } from "@/lib/env";
-
-   const redis = env.UPSTASH_REDIS_REST_URL
-     ? new Redis({
-         url: env.UPSTASH_REDIS_REST_URL,
-         token: env.UPSTASH_REDIS_REST_TOKEN!,
-       })
-     : null;
-
-   /** 5 intentos cada 15 min por clave (ip+email). No-op si no hay Redis. */
-   export const authLimiter = redis
-     ? new Ratelimit({
-         redis,
-         limiter: Ratelimit.slidingWindow(5, "15 m"),
-         prefix: "rl:auth",
-       })
-     : null;
-
-   /** Devuelve true si SÍ puede seguir; false si excedió el límite. */
-   export async function allow(limiter: Ratelimit | null, key: string) {
-     if (!limiter) return true; // sin Redis configurado, no bloquea
-     const { success } = await limiter.limit(key);
-     return success;
-   }
+   ```
+   UPSTASH_REDIS_REST_URL="https://xxxx.upstash.io"
+   UPSTASH_REDIS_REST_TOKEN="xxxx"
    ```
 
-5. Usarlo al principio de cada acción sensible (ejemplo login):
+4. **Redeploy** (Vercel → Deployments → Redeploy, o un push cualquiera). Listo:
+   los intentos de login/registro/reset quedan limitados.
 
-   ```ts
-   import { headers } from "next/headers";
-   import { allow, authLimiter } from "@/lib/ratelimit";
+Ya están declaradas en `src/lib/env.ts` (opcionales, validadas con Zod) y en
+`.env.example`.
 
-   const ip =
-     (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "0.0.0.0";
-   if (!(await allow(authLimiter, `${ip}:${email}`))) {
-     return { ok: false, error: "Demasiados intentos. Probá de nuevo en unos minutos." };
-   }
-   ```
+## Cómo verificar que quedó activo
 
-Con `allow()` devolviendo `true` cuando no hay Redis, el código se puede mergear
-YA sin romper nada; queda activo apenas se setean las env vars.
+Después de setear las env vars y redeployar, en `/ingresar` meté mal la
+contraseña 6 veces seguidas con el mismo email: a partir del 6º intento tenés
+que ver **"Demasiados intentos. Esperá unos minutos y volvé a probar."** (antes
+de eso, "Email o contraseña incorrectos"). En el dashboard de Upstash vas a ver
+las keys `rl:auth:login:...` con su contador.
 
-## Opción B — Vercel Firewall / Rate Limiting (sin código)
+## Ajustar el límite
 
-Vercel ofrece rate limiting a nivel edge por ruta (Pro). Se configura desde el
-dashboard sin tocar código. Sirve para `/ingresar`, `/registro`, `/restablecer`
-y `/api/*`. Menos granular que la Opción A (no puede keyear por email), pero
-cero mantenimiento. Se pueden combinar las dos.
+En `src/lib/ratelimit.ts`, `authLimiter` usa
+`Ratelimit.slidingWindow(5, "15 m")`. Cambiá esos números para endurecer o
+aflojar. Para agregar el límite a otro endpoint (ej. `POST /api/push/subscribe`),
+importá `allow` + un limiter nuevo y llamalo al inicio del handler con una clave
+(`userId`, `ip`, etc.).
+
+## Alternativa sin código: Vercel Firewall
+
+Vercel (Pro) permite rate limiting a nivel edge por ruta desde el dashboard, sin
+código, para `/ingresar`, `/registro`, `/restablecer`, `/api/*`. Menos granular
+(no puede keyear por email), pero cero mantenimiento. Se puede combinar con lo
+de arriba.

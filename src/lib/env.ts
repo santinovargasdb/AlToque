@@ -26,6 +26,10 @@ const serverSchema = z.object({
   VAPID_PRIVATE_KEY: z.string().optional(),
 
   CRON_SECRET: z.string().min(1, "CRON_SECRET es obligatoria: protege los cron jobs de expire-jobs y cleanup-orphans"),
+
+  // Rate limiting (Upstash Redis). Opcionales: sin ellas, el limiter es no-op.
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 });
 
 const parsed = serverSchema.safeParse(process.env);

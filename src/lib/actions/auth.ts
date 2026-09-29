@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
 import { getSession, homeForRole, isProfileComplete } from "@/lib/auth";
+import { allow, authLimiter, clientIp } from "@/lib/ratelimit";
 import { getRequestOrigin } from "@/lib/url";
 import { logAuthError } from "@/lib/auth-log";
 import { logSecurityEvent, isNewLoginContext } from "@/lib/audit";
@@ -65,6 +66,14 @@ export async function signUpWithPassword(
   }
   const data = parsed.data;
 
+  const ip = await clientIp();
+  if (!(await allow(authLimiter, `signup:${ip}:${data.email}`))) {
+    return {
+      ok: false,
+      error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
+    };
+  }
+
   const origin = await getRequestOrigin();
   const next =
     data.redirectTo ?? (data.role === "provider" ? "/pro/inicio" : "/inicio");
@@ -117,6 +126,14 @@ export async function signInWithPassword(
     };
   }
 
+  const ip = await clientIp();
+  if (!(await allow(authLimiter, `login:${ip}:${parsed.data.email}`))) {
+    return {
+      ok: false,
+      error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
+    };
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
@@ -159,6 +176,14 @@ export async function requestPasswordReset(
     return {
       ok: false,
       error: parsed.error.issues[0]?.message ?? "Email inválido.",
+    };
+  }
+
+  const ip = await clientIp();
+  if (!(await allow(authLimiter, `reset:${ip}:${parsed.data.email}`))) {
+    return {
+      ok: false,
+      error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
     };
   }
 
