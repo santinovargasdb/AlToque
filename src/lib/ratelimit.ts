@@ -1,48 +1,27 @@
 import "server-only";
 
 import { headers } from "next/headers";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-import { env } from "@/lib/env";
+import { sql } from "drizzle-orm";
+import { db } from "@/lib/db";
 
 /**
- * Rate limiting con Upstash Redis — PRE-CABLEADO.
+ * Rate limiting sobre la MISMA base Postgres de Supabase — sin Redis ni cuentas
+ * extra.
  *
- * Si NO están seteadas `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`,
- * `allow()` devuelve siempre `true` (no-op): el código funciona igual sin Redis.
- * Apenas cargás esas dos env vars (Upstash gratis → Vercel), empieza a limitar
- * sin tocar más código. Guía completa: `docs/security-rate-limiting.md`.
+ * Cuenta los intentos en la tabla `rate_limits` con una ventana fija atómica
+ * (un `insert ... on conflict do update` que incrementa o resetea según la
+ * ventana). Corré `drizzle/rate-limits.sql` una vez en Supabase para crear la
+ * tabla. Hasta que exista, `allow()` es no-op (fail-open): si la query falla por
+ * lo que sea, deja pasar — el objetivo es frenar fuerza bruta, nunca romper el
+ * login. Ver `docs/security-rate-limiting.md`.
  */
-const url = env.UPSTASH_REDIS_REST_URL;
-const token = env.UPSTASH_REDIS_REST_TOKEN;
-const redis = url && token ? new Redis({ url, token }) : null;
+export type RateConfig = { limit: number; windowMinutes: number };
 
-/**
- * Login: 10 intentos cada 15 min por (ip+email). Más tolerante: un usuario
- * legítimo puede tipear mal la contraseña varias veces (sobre todo en mobile)
- * sin quedar bloqueado, y 10/15min igual frena la fuerza bruta en seco.
- */
-export const loginLimiter = redis
-  ? new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(10, "15 m"),
-      prefix: "rl:login",
-      analytics: false,
-    })
-  : null;
+/** Login: 10 intentos / 15 min por (ip+email). Tolerante con tipeos. */
+export const loginLimiter: RateConfig = { limit: 10, windowMinutes: 15 };
 
-/**
- * Registro y reset de contraseña: 5 cada 15 min por (ip+email). Más ajustado:
- * no hay razón legítima para repetirlos tanto, y evita spam de emails.
- */
-export const sensitiveLimiter = redis
-  ? new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(5, "15 m"),
-      prefix: "rl:sensitive",
-      analytics: false,
-    })
-  : null;
+/** Registro y reset de contraseña: 5 / 15 min por (ip+email). Más ajustado. */
+export const sensitiveLimiter: RateConfig = { limit: 5, windowMinutes: 15 };
 
 /** IP del cliente detrás del proxy de Vercel (primer valor de x-forwarded-for). */
 export async function clientIp(): Promise<string> {
@@ -51,21 +30,25 @@ export async function clientIp(): Promise<string> {
 }
 
 /**
- * `true` si la acción puede seguir; `false` si la clave excedió el límite.
- *
- * - No-op (siempre `true`) cuando Upstash no está configurado.
- * - Fail-open ante error de red: si Redis se cae, NO bloqueamos a usuarios
- *   legítimos (el objetivo es frenar fuerza bruta, no romper el login).
+ * `true` si la clave puede seguir; `false` si superó el límite en la ventana.
+ * Fail-open ante error o si la tabla `rate_limits` todavía no existe.
  */
-export async function allow(
-  limiter: Ratelimit | null,
-  key: string,
-): Promise<boolean> {
-  if (!limiter) return true;
+export async function allow(cfg: RateConfig, key: string): Promise<boolean> {
   try {
-    const { success } = await limiter.limit(key);
-    return success;
+    const rows = (await db.execute(sql`
+      insert into rate_limits (id, count, expires_at)
+      values (${key}, 1, now() + (${cfg.windowMinutes}::int * interval '1 minute'))
+      on conflict (id) do update set
+        count = case when rate_limits.expires_at < now()
+                     then 1 else rate_limits.count + 1 end,
+        expires_at = case when rate_limits.expires_at < now()
+                          then now() + (${cfg.windowMinutes}::int * interval '1 minute')
+                          else rate_limits.expires_at end
+      returning count
+    `)) as unknown as Array<{ count: number }>;
+    const count = Number(rows[0]?.count ?? 0);
+    return count <= cfg.limit;
   } catch {
-    return true;
+    return true; // fail-open (tabla inexistente o error de DB)
   }
 }
