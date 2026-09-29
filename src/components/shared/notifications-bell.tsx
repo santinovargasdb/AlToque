@@ -8,12 +8,14 @@ import {
   Bell,
   Check,
   CheckCheck,
+  ChevronDown,
   MessageSquare,
   Zap,
   Info,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { cn, formatDateTime } from "@/lib/utils";
 import { ease, spring } from "@/lib/motion";
 
@@ -58,6 +60,7 @@ export function NotificationsBell({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationRow[] | null>(null);
   const [unread, setUnread] = useState(0);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Conteo inicial de no leídas (one-shot fetch).
@@ -108,7 +111,13 @@ export function NotificationsBell({ userId }: { userId: string }) {
   function toggle() {
     const next = !open;
     setOpen(next);
+    if (!next) setExpandedId(null);
     if (next && items === null) void loadItems();
+  }
+
+  function closePanel() {
+    setOpen(false);
+    setExpandedId(null);
   }
 
   async function markRead(id: string) {
@@ -141,9 +150,15 @@ export function NotificationsBell({ userId }: { userId: string }) {
       .is("read_at", null);
   }
 
-  function onItemClick(n: NotificationRow) {
+  /** Tocar la notificación la expande en el lugar (y la marca leída). */
+  function toggleItem(n: NotificationRow) {
     if (!n.read_at) void markRead(n.id);
-    setOpen(false);
+    setExpandedId((prev) => (prev === n.id ? null : n.id));
+  }
+
+  /** "Abrir" navega al destino de la notificación. */
+  function openNotification(n: NotificationRow) {
+    closePanel();
     if (n.link) router.push(n.link);
   }
 
@@ -173,7 +188,7 @@ export function NotificationsBell({ userId }: { userId: string }) {
       {open && (
         <>
           {/* Cierre por click afuera. */}
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-40" onClick={closePanel} />
           <div
             ref={panelRef}
             className="absolute right-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-top-2 rounded-md border border-border bg-card duration-150"
@@ -214,6 +229,8 @@ export function NotificationsBell({ userId }: { userId: string }) {
                   {items.map((n, idx) => {
                     const Icon = TYPE_ICON[n.type] ?? Bell;
                     const isUnread = !n.read_at;
+                    const isExpanded = expandedId === n.id;
+                    const expandable = Boolean(n.body || n.link);
                     return (
                       <motion.li
                         key={n.id}
@@ -224,15 +241,18 @@ export function NotificationsBell({ userId }: { userId: string }) {
                           ease: ease.enter,
                           delay: reduce ? 0 : Math.min(idx * 0.03, 0.24),
                         }}
-                        className="border-b border-border last:border-0"
+                        className={cn(
+                          "border-b border-border last:border-0",
+                          isUnread && "bg-primary/5",
+                        )}
                       >
                         <button
                           type="button"
-                          onClick={() => onItemClick(n)}
-                          className={cn(
-                            "flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary/60",
-                            isUnread && "bg-primary/5",
-                          )}
+                          onClick={() =>
+                            expandable ? toggleItem(n) : openNotification(n)
+                          }
+                          aria-expanded={expandable ? isExpanded : undefined}
+                          className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary/60"
                         >
                           <span
                             className={cn(
@@ -253,7 +273,7 @@ export function NotificationsBell({ userId }: { userId: string }) {
                             >
                               {n.title}
                             </span>
-                            {n.body && (
+                            {n.body && !isExpanded && (
                               <span className="mt-0.5 block truncate text-xs text-muted-foreground">
                                 {n.body}
                               </span>
@@ -262,13 +282,53 @@ export function NotificationsBell({ userId }: { userId: string }) {
                               {formatDateTime(n.created_at)}
                             </span>
                           </span>
-                          {isUnread && (
+                          {expandable ? (
+                            <ChevronDown
+                              className={cn(
+                                "mt-1 size-4 shrink-0 text-muted-foreground transition-transform duration-200",
+                                isExpanded && "rotate-180",
+                              )}
+                              aria-hidden="true"
+                            />
+                          ) : isUnread ? (
                             <span
                               className="mt-1.5 size-2 shrink-0 rounded-full bg-primary"
                               aria-label="No leída"
                             />
-                          )}
+                          ) : null}
                         </button>
+
+                        {/* Expand por CSS grid 0fr→1fr (fiable; motion no anima
+                            height:auto en este proyecto) */}
+                        <div
+                          className={cn(
+                            "grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none",
+                            isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                          )}
+                        >
+                          <div className="overflow-hidden">
+                            <div
+                              className={cn(
+                                "space-y-2 pb-3 pl-[3.75rem] pr-4 transition-opacity duration-200 motion-reduce:transition-none",
+                                isExpanded ? "opacity-100" : "opacity-0",
+                              )}
+                            >
+                              {n.body && (
+                                <p className="text-sm text-muted-foreground">
+                                  {n.body}
+                                </p>
+                              )}
+                              {n.link && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => openNotification(n)}
+                                >
+                                  Abrir
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </motion.li>
                     );
                   })}
