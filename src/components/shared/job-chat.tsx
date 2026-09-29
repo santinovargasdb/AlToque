@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { ease } from "@/lib/motion";
 import { sendMessage, type SentMessage } from "@/lib/actions/message";
 
 /** Fila de `messages` como llega por Realtime (snake_case). */
@@ -43,6 +45,9 @@ export function JobChat({
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  // Mensajes que ya estaban al montar: no animan (solo los nuevos entran).
+  const initialIds = useRef(new Set(initialMessages.map((m) => m.id)));
 
   function append(msg: SentMessage) {
     setMessages((prev) =>
@@ -107,9 +112,15 @@ export function JobChat({
         ) : (
           messages.map((m) => {
             const mine = m.senderId === currentUserId;
+            const isNew = !initialIds.current.has(m.id);
             return (
-              <div
+              <motion.div
                 key={m.id}
+                initial={
+                  reduce || !isNew ? false : { opacity: 0, y: 10, scale: 0.98 }
+                }
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.24, ease: ease.enter }}
                 className={cn(
                   "max-w-[80%] rounded-md px-3.5 py-2 text-sm",
                   mine
@@ -126,7 +137,7 @@ export function JobChat({
                 >
                   {TIME.format(new Date(m.createdAt))}
                 </p>
-              </div>
+              </motion.div>
             );
           })
         )}

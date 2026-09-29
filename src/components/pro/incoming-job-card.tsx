@@ -2,11 +2,13 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { Loader2, Check, X, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatDistance } from "@/lib/utils";
+import { cn, formatDistance } from "@/lib/utils";
+import { spring } from "@/lib/motion";
 import { acceptJob, declineJob, type IncomingJob } from "@/lib/actions/dispatch";
 
 const TTL_MS = 10 * 60 * 1000;
@@ -19,6 +21,7 @@ export function IncomingJobCard({
   onResolved: () => void;
 }) {
   const router = useRouter();
+  const reduce = useReducedMotion();
   const [pending, startTransition] = useTransition();
   const [remaining, setRemaining] = useState<number | null>(null);
 
@@ -58,17 +61,35 @@ export function IncomingJobCard({
     });
   }
 
+  const low = remaining != null && remaining < 120000;
+
   return (
-    <article className="rounded-md border border-action/40 bg-action/5 p-4">
+    <motion.article
+      initial={reduce ? false : { opacity: 0, y: -12, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={spring.smooth}
+      className="rounded-md border border-action/40 bg-action/5 p-4"
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <Badge variant="warning">Urgente</Badge>
           <h3 className="mt-1 truncate font-medium">{job.title}</h3>
           <p className="text-sm text-muted-foreground">{job.categoryName}</p>
         </div>
-        <span className="flex items-center gap-1 text-sm font-medium text-action">
+        <motion.span
+          className={cn(
+            "flex items-center gap-1 text-sm font-semibold",
+            low ? "text-destructive" : "text-action",
+          )}
+          animate={!reduce && low ? { scale: [1, 1.07, 1] } : { scale: 1 }}
+          transition={
+            low
+              ? { duration: 1, repeat: Infinity, ease: "easeInOut" }
+              : { duration: 0.2 }
+          }
+        >
           <Clock className="size-4" /> {mmss}
-        </span>
+        </motion.span>
       </div>
 
       <div className="mt-2 flex flex-wrap gap-x-4 text-sm text-muted-foreground">
@@ -94,6 +115,6 @@ export function IncomingJobCard({
           <X className="size-4" /> Rechazar
         </Button>
       </div>
-    </article>
+    </motion.article>
   );
 }

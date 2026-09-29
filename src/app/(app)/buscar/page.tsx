@@ -7,6 +7,7 @@ import { categories } from "@/lib/db/schema";
 import { searchProviders } from "@/lib/db/queries";
 import { ProviderCard } from "@/components/app/provider-card";
 import { MapView } from "@/components/shared/map-view";
+import { Stagger, StaggerItem } from "@/components/shared/reveal";
 import { Button } from "@/components/ui/button";
 
 export default async function BuscarPage({
@@ -95,11 +96,13 @@ export default async function BuscarPage({
               : "profesionales encontrados"}
             , ordenados por cercanía.
           </p>
-          <div className="space-y-3">
+          <Stagger className="space-y-3">
             {results.map((p) => (
-              <ProviderCard key={p.id} provider={p} />
+              <StaggerItem key={p.id}>
+                <ProviderCard provider={p} />
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </>
       )}
     </div>
