@@ -70,6 +70,7 @@ export default async function ClientJobPage({
             jobId={job.id}
             targetId={job.providerId}
             targetLabel={job.providerName ?? "el profesional"}
+            direction="client_to_provider"
           />
         ))}
     </JobDetailView>
