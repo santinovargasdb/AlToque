@@ -3,16 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { and, avg, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { jobs, reviews, providerProfiles } from "@/lib/db/schema";
+import { jobs, reviews, reviewAspects, profiles, providerProfiles } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import { reviewSchema } from "@/lib/validations/job";
+import {
+  aspectKeysFor,
+  generalFromAspects,
+  type AspectKey,
+  type ReviewDirection,
+} from "@/lib/reviews/aspects";
 import type { ActionResult } from "./provider";
 
 /**
- * Reseña bidireccional de un trabajo completado (Step 10). Una por parte
- * (unique job+author en DB). El target queda fijado por el rol en el job:
- * el cliente reseña al profesional y viceversa (no se acepta otro target).
- * Si el reseñado es el profesional, recalcula su rating_avg.
+ * Reseña bidireccional de un trabajo completado. Una por parte (unique
+ * job+author). El cliente puntúa al profesional y viceversa; el set de
+ * aspectos depende de la dirección y se valida server-side (no se confía
+ * en el cliente). La nota general = promedio de los 4 aspectos. Recalcula
+ * el rating agregado del reseñado (pro en provider_profiles, cliente en
+ * profiles).
  */
 export async function submitReview(input: unknown): Promise<ActionResult> {
   const session = await getSession();
@@ -21,19 +29,12 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
 
   const parsed = reviewSchema.safeParse(input);
   if (!parsed.success) {
-    return {
-      ok: false,
-      error: parsed.error.issues[0]?.message ?? "Datos inválidos.",
-    };
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
   }
-  const { jobId, targetId, rating, comment } = parsed.data;
+  const { jobId, targetId, aspects, comment } = parsed.data;
 
   const [job] = await db
-    .select({
-      clientId: jobs.clientId,
-      providerId: jobs.providerId,
-      status: jobs.status,
-    })
+    .select({ clientId: jobs.clientId, providerId: jobs.providerId, status: jobs.status })
     .from(jobs)
     .where(eq(jobs.id, jobId))
     .limit(1);
@@ -51,34 +52,63 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
     return { ok: false, error: "Reseña inválida." };
   }
 
+  // El set de aspectos debe ser EXACTAMENTE el de la dirección.
+  const direction: ReviewDirection = isClient ? "client_to_provider" : "provider_to_client";
+  const expectedKeys = aspectKeysFor(direction);
+  const gotKeys = Object.keys(aspects);
+  const sameSet =
+    gotKeys.length === expectedKeys.length &&
+    expectedKeys.every((k) => k in aspects);
+  if (!sameSet) return { ok: false, error: "Reseña inválida." };
+
   const [existing] = await db
     .select({ id: reviews.id })
     .from(reviews)
     .where(and(eq(reviews.jobId, jobId), eq(reviews.authorId, uid)))
     .limit(1);
-  if (existing) {
-    return { ok: false, error: "Ya dejaste tu reseña para este trabajo." };
-  }
+  if (existing) return { ok: false, error: "Ya dejaste tu reseña para este trabajo." };
+
+  const general = generalFromAspects(expectedKeys.map((k) => aspects[k]!));
+  const targetIsProvider = targetId === job.providerId;
 
   await db.transaction(async (tx) => {
-    await tx.insert(reviews).values({
-      jobId,
-      authorId: uid,
-      targetId,
-      rating: String(rating),
-      comment: comment?.trim() || null,
-    });
+    const [row] = await tx
+      .insert(reviews)
+      .values({
+        jobId,
+        authorId: uid,
+        targetId,
+        rating: String(general), // numeric column → string
+        comment: comment?.trim() || null,
+      })
+      .returning({ id: reviews.id });
 
-    // El rating del profesional vive en provider_profiles (promedio 1 decimal).
-    if (targetId === job.providerId) {
-      const [agg] = await tx
-        .select({ average: avg(reviews.rating) })
-        .from(reviews)
-        .where(eq(reviews.targetId, targetId));
+    await tx.insert(reviewAspects).values(
+      expectedKeys.map((k) => ({
+        reviewId: row!.id,
+        aspect: k as AspectKey,
+        score: aspects[k]!,
+      })),
+    );
+
+    // Recalcular el agregado del reseñado (promedio de las notas generales).
+    const [agg] = await tx
+      .select({ average: avg(reviews.rating), count: sql<number>`count(*)::int` })
+      .from(reviews)
+      .where(eq(reviews.targetId, targetId));
+    const avgStr = sql`round(${Number(agg?.average ?? general)}::numeric, 1)`;
+    const count = Number(agg?.count ?? 1);
+
+    if (targetIsProvider) {
       await tx
         .update(providerProfiles)
-        .set({ ratingAvg: sql`round(${Number(agg?.average ?? rating)}::numeric, 1)` })
+        .set({ ratingAvg: avgStr })
         .where(eq(providerProfiles.profileId, targetId));
+    } else {
+      await tx
+        .update(profiles)
+        .set({ ratingAvg: avgStr, ratingCount: count })
+        .where(eq(profiles.id, targetId));
     }
   });
 
