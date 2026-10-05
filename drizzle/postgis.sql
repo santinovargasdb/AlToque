@@ -235,3 +235,17 @@ end $$;
 alter table messages replica identity full;
 alter table job_dispatch replica identity full;
 alter table notifications replica identity full;
+
+-- review_aspects: puntaje 1–5 y RLS (lectura pública, escritura del autor de la reseña)
+alter table review_aspects add constraint review_aspects_score_chk check (score between 1 and 5);
+alter table review_aspects enable row level security;
+create policy "review_aspects_read" on review_aspects
+  for select using (true);
+create policy "review_aspects_insert" on review_aspects
+  for insert with check (
+    exists (select 1 from reviews r where r.id = review_id and r.author_id = auth.uid())
+  );
+
+-- reviews.rating pasa a soportar 1 decimal
+alter table reviews drop constraint if exists reviews_rating_chk;
+alter table reviews add constraint reviews_rating_chk check (rating between 1.0 and 5.0);

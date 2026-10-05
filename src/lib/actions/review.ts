@@ -65,7 +65,7 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
       jobId,
       authorId: uid,
       targetId,
-      rating,
+      rating: String(rating),
       comment: comment?.trim() || null,
     });
 

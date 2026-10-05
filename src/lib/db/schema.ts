@@ -14,6 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { geographyPoint } from "./geography";
+import { ALL_ASPECT_KEYS } from "@/lib/reviews/aspects";
 
 // ── Enums de suscripción ──
 export const subscriptionPlanEnum = pgEnum("subscription_plan", [
@@ -62,6 +63,7 @@ export const dispatchStatusEnum = pgEnum("dispatch_status", [
   "declined",
   "expired",
 ]);
+export const reviewAspectEnum = pgEnum("review_aspect", ALL_ASPECT_KEYS);
 
 // ── profiles (extiende auth.users 1:1 por id; lo crea un trigger al registrarse) ──
 export const profiles = pgTable("profiles", {
@@ -70,6 +72,10 @@ export const profiles = pgTable("profiles", {
   fullName: text("full_name"),
   phone: text("phone"),
   avatarUrl: text("avatar_url"),
+  ratingAvg: numeric("rating_avg", { precision: 2, scale: 1 })
+    .notNull()
+    .default("0.0"),
+  ratingCount: integer("rating_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -212,7 +218,7 @@ export const reviews = pgTable(
     targetId: uuid("target_id")
       .notNull()
       .references(() => profiles.id),
-    rating: integer("rating").notNull(), // 1–5 (check en postgis.sql)
+    rating: numeric("rating", { precision: 2, scale: 1 }).notNull(), // nota general = promedio de aspectos (1–5)
     comment: text("comment"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
@@ -221,6 +227,23 @@ export const reviews = pgTable(
   (t) => [
     unique("uq_review_job_author").on(t.jobId, t.authorId),
     index("idx_reviews_target").on(t.targetId),
+  ],
+);
+
+// ── review_aspects (puntaje por aspecto de cada reseña) ──
+export const reviewAspects = pgTable(
+  "review_aspects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reviewId: uuid("review_id")
+      .notNull()
+      .references(() => reviews.id, { onDelete: "cascade" }),
+    aspect: reviewAspectEnum("aspect").notNull(),
+    score: integer("score").notNull(), // 1–5 (check en postgis.sql)
+  },
+  (t) => [
+    unique("uq_review_aspect").on(t.reviewId, t.aspect),
+    index("idx_review_aspects_review").on(t.reviewId),
   ],
 );
 

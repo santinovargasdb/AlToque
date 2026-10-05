@@ -153,7 +153,7 @@ export default async function ProviderPublicProfile({
                   <span className="font-medium">
                     {r.authorName ?? "Cliente"}
                   </span>
-                  <RatingStars rating={r.rating} showCount={false} />
+                  <RatingStars rating={Number(r.rating)} showCount={false} />
                 </div>
                 {r.comment && (
                   <p className="mt-1.5 text-sm text-muted-foreground">
