@@ -64,7 +64,11 @@ export default async function ClientJobPage({
       {job.status === "completed" &&
         job.providerId &&
         (myReview ? (
-          <ReviewSummary rating={Number(myReview.rating)} comment={myReview.comment} />
+          <ReviewSummary
+            rating={myReview.rating}
+            comment={myReview.comment}
+            aspects={myReview.aspects}
+          />
         ) : (
           <ReviewForm
             jobId={job.id}
