@@ -42,3 +42,42 @@ describe("generalFromAspects · promedio a 1 decimal", () => {
     expect(generalFromAspects([3, 4, 2, 5])).toBe(3.5);
   });
 });
+
+import { reviewSchema } from "@/lib/validations/job";
+
+const baseReview = {
+  jobId: "11111111-1111-1111-1111-111111111111",
+  targetId: "22222222-2222-2222-2222-222222222222",
+  aspects: { punctuality: 5, quality: 4, communication: 5, price: 4 },
+  comment: "Impecable",
+};
+
+describe("reviewSchema · aspectos", () => {
+  it("acepta 4 aspectos válidos", () => {
+    expect(reviewSchema.safeParse(baseReview).success).toBe(true);
+  });
+
+  it("rechaza si faltan aspectos (menos de 4)", () => {
+    const r = reviewSchema.safeParse({
+      ...baseReview,
+      aspects: { punctuality: 5, quality: 4 },
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("rechaza un score fuera de 1–5", () => {
+    const r = reviewSchema.safeParse({
+      ...baseReview,
+      aspects: { ...baseReview.aspects, quality: 6 },
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("rechaza una clave de aspecto desconocida", () => {
+    const r = reviewSchema.safeParse({
+      ...baseReview,
+      aspects: { punctuality: 5, quality: 4, communication: 5, bogus: 4 },
+    });
+    expect(r.success).toBe(false);
+  });
+});

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ALL_ASPECT_KEYS } from "@/lib/reviews/aspects";
 
 /** Oficios habilitados (slugs de categories). */
 export const CATEGORY_SLUGS = [
@@ -44,10 +45,20 @@ export const setFinalPriceSchema = z.object({
   finalPrice: z.number().positive().max(100_000_000),
 });
 
-/** Input de `submitReview`. */
-export const reviewSchema = z.object({
-  jobId: z.string().uuid(),
-  targetId: z.string().uuid(),
-  rating: z.number().int().min(1).max(5),
-  comment: z.string().max(1000).optional(),
-});
+/** Puntaje individual de un aspecto. */
+const aspectScore = z.number().int().min(1).max(5);
+
+/** Input de `submitReview`. Los 4 aspectos van en `aspects`; la nota general
+ * la calcula la Server Action como promedio. El set correcto de claves según
+ * la dirección (cliente→pro vs pro→cliente) se valida en `submitReview`. */
+export const reviewSchema = z
+  .object({
+    jobId: z.string().uuid(),
+    targetId: z.string().uuid(),
+    aspects: z.record(z.enum(ALL_ASPECT_KEYS as unknown as [string, ...string[]]), aspectScore),
+    comment: z.string().max(1000).optional(),
+  })
+  .refine((d) => Object.keys(d.aspects).length === 4, {
+    message: "Calificá los 4 aspectos.",
+    path: ["aspects"],
+  });
