@@ -23,9 +23,12 @@ import type { Role } from "@/lib/auth";
 export function PasswordSignupForm({
   role,
   redirectTo,
+  accepted,
 }: {
   role: Role;
   redirectTo: string;
+  /** Consentimiento legal (mayoría de edad + Términos); lo controla el padre. */
+  accepted: boolean;
 }) {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -47,6 +50,7 @@ export function PasswordSignupForm({
       password,
       confirmPassword,
       redirectTo,
+      acceptedTerms: accepted,
     };
     // Validación inmediata en el cliente (mismo schema que el servidor).
     const parsed = signUpSchema.safeParse(input);
@@ -155,7 +159,9 @@ export function PasswordSignupForm({
       <Button
         type="submit"
         className="w-full"
-        disabled={pending || !passwordOk || password !== confirmPassword}
+        disabled={
+          pending || !accepted || !passwordOk || password !== confirmPassword
+        }
       >
         {pending && (
           <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">

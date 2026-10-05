@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { completeProfile } from "@/lib/actions/auth";
 import { logAuthError } from "@/lib/auth-log";
 import { completeProfileSchema } from "@/lib/validations/auth";
+import { TermsCheckbox } from "./terms-checkbox";
 
 /**
  * Form de datos básicos del perfil (nombre y teléfono), con doble uso:
@@ -35,11 +36,19 @@ export function CompleteProfileForm({
   const router = useRouter();
   const [fullName, setFullName] = useState(initialFullName);
   const [phone, setPhone] = useState(initialPhone);
+  // El consentimiento legal solo se pide en el alta (onboarding), no al editar.
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  const isOnboarding = mode === "onboarding";
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = completeProfileSchema.safeParse({ fullName, phone });
+    const parsed = completeProfileSchema.safeParse({
+      fullName,
+      phone,
+      acceptedTerms: isOnboarding ? acceptedTerms : undefined,
+    });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Revisá los datos.");
       return;
@@ -95,7 +104,18 @@ export function CompleteProfileForm({
           Lo usamos para coordinar los trabajos. No se muestra públicamente.
         </p>
       </div>
-      <Button type="submit" className="w-full" disabled={pending}>
+      {isOnboarding && (
+        <TermsCheckbox
+          id="accept-terms-onboarding"
+          checked={acceptedTerms}
+          onCheckedChange={setAcceptedTerms}
+        />
+      )}
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={pending || (isOnboarding && !acceptedTerms)}
+      >
         {pending && <Loader2 className="size-4 animate-spin" />}
         {mode === "edit" ? "Guardar cambios" : "Guardar y continuar"}
       </Button>

@@ -274,6 +274,15 @@ export async function completeProfile(
   // Define si corresponde el email de bienvenida.
   const wasIncomplete = !isProfileComplete(session.profile);
 
+  // Consentimiento legal obligatorio SOLO en el alta (no al editar el perfil):
+  // cubre a quien llegó por Google/OTP sin pasar por el checkbox del registro.
+  if (wasIncomplete && parsed.data.acceptedTerms !== true) {
+    return {
+      ok: false,
+      error: "Tenés que confirmar que sos mayor de 18 y aceptar los Términos.",
+    };
+  }
+
   try {
     await db
       .update(profiles)

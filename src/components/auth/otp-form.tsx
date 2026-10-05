@@ -17,10 +17,16 @@ export function OtpForm({
   mode,
   role,
   redirectTo = "/inicio",
+  accepted = true,
 }: {
   mode: Mode;
   role?: Role;
   redirectTo?: string;
+  /**
+   * Consentimiento legal en el alta (lo controla el padre). Default `true`
+   * porque en el login (mode="login") no aplica y no debe bloquear nada.
+   */
+  accepted?: boolean;
 }) {
   const supabase = createClient();
   const [step, setStep] = useState<"email" | "code">("email");
@@ -166,7 +172,11 @@ export function OtpForm({
           autoFocus={!isSignup}
         />
       </div>
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={loading || (isSignup && !accepted)}
+      >
         {loading && <Loader2 className="size-4 animate-spin" />}
         {isSignup ? "Crear cuenta" : "Enviar código"}
       </Button>

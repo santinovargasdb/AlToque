@@ -100,6 +100,12 @@ export const completeProfileSchema = z.object({
     .min(2, "Ingresá tu nombre y apellido")
     .max(120, "El nombre es demasiado largo"),
   phone: phoneSchema,
+  /**
+   * Consentimiento legal (mayoría de edad + Términos/Privacidad). Opcional en
+   * el schema porque este form también edita el perfil ya existente; la Server
+   * Action `completeProfile` lo EXIGE solo en el primer alta (onboarding).
+   */
+  acceptedTerms: z.boolean().optional(),
 });
 
 export type CompleteProfileInput = z.infer<typeof completeProfileSchema>;
@@ -142,6 +148,15 @@ export const signUpSchema = z
     password: passwordSchema,
     confirmPassword: z.string({ required_error: "Repetí la contraseña" }),
     redirectTo: internalPathSchema.optional(),
+    /**
+     * Consentimiento legal obligatorio: mayoría de edad (18) + aceptación de
+     * Términos y Privacidad. `literal(true)` rechaza `false` y la ausencia.
+     */
+    acceptedTerms: z.literal(true, {
+      errorMap: () => ({
+        message: "Tenés que confirmar que sos mayor de 18 y aceptar los Términos.",
+      }),
+    }),
   })
   .refine((d) => d.password === d.confirmPassword, {
     message: "Las contraseñas no coinciden",
