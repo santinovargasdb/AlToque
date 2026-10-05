@@ -71,6 +71,7 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
   const general = generalFromAspects(expectedKeys.map((k) => aspects[k]!));
   const targetIsProvider = targetId === job.providerId;
 
+  try {
   await db.transaction(async (tx) => {
     const [row] = await tx
       .insert(reviews)
@@ -83,9 +84,11 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
       })
       .returning({ id: reviews.id });
 
+    if (!row) throw new Error("No se pudo crear la reseña.");
+
     await tx.insert(reviewAspects).values(
       expectedKeys.map((k) => ({
-        reviewId: row!.id,
+        reviewId: row.id,
         aspect: k as AspectKey,
         score: aspects[k]!,
       })),
@@ -111,6 +114,20 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
         .where(eq(profiles.id, targetId));
     }
   });
+  } catch (err) {
+    // Carrera: dos reseñas del mismo autor para el mismo trabajo. El índice
+    // único uq_review_job_author(job_id, author_id) protege la integridad;
+    // acá mapeamos el 23505 al mismo mensaje amigable del pre-check.
+    if (
+      err !== null &&
+      typeof err === "object" &&
+      "code" in err &&
+      (err as { code?: string }).code === "23505"
+    ) {
+      return { ok: false, error: "Ya dejaste tu reseña para este trabajo." };
+    }
+    throw err;
+  }
 
   revalidatePath(`/pedido/${jobId}`);
   revalidatePath(`/pro/pedido/${jobId}`);
