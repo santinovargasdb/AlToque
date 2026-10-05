@@ -74,9 +74,9 @@ export function ReviewForm({
           const current = scores[a.key] ?? 0;
           return (
             <div key={a.key} className="flex items-center justify-between gap-3">
-              <Label className="text-sm text-muted-foreground">{a.label}</Label>
+              <Label className="min-w-0 text-sm text-muted-foreground">{a.label}</Label>
               <div
-                className="flex items-center gap-1"
+                className="flex shrink-0 items-center gap-1"
                 role="radiogroup"
                 aria-label={a.label}
               >
