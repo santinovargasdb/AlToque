@@ -58,17 +58,20 @@ const PROVIDERS: Record<OAuthProviderId, ProviderBranding> = {
  * @param role Intención de registro ("provider" crea el perfil profesional);
  *   el callback SOLO la aplica a signups nuevos, nunca a cuentas existentes.
  * @param label Texto del botón (default "Continuar con {proveedor}").
+ * @param disabled Deshabilita el botón (ej. hasta aceptar los Términos en el alta).
  */
 export function OAuthButton({
   provider,
   redirectTo,
   role,
   label,
+  disabled,
 }: {
   provider: OAuthProviderId;
   redirectTo: string;
   role?: Role;
   label?: string;
+  disabled?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const branding = PROVIDERS[provider];
@@ -102,7 +105,7 @@ export function OAuthButton({
     <button
       type="button"
       onClick={signIn}
-      disabled={loading}
+      disabled={loading || disabled}
       className={cn(
         "flex h-9 w-full items-center justify-center gap-2.5 rounded-md px-4 text-xs font-medium",
         "transition-colors duration-150",

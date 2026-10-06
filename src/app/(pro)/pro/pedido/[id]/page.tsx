@@ -5,9 +5,12 @@ import {
   getJobDetail,
   getJobMessages,
   getJobReviewByAuthor,
+  getClientReputation,
+  getAspectAverages,
 } from "@/lib/db/queries";
 import { JobDetailView } from "@/components/app/job-detail-view";
 import { ProviderJobActions } from "@/components/pro/provider-job-actions";
+import { ClientReputation } from "@/components/pro/client-reputation";
 import { JobChat } from "@/components/shared/job-chat";
 import { ReviewForm } from "@/components/shared/review-form";
 import { ReviewSummary } from "@/components/shared/review-summary";
@@ -27,11 +30,13 @@ export default async function ProviderJobPage({
   if (!job || job.providerId !== user.id) notFound();
 
   const showChat = CHAT_STATUSES.includes(job.status);
-  const [chatMessages, myReview] = await Promise.all([
+  const [chatMessages, myReview, clientRep, clientAspects] = await Promise.all([
     showChat ? getJobMessages(job.id) : Promise.resolve([]),
     job.status === "completed"
       ? getJobReviewByAuthor(job.id, user.id)
       : Promise.resolve(null),
+    getClientReputation(job.clientId),
+    getAspectAverages(job.clientId),
   ]);
 
   return (
@@ -48,16 +53,29 @@ export default async function ProviderJobPage({
         />
       )}
 
+      {clientRep && (
+        <ClientReputation
+          ratingAvg={clientRep.ratingAvg}
+          ratingCount={clientRep.ratingCount}
+          aspects={clientAspects.map((a) => ({ aspect: a.aspect, value: a.avg }))}
+        />
+      )}
+
       <ProviderJobActions jobId={job.id} status={job.status} />
 
       {job.status === "completed" &&
         (myReview ? (
-          <ReviewSummary rating={myReview.rating} comment={myReview.comment} />
+          <ReviewSummary
+            rating={myReview.rating}
+            comment={myReview.comment}
+            aspects={myReview.aspects}
+          />
         ) : (
           <ReviewForm
             jobId={job.id}
             targetId={job.clientId}
             targetLabel={job.clientName ?? "el cliente"}
+            direction="provider_to_client"
           />
         ))}
     </JobDetailView>

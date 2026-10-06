@@ -17,16 +17,20 @@ export function OtpForm({
   mode,
   role,
   redirectTo = "/inicio",
+  accepted = true,
 }: {
   mode: Mode;
   role?: Role;
   redirectTo?: string;
+  /**
+   * Consentimiento legal en el alta (lo controla el padre). Default `true`
+   * porque en el login (mode="login") no aplica y no debe bloquear nada.
+   */
+  accepted?: boolean;
 }) {
   const supabase = createClient();
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -47,9 +51,7 @@ export function OtpForm({
       options: {
         shouldCreateUser: isSignup,
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
-        data: isSignup
-          ? { role: role ?? "client", full_name: fullName, phone }
-          : undefined,
+        data: isSignup ? { role: role ?? "client" } : undefined,
       },
     });
     setLoading(false);
@@ -124,31 +126,6 @@ export function OtpForm({
 
   return (
     <form onSubmit={sendCode} className="space-y-4">
-      {isSignup && (
-        <>
-          <div className="space-y-1.5">
-            <Label htmlFor="fullName">Nombre y apellido</Label>
-            <Input
-              id="fullName"
-              placeholder="Juan Pérez"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="phone">Teléfono</Label>
-            <Input
-              id="phone"
-              type="tel"
-              inputMode="tel"
-              placeholder="11 2345 6789"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
-        </>
-      )}
       <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -163,10 +140,14 @@ export function OtpForm({
           title="Ingresá un email válido (ej: nombre@dominio.com)"
           maxLength={254}
           required
-          autoFocus={!isSignup}
+          autoFocus
         />
       </div>
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={loading || (isSignup && !accepted)}
+      >
         {loading && <Loader2 className="size-4 animate-spin" />}
         {isSignup ? "Crear cuenta" : "Enviar código"}
       </Button>

@@ -6,11 +6,15 @@ import { OtpForm } from "./otp-form";
 import { PasswordSignupForm } from "./password-signup-form";
 import { OAuthButton } from "./oauth-button";
 import { AuthDivider } from "./auth-divider";
+import { TermsCheckbox } from "./terms-checkbox";
 import type { Role } from "@/lib/auth";
 
 export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
   const [role, setRole] = useState<Role | null>(initialRole ?? null);
   const [method, setMethod] = useState<"password" | "otp">("password");
+  // Consentimiento legal compartido: un solo tilde gobierna los 3 métodos
+  // de alta (Google, contraseña, OTP). Sin esto no se habilita ninguno.
+  const [accepted, setAccepted] = useState(false);
 
   if (role) {
     const redirectTo = role === "provider" ? "/pro/inicio" : "/inicio";
@@ -48,6 +52,9 @@ export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
                 : "Te enviamos un código por email para confirmar."}
           </p>
         </div>
+        {/* Consentimiento legal: gobierna los 3 métodos de abajo. */}
+        <TermsCheckbox checked={accepted} onCheckedChange={setAccepted} />
+
         {/* El rol elegido viaja como intención al callback: Google no puede
             mandarlo en los metadatos, así que /auth/callback lo aplica solo
             a este signup nuevo (nunca a cuentas existentes). */}
@@ -56,6 +63,7 @@ export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
           redirectTo={redirectTo}
           role={role}
           label="Registrarme con Google"
+          disabled={!accepted}
         />
 
         <AuthDivider />
@@ -66,9 +74,18 @@ export function RegistroFlow({ initialRole }: { initialRole?: Role }) {
           className="animate-in fade-in slide-in-from-bottom-1 duration-200"
         >
           {method === "password" ? (
-            <PasswordSignupForm role={role} redirectTo={redirectTo} />
+            <PasswordSignupForm
+              role={role}
+              redirectTo={redirectTo}
+              accepted={accepted}
+            />
           ) : (
-            <OtpForm mode="signup" role={role} redirectTo={redirectTo} />
+            <OtpForm
+              mode="signup"
+              role={role}
+              redirectTo={redirectTo}
+              accepted={accepted}
+            />
           )}
         </div>
         <button

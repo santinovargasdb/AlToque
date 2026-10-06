@@ -64,12 +64,17 @@ export default async function ClientJobPage({
       {job.status === "completed" &&
         job.providerId &&
         (myReview ? (
-          <ReviewSummary rating={myReview.rating} comment={myReview.comment} />
+          <ReviewSummary
+            rating={myReview.rating}
+            comment={myReview.comment}
+            aspects={myReview.aspects}
+          />
         ) : (
           <ReviewForm
             jobId={job.id}
             targetId={job.providerId}
             targetLabel={job.providerName ?? "el profesional"}
+            direction="client_to_provider"
           />
         ))}
     </JobDetailView>

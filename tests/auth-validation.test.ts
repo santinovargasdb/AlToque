@@ -133,10 +133,21 @@ describe("signUpSchema", () => {
     email: "juan@dominio.com",
     password: "Segura#2026",
     confirmPassword: "Segura#2026",
+    acceptedTerms: true as const,
   };
 
   it("acepta un registro válido", () => {
     expect(signUpSchema.safeParse(base).success).toBe(true);
+  });
+
+  it("rechaza si no se aceptan los términos (ausente)", () => {
+    const { acceptedTerms: _omit, ...withoutTerms } = base;
+    expect(signUpSchema.safeParse(withoutTerms).success).toBe(false);
+  });
+
+  it("rechaza si los términos vienen en false", () => {
+    const r = signUpSchema.safeParse({ ...base, acceptedTerms: false });
+    expect(r.success).toBe(false);
   });
 
   it("rechaza contraseñas que no coinciden", () => {
@@ -211,6 +222,15 @@ describe("completeProfileSchema · onboarding", () => {
     const r = completeProfileSchema.safeParse({
       fullName: "Juan Pérez",
       phone: "11 2345 6789",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("acepta el consentimiento opcional (onboarding)", () => {
+    const r = completeProfileSchema.safeParse({
+      fullName: "Juan Pérez",
+      phone: "11 2345 6789",
+      acceptedTerms: true,
     });
     expect(r.success).toBe(true);
   });

@@ -12,6 +12,8 @@ import {
   categories,
   reviews,
 } from "@/lib/db/schema";
+import { getAspectAverages } from "@/lib/db/queries";
+import { AspectBreakdown } from "@/components/shared/aspect-breakdown";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { RatingStars } from "@/components/shared/rating-stars";
 import { Badge } from "@/components/ui/badge";
@@ -47,7 +49,7 @@ export default async function ProviderPublicProfile({
   // Solo profesionales aprobados tienen perfil público.
   if (!prov || prov.status !== "approved") notFound();
 
-  const [cats, reviewList] = await Promise.all([
+  const [cats, reviewList, aspectAverages] = await Promise.all([
     db
       .select({ name: categories.name })
       .from(providerCategories)
@@ -66,6 +68,7 @@ export default async function ProviderPublicProfile({
       .where(eq(reviews.targetId, id))
       .orderBy(desc(reviews.createdAt))
       .limit(20),
+    getAspectAverages(id),
   ]);
 
   const initial = (prov.fullName ?? "?").charAt(0).toUpperCase();
@@ -102,6 +105,13 @@ export default async function ProviderPublicProfile({
                 size="md"
               />
             </div>
+            {aspectAverages.length > 0 && (
+              <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
+                <AspectBreakdown
+                  items={aspectAverages.map((a) => ({ aspect: a.aspect, value: a.avg }))}
+                />
+              </div>
+            )}
             <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
               <Briefcase className="size-3.5" />
               {prov.jobsCompleted} trabajos completados
@@ -153,7 +163,7 @@ export default async function ProviderPublicProfile({
                   <span className="font-medium">
                     {r.authorName ?? "Cliente"}
                   </span>
-                  <RatingStars rating={r.rating} showCount={false} />
+                  <RatingStars rating={Number(r.rating)} showCount={false} />
                 </div>
                 {r.comment && (
                   <p className="mt-1.5 text-sm text-muted-foreground">

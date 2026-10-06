@@ -6,6 +6,7 @@ import {
   providerCategories,
   categories,
   reviews,
+  reviewAspects,
   messages,
   jobs,
 } from "./schema";
@@ -232,18 +233,50 @@ export async function getJobDetail(jobId: string): Promise<JobDetail | null> {
   };
 }
 
-/** Reseña que dejó `authorId` sobre un trabajo (o null si aún no reseñó). */
+/** Reseña que dejó `authorId` sobre un trabajo (con su desglose), o null. */
 export async function getJobReviewByAuthor(jobId: string, authorId: string) {
   const [review] = await db
-    .select({
-      id: reviews.id,
-      rating: reviews.rating,
-      comment: reviews.comment,
-    })
+    .select({ id: reviews.id, rating: reviews.rating, comment: reviews.comment })
     .from(reviews)
     .where(and(eq(reviews.jobId, jobId), eq(reviews.authorId, authorId)))
     .limit(1);
-  return review ?? null;
+  if (!review) return null;
+
+  const aspects = await db
+    .select({ aspect: reviewAspects.aspect, score: reviewAspects.score })
+    .from(reviewAspects)
+    .where(eq(reviewAspects.reviewId, review.id));
+
+  return { id: review.id, rating: Number(review.rating), comment: review.comment, aspects };
+}
+
+/** Promedio por aspecto de todas las reseñas donde `targetId` es el reseñado. */
+export async function getAspectAverages(
+  targetId: string,
+): Promise<{ aspect: string; avg: number; count: number }[]> {
+  const rows = await db
+    .select({
+      aspect: reviewAspects.aspect,
+      avg: sql<string>`round(avg(${reviewAspects.score})::numeric, 1)`,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(reviewAspects)
+    .innerJoin(reviews, eq(reviews.id, reviewAspects.reviewId))
+    .where(eq(reviews.targetId, targetId))
+    .groupBy(reviewAspects.aspect);
+  return rows.map((r) => ({ aspect: r.aspect, avg: Number(r.avg), count: Number(r.count) }));
+}
+
+/** Reputación agregada del cliente (cacheada en profiles), o null si no existe. */
+export async function getClientReputation(
+  clientId: string,
+): Promise<{ ratingAvg: number; ratingCount: number } | null> {
+  const [p] = await db
+    .select({ ratingAvg: profiles.ratingAvg, ratingCount: profiles.ratingCount })
+    .from(profiles)
+    .where(eq(profiles.id, clientId))
+    .limit(1);
+  return p ? { ratingAvg: Number(p.ratingAvg), ratingCount: p.ratingCount } : null;
 }
 
 /** Mensajes del chat de un trabajo, serializados para el client component. */
