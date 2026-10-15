@@ -4,6 +4,21 @@
 
 Matching por geolocalización (PostGIS), pago híbrido (**efectivo = conectar** · **transfer/tarjeta = Mercado Pago con split**), comisión por trabajo. Mobile-first, instalable como PWA.
 
+[![Demo en vivo](https://img.shields.io/badge/▶_demo-en_vivo-2ea44f?style=for-the-badge)](https://al-toque-eta.vercel.app)
+&nbsp;
+![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
+![PostGIS](https://img.shields.io/badge/PostGIS-336791?logo=postgresql&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?logo=pwa&logoColor=white)
+
+**🔗 Demo:** https://al-toque-eta.vercel.app
+
+<!-- 📸 CAPTURAS: ideal un GIF del flujo (mapa → pedido → chat). Arrastralo acá en el editor web de GitHub o guardá en docs/screenshots/: -->
+<!-- ![Flujo de pedido](docs/screenshots/flujo.gif) -->
+
+**Destacados:** matching geoespacial con PostGIS (`find_nearby_providers`) · race-condition de `acceptJob` resuelta a nivel SQL y testeada · 34 políticas RLS · PII redactada en logs · TS strict con un solo `as any` en todo `src/`.
+
 ## Stack
 
 Next.js 15 (App Router) · TypeScript strict · Tailwind v4 · shadcn/ui · Supabase (Postgres + PostGIS, Auth, Realtime, Storage) · Drizzle ORM · Mercado Pago · Google Maps Platform · Web Push (VAPID) · Serwist · Vercel.
