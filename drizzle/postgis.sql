@@ -247,10 +247,13 @@ alter table notifications replica identity full;
 
 -- REQUIERE migración 0005 aplicada previamente (tabla review_aspects debe existir).
 -- review_aspects: puntaje 1–5 y RLS (lectura pública, escritura del autor de la reseña)
+alter table review_aspects drop constraint if exists review_aspects_score_chk;
 alter table review_aspects add constraint review_aspects_score_chk check (score between 1 and 5);
 alter table review_aspects enable row level security;
+drop policy if exists "review_aspects_read" on review_aspects;
 create policy "review_aspects_read" on review_aspects
   for select using (true);
+drop policy if exists "review_aspects_insert" on review_aspects;
 create policy "review_aspects_insert" on review_aspects
   for insert with check (
     exists (select 1 from reviews r where r.id = review_id and r.author_id = auth.uid())
