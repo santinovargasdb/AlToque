@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/cleanup-orphans",
       "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/expire-grace",
+      "schedule": "0 2 * * *"
     }
   ]
 }

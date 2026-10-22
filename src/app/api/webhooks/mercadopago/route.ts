@@ -1,7 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isValidWebhookSignature } from "@/lib/mercadopago/webhook";
-import { fetchPreApprovalStatus } from "@/lib/mercadopago/subscriptions";
-import { processPreapprovalEvent } from "@/lib/actions/subscription";
+import {
+  fetchPreApprovalStatus,
+  fetchAuthorizedPaymentStatus,
+} from "@/lib/mercadopago/subscriptions";
+import {
+  processPreapprovalEvent,
+  processAuthorizedPaymentApproved,
+} from "@/lib/actions/subscription";
 
 type WebhookBody = {
   type?: string;
@@ -18,6 +24,7 @@ type WebhookBody = {
  * @pagokit:signature-verified — verificación delegada a isValidWebhookSignature (lib/mercadopago/webhook.ts)
  */
 // @pagokit:signature-verified
+// pagokit-ignore: webhook-has-signature -- la firma se verifica abajo con isValidWebhookSignature (HMAC-SHA256, lib/mercadopago/webhook.ts); el detector no reconoce el wrapper custom
 export async function POST(request: NextRequest) {
   // Leer body como texto crudo; JSON.parse DESPUÉS de verificar la firma
   const rawBody = await request.text();
@@ -46,12 +53,23 @@ export async function POST(request: NextRequest) {
   }
 
   const topic = body?.type ?? body?.topic ?? "";
-  const isSubscriptionEvent =
-    topic === "subscription_preapproval" || topic === "preapproval";
 
-  if (isSubscriptionEvent && dataId) {
+  if (
+    (topic === "subscription_preapproval" || topic === "preapproval") &&
+    dataId
+  ) {
+    // Cambio de estado del preapproval (alta, autorización, pausa, baja).
     fetchPreApprovalStatus(dataId)
       .then((mpStatus) => processPreapprovalEvent(dataId, mpStatus))
+      .catch(console.error);
+  } else if (topic === "subscription_authorized_payment" && dataId) {
+    // Cobro recurrente: si salió aprobado, renueva el período de la suscripción.
+    fetchAuthorizedPaymentStatus(dataId)
+      .then(({ preapprovalId, approved }) => {
+        if (preapprovalId && approved) {
+          return processAuthorizedPaymentApproved(preapprovalId);
+        }
+      })
       .catch(console.error);
   }
 

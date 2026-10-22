@@ -13,3 +13,10 @@ export const FOUNDING_THRESHOLD = 50;
 export const PROVIDER_REGULAR_PRICE = 7000;
 export const PROVIDER_FOUNDING_PRICE = 5000;
 export const CLIENT_PRICE = 4500;
+
+/**
+ * Días de gracia tras un cobro fallido antes de cortar el acceso (spec §6).
+ * Durante la gracia la suscripción está `past_due` pero el gate sigue abierto;
+ * el cron `expire-grace` corta recién al vencer este plazo.
+ */
+export const GRACE_DAYS = 7;

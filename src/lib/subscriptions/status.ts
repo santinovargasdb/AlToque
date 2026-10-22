@@ -1,12 +1,13 @@
 import "server-only";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { subscriptions, providerProfiles } from "@/lib/db/schema";
 
 /**
- * ¿El cliente tiene una suscripción Premium (`client_monthly`) activa?
+ * ¿El cliente tiene una suscripción Premium (`client_monthly`) habilitada?
  * Gate de las funciones exclusivas de Premium (hoy: pedidos urgentes).
- * Solo `active` habilita el beneficio; `pending` aún no autorizó el pago en MP.
+ * `active` y `past_due` habilitan (durante la gracia el acceso sigue abierto,
+ * spec §6); `pending` aún no autorizó el pago en MP.
  */
 export async function hasActiveClientSubscription(
   profileId: string,
@@ -18,7 +19,7 @@ export async function hasActiveClientSubscription(
       and(
         eq(subscriptions.profileId, profileId),
         eq(subscriptions.plan, "client_monthly"),
-        eq(subscriptions.status, "active"),
+        inArray(subscriptions.status, ["active", "past_due"]),
       ),
     )
     .limit(1);
