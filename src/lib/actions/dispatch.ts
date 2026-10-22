@@ -11,6 +11,7 @@ import {
   notifications,
 } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
+import { hasActiveProviderSubscription } from "@/lib/subscriptions/status";
 import { sendPushToUsers } from "@/lib/push/send";
 import type { ActionResult } from "./provider";
 
@@ -80,6 +81,16 @@ export async function acceptJob(jobId: string): Promise<ActionResult> {
     return { ok: false, error: "No autorizado." };
   }
   const uid = session.user.id;
+
+  // Gate de suscripción: sin plan activo no puede tomar pedidos nuevos
+  // (spec §3/§7; los trabajos ya aceptados siguen funcionando normal).
+  if (!(await hasActiveProviderSubscription(uid))) {
+    return {
+      ok: false,
+      error:
+        "Necesitás una suscripción activa para tomar nuevos pedidos. Reactivá tu plan en Suscripción.",
+    };
+  }
 
   const updated = (await db.execute(
     sql`update jobs

@@ -7,7 +7,10 @@ import { jobs, jobDispatch, providerProfiles } from "@/lib/db/schema";
 import { findNearbyProviders } from "@/lib/db/queries";
 import { dispatchNewUrgentJob } from "@/lib/notifications/dispatch";
 import { getSession } from "@/lib/auth";
-import { hasActiveClientSubscription } from "@/lib/subscriptions/status";
+import {
+  hasActiveClientSubscription,
+  hasActiveProviderSubscription,
+} from "@/lib/subscriptions/status";
 import { geocodeAddress } from "@/lib/maps/geocode";
 import { createJobSchema, setFinalPriceSchema } from "@/lib/validations/job";
 import type { ActionResult } from "./provider";
@@ -184,6 +187,16 @@ export async function updateJobStatus(params: {
   if (params.status === "accepted") {
     if (!isProvider || job.status !== "requested") {
       return { ok: false, error: "No se puede aceptar este pedido." };
+    }
+    // Gate de suscripción: el profesional no puede tomar pedidos nuevos sin
+    // plan activo (spec §3/§7). Las demás transiciones (iniciar / cancelar)
+    // operan sobre trabajos ya aceptados y NO se gatean.
+    if (!(await hasActiveProviderSubscription(uid))) {
+      return {
+        ok: false,
+        error:
+          "Necesitás una suscripción activa para tomar nuevos pedidos. Reactivá tu plan en Suscripción.",
+      };
     }
     await db
       .update(jobs)
