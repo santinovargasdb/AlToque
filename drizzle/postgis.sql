@@ -29,7 +29,11 @@ alter table reviews
 
 -- ════════════════════════════════════════════════════════════
 -- "El profesional más cercano disponible" para un oficio dado.
--- Solo profesionales APROBADOS dentro de su radio de cobertura.
+-- Solo profesionales APROBADOS y con SUSCRIPCIÓN ACTIVA dentro de su radio
+-- de cobertura. Gate del modelo de suscripción (spec 2026-07-31 §5/§7: sin
+-- suscripción activa el profesional NO aparece en búsquedas ni en el despacho
+-- de urgencias; conserva el perfil accesible por link directo y sus trabajos
+-- ya aceptados). `subscription_active` lo mantiene el webhook de MP.
 -- ════════════════════════════════════════════════════════════
 create or replace function find_nearby_providers(
   p_category uuid,
@@ -46,6 +50,7 @@ create or replace function find_nearby_providers(
     on pc.provider_id = pp.profile_id
    and pc.category_id = p_category
   where pp.verification_status = 'approved'
+    and pp.subscription_active = true
     and pp.base_location is not null
     and st_dwithin(pp.base_location,
                    st_setsrid(st_makepoint(p_lng, p_lat), 4326),
@@ -55,6 +60,7 @@ create or replace function find_nearby_providers(
 $$ language sql stable set search_path = public;
 
 -- ── Variante URGENTE: además exige is_online = true ──
+-- (el gate de suscripción activa aplica igual que en la búsqueda general)
 create or replace function find_nearby_online_providers(
   p_category uuid,
   p_lng float8,
@@ -70,6 +76,7 @@ create or replace function find_nearby_online_providers(
     on pc.provider_id = pp.profile_id
    and pc.category_id = p_category
   where pp.verification_status = 'approved'
+    and pp.subscription_active = true
     and pp.is_online = true
     and pp.base_location is not null
     and st_dwithin(pp.base_location,
