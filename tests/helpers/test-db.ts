@@ -55,11 +55,18 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     drop table if exists provider_profiles cascade;
     drop type if exists subscription_plan cascade;
     drop type if exists subscription_status cascade;
+    drop table if exists review_aspects cascade;
+    drop table if exists reviews cascade;
+    drop table if exists profiles cascade;
+    drop type if exists review_aspect cascade;
 
     create type job_type as enum ('scheduled','urgent');
     create type subscription_plan as enum ('provider_monthly','client_monthly');
     create type subscription_status as enum
       ('pending','active','past_due','paused','cancelled');
+    create type review_aspect as enum
+      ('punctuality','quality','communication','price',
+       'respect','availability','clarity','payment');
     create type job_status as enum
       ('requested','broadcasting','accepted','in_progress','completed','cancelled','expired');
     create type payment_method as enum ('cash','transfer','card');
@@ -137,7 +144,8 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     create table provider_profiles (
       profile_id uuid primary key,
       subscription_active boolean not null default false,
-      jobs_completed integer not null default 0
+      jobs_completed integer not null default 0,
+      rating_avg numeric(2,1) not null default '0.0'
     );
 
     create table subscriptions (
@@ -154,6 +162,31 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     );
     create unique index idx_subscriptions_mp_preapproval
       on subscriptions (mp_preapproval_id) where mp_preapproval_id is not null;
+
+    create table profiles (
+      id uuid primary key,
+      rating_avg numeric(2,1) not null default '0.0',
+      rating_count integer not null default 0
+    );
+
+    create table reviews (
+      id uuid primary key default gen_random_uuid(),
+      job_id uuid not null,
+      author_id uuid not null,
+      target_id uuid not null,
+      rating numeric(2,1) not null,
+      comment text,
+      created_at timestamptz not null default now(),
+      unique (job_id, author_id)
+    );
+
+    create table review_aspects (
+      id uuid primary key default gen_random_uuid(),
+      review_id uuid not null references reviews(id) on delete cascade,
+      aspect review_aspect not null,
+      score integer not null,
+      unique (review_id, aspect)
+    );
   `,
     )
     .simple();
@@ -162,7 +195,8 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 /** Limpia las tablas entre tests. */
 export async function truncateAll(sql: RawClient): Promise<void> {
   await sql`truncate table job_dispatch, jobs, messages, notifications,
-            push_subscriptions, provider_profiles, subscriptions
+            push_subscriptions, provider_profiles, subscriptions,
+            profiles, reviews, review_aspects
             restart identity cascade`;
 }
 
