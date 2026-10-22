@@ -126,7 +126,8 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 
     create table provider_profiles (
       profile_id uuid primary key,
-      subscription_active boolean not null default false
+      subscription_active boolean not null default false,
+      jobs_completed integer not null default 0
     );
 
     create table subscriptions (
