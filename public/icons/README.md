@@ -1,19 +1,19 @@
 # Íconos PWA
 
-El `manifest.ts` referencia estos PNG (generarlos antes del deploy):
+Generados desde la marca AlToque (cuadrado azul `#2563EB` + rayo naranja `#F97316`, misma identidad que `src/app/icon.svg`). Ya presentes:
 
-- `icon-192.png`: 192×192
-- `icon-512.png`: 512×512
-- `icon-maskable-512.png`: 512×512 (con safe area para máscara)
-- `badge-72.png`: 72×72 (badge monocromo para notificaciones push)
+- `icon-192.png`: 192×192 (purpose `any`, full-bleed)
+- `icon-512.png`: 512×512 (purpose `any`, full-bleed)
+- `icon-maskable-512.png`: 512×512 (purpose `maskable`; rayo reducido dentro de la safe-zone para que el recorte adaptativo no lo corte)
+- `badge-72.png`: 72×72 (silueta blanca sobre transparente para el badge de notificaciones push; el sistema lo tiñe)
 
-## Generarlos rápido
+## Regenerarlos
 
-Desde el logo/ícono base (`../logo.svg` o `src/app/icon.svg`):
+Si cambia la marca, exportá de nuevo desde `src/app/icon.svg` a los tamaños de arriba. Opción rápida:
 
 ```bash
 npx pwa-asset-generator src/app/icon.svg public/icons \
   --icon-only --favicon --maskable --padding "12%" --background "#2563EB"
 ```
 
-O manualmente exportando el SVG a PNG en los tamaños indicados.
+O rasterizando el SVG a PNG manualmente (p. ej. con `sharp` o un `<canvas>`) en los tamaños indicados.
