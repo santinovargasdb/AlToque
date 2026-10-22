@@ -81,6 +81,13 @@ describe.skipIf(!hasTestDb)("despacho urgente (integración)", () => {
     sessionQueue.length = 0;
     currentSession = null;
     findNearbyProviders.mockReset();
+    // Los actores tienen suscripción activa: el gate de suscripción se prueba
+    // aparte (tests/integration/subscriptions.test.ts). Sin esto, el gate
+    // bloquearía acceptJob (profesional) y createJob urgente (cliente).
+    await sql`insert into provider_profiles (profile_id, subscription_active)
+              values (${PROVIDER_A}, true), (${PROVIDER_B}, true)`;
+    await sql`insert into subscriptions (profile_id, plan, status)
+              values (${CLIENT}, 'client_monthly', 'active')`;
   });
 
   /** Inserta un pedido en `broadcasting` con dispatch notificado a A y B. */

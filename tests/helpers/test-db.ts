@@ -31,7 +31,13 @@ export function rawClient(): RawClient {
   });
 }
 
-/** Crea enums + tablas mínimas (jobs, job_dispatch) + stubs de PostGIS. */
+/**
+ * Crea enums + tablas mínimas (jobs, job_dispatch, notifications,
+ * push_subscriptions, provider_profiles, subscriptions) + stubs de PostGIS.
+ * `provider_profiles` y `subscriptions` son versiones reducidas (solo las
+ * columnas que tocan los Server Actions) para los tests del gate de
+ * suscripción y la idempotencia del webhook.
+ */
 export async function setupTestSchema(sql: RawClient): Promise<void> {
   await sql
     .unsafe(
@@ -44,8 +50,15 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     drop type if exists job_status cascade;
     drop type if exists payment_method cascade;
     drop type if exists dispatch_status cascade;
+    drop table if exists subscriptions cascade;
+    drop table if exists provider_profiles cascade;
+    drop type if exists subscription_plan cascade;
+    drop type if exists subscription_status cascade;
 
     create type job_type as enum ('scheduled','urgent');
+    create type subscription_plan as enum ('provider_monthly','client_monthly');
+    create type subscription_status as enum
+      ('pending','active','past_due','paused','cancelled');
     create type job_status as enum
       ('requested','broadcasting','accepted','in_progress','completed','cancelled','expired');
     create type payment_method as enum ('cash','transfer','card');
@@ -110,6 +123,26 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       auth text not null,
       created_at timestamptz not null default now()
     );
+
+    create table provider_profiles (
+      profile_id uuid primary key,
+      subscription_active boolean not null default false
+    );
+
+    create table subscriptions (
+      id uuid primary key default gen_random_uuid(),
+      profile_id uuid not null,
+      plan subscription_plan not null,
+      status subscription_status not null default 'pending',
+      mp_preapproval_id text,
+      current_period_end timestamptz,
+      cancel_at_period_end boolean not null default false,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now(),
+      unique (profile_id, plan)
+    );
+    create unique index idx_subscriptions_mp_preapproval
+      on subscriptions (mp_preapproval_id) where mp_preapproval_id is not null;
   `,
     )
     .simple();
@@ -117,7 +150,8 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 
 /** Limpia las tablas entre tests. */
 export async function truncateAll(sql: RawClient): Promise<void> {
-  await sql`truncate table job_dispatch, jobs, notifications, push_subscriptions
+  await sql`truncate table job_dispatch, jobs, notifications, push_subscriptions,
+            provider_profiles, subscriptions
             restart identity cascade`;
 }
 
