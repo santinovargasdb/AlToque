@@ -44,6 +44,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       `
     drop table if exists job_dispatch cascade;
     drop table if exists jobs cascade;
+    drop table if exists messages cascade;
     drop table if exists notifications cascade;
     drop table if exists push_subscriptions cascade;
     drop type if exists job_type cascade;
@@ -115,6 +116,15 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       created_at timestamptz not null default now()
     );
 
+    create table messages (
+      id uuid primary key default gen_random_uuid(),
+      job_id uuid not null,
+      sender_id uuid not null,
+      body text not null,
+      created_at timestamptz not null default now(),
+      read_at timestamptz
+    );
+
     create table push_subscriptions (
       id uuid primary key default gen_random_uuid(),
       user_id uuid not null,
@@ -151,8 +161,8 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 
 /** Limpia las tablas entre tests. */
 export async function truncateAll(sql: RawClient): Promise<void> {
-  await sql`truncate table job_dispatch, jobs, notifications, push_subscriptions,
-            provider_profiles, subscriptions
+  await sql`truncate table job_dispatch, jobs, messages, notifications,
+            push_subscriptions, provider_profiles, subscriptions
             restart identity cascade`;
 }
 
