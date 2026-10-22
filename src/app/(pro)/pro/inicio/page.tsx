@@ -8,6 +8,8 @@ import { SignOutButton } from "@/components/shared/sign-out-button";
 import { ProDispatchPanel } from "@/components/pro/pro-dispatch-panel";
 import { PushSubscribe } from "@/components/shared/push-subscribe";
 import { cn } from "@/lib/utils";
+import { getProviderGateState } from "@/lib/subscriptions/status";
+import { SubscriptionBanner } from "@/components/pro/subscription-banner";
 
 export default async function ProInicioPage() {
   const { user, profile } = await requireRole("provider");
@@ -27,6 +29,8 @@ export default async function ProInicioPage() {
     cat_count: number;
   }>;
   const s = rows[0];
+
+  const gateState = await getProviderGateState(user.id);
 
   const profileDone = !!s && s.has_loc && Number(s.cat_count) > 0;
   const verified = s?.status === "approved";
@@ -110,6 +114,7 @@ export default async function ProInicioPage() {
 
       {verified ? (
         <>
+          <SubscriptionBanner state={gateState} />
           <PushSubscribe />
           <ProDispatchPanel
             providerId={user.id}

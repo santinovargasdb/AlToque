@@ -35,6 +35,7 @@ describe.skipIf(!hasTestDb)("gracia de suscripción (integración)", () => {
   let sql: RawClient;
   let processAuthorizedPaymentApproved: typeof import("@/lib/actions/subscription").processAuthorizedPaymentApproved;
   let expireGracePeriods: typeof import("@/lib/actions/subscription").expireGracePeriods;
+  let getProviderGateState: typeof import("@/lib/subscriptions/status").getProviderGateState;
 
   beforeAll(async () => {
     sql = rawClient();
@@ -42,6 +43,7 @@ describe.skipIf(!hasTestDb)("gracia de suscripción (integración)", () => {
     ({ processAuthorizedPaymentApproved, expireGracePeriods } = await import(
       "@/lib/actions/subscription"
     ));
+    ({ getProviderGateState } = await import("@/lib/subscriptions/status"));
   });
 
   afterAll(async () => {
@@ -150,5 +152,35 @@ describe.skipIf(!hasTestDb)("gracia de suscripción (integración)", () => {
     await expireGracePeriods();
 
     expect(await subStatus()).toBe("active");
+  });
+
+  // ── getProviderGateState (estado para el banner del lado pro) ──
+  it("getProviderGateState: sin plan y en trial → kind 'trial' con los gratis restantes", async () => {
+    await sql`insert into provider_profiles (profile_id, jobs_completed) values (${PROVIDER}, 2)`;
+    expect(await getProviderGateState(PROVIDER)).toEqual({
+      kind: "trial",
+      freeJobsLeft: 3,
+    });
+  });
+
+  it("getProviderGateState: sin plan y con el trial agotado → kind 'blocked'", async () => {
+    await sql`insert into provider_profiles (profile_id, jobs_completed) values (${PROVIDER}, 5)`;
+    expect((await getProviderGateState(PROVIDER)).kind).toBe("blocked");
+  });
+
+  it("getProviderGateState: suscripción activa → kind 'active' (sin aviso)", async () => {
+    await sql`insert into provider_profiles (profile_id, jobs_completed) values (${PROVIDER}, 10)`;
+    await sql`insert into subscriptions (profile_id, plan, status)
+              values (${PROVIDER}, 'provider_monthly', 'active')`;
+    expect((await getProviderGateState(PROVIDER)).kind).toBe("active");
+  });
+
+  it("getProviderGateState: past_due → kind 'grace' con fecha límite", async () => {
+    await sql`insert into provider_profiles (profile_id, jobs_completed) values (${PROVIDER}, 10)`;
+    await sql`insert into subscriptions (profile_id, plan, status, current_period_end)
+              values (${PROVIDER}, 'provider_monthly', 'past_due', now())`;
+    const st = await getProviderGateState(PROVIDER);
+    expect(st.kind).toBe("grace");
+    if (st.kind === "grace") expect(st.until).not.toBeNull();
   });
 });
