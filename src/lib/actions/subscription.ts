@@ -6,14 +6,14 @@ import { db } from "@/lib/db";
 import { subscriptions, providerProfiles } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import { createPreApproval } from "@/lib/mercadopago/subscriptions";
+import {
+  FOUNDING_THRESHOLD,
+  PROVIDER_REGULAR_PRICE,
+  PROVIDER_FOUNDING_PRICE,
+  CLIENT_PRICE,
+} from "@/lib/subscriptions/plans";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-
-// Precio fundador: primeros 50 profesionales activos
-const FOUNDING_THRESHOLD = 50;
-const PROVIDER_REGULAR_PRICE = 7000;
-const PROVIDER_FOUNDING_PRICE = 5000;
-const CLIENT_PRICE = 4500;
 
 export type SubActionResult =
   | { ok: true; initPoint: string }
