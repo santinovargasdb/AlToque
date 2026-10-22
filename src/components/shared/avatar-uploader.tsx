@@ -137,7 +137,6 @@ export function AvatarUploader({
       <div className="relative shrink-0">
         <div className="flex size-24 items-center justify-center overflow-hidden rounded-full border border-border bg-primary/10 font-heading text-3xl font-bold text-primary">
           {preview ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <motion.img
               key={preview}
               src={preview}
