@@ -11,7 +11,7 @@ import {
   notifications,
 } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
-import { hasActiveProviderSubscription } from "@/lib/subscriptions/status";
+import { providerCanReceiveJobs } from "@/lib/subscriptions/status";
 import { sendPushToUsers } from "@/lib/push/send";
 import type { ActionResult } from "./provider";
 
@@ -82,9 +82,9 @@ export async function acceptJob(jobId: string): Promise<ActionResult> {
   }
   const uid = session.user.id;
 
-  // Gate de suscripción: sin plan activo no puede tomar pedidos nuevos
-  // (spec §3/§7; los trabajos ya aceptados siguen funcionando normal).
-  if (!(await hasActiveProviderSubscription(uid))) {
+  // Gate: necesita plan activo (o trial de bienvenida) para tomar pedidos
+  // nuevos (spec §3/§7; los trabajos ya aceptados siguen funcionando normal).
+  if (!(await providerCanReceiveJobs(uid))) {
     return {
       ok: false,
       error:

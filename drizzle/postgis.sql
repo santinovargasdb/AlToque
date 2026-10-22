@@ -29,11 +29,13 @@ alter table reviews
 
 -- ════════════════════════════════════════════════════════════
 -- "El profesional más cercano disponible" para un oficio dado.
--- Solo profesionales APROBADOS y con SUSCRIPCIÓN ACTIVA dentro de su radio
--- de cobertura. Gate del modelo de suscripción (spec 2026-07-31 §5/§7: sin
--- suscripción activa el profesional NO aparece en búsquedas ni en el despacho
--- de urgencias; conserva el perfil accesible por link directo y sus trabajos
--- ya aceptados). `subscription_active` lo mantiene el webhook de MP.
+-- Solo profesionales APROBADOS y HABILITADOS dentro de su radio de cobertura.
+-- Habilitado = suscripción activa (`subscription_active`, lo mantiene el webhook
+-- de MP; incluye la gracia `past_due`) O trial de bienvenida
+-- (`jobs_completed < 5`, = FREE_JOBS en lib/subscriptions/plans.ts). Gate del
+-- modelo de suscripción (spec 2026-07-31 §5/§7 + decisión 2026-09-28): sin
+-- habilitación el profesional NO aparece en búsquedas ni en el despacho de
+-- urgencias; conserva el perfil por link directo y sus trabajos ya aceptados.
 -- ════════════════════════════════════════════════════════════
 create or replace function find_nearby_providers(
   p_category uuid,
@@ -50,7 +52,7 @@ create or replace function find_nearby_providers(
     on pc.provider_id = pp.profile_id
    and pc.category_id = p_category
   where pp.verification_status = 'approved'
-    and pp.subscription_active = true
+    and (pp.subscription_active = true or pp.jobs_completed < 5)
     and pp.base_location is not null
     and st_dwithin(pp.base_location,
                    st_setsrid(st_makepoint(p_lng, p_lat), 4326),
@@ -76,7 +78,7 @@ create or replace function find_nearby_online_providers(
     on pc.provider_id = pp.profile_id
    and pc.category_id = p_category
   where pp.verification_status = 'approved'
-    and pp.subscription_active = true
+    and (pp.subscription_active = true or pp.jobs_completed < 5)
     and pp.is_online = true
     and pp.base_location is not null
     and st_dwithin(pp.base_location,

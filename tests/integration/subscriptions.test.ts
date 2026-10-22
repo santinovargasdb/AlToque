@@ -79,10 +79,17 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
     currentSession = null;
   });
 
-  async function setProviderSub(providerId: string, active: boolean) {
-    await sql`insert into provider_profiles (profile_id, subscription_active)
-              values (${providerId}, ${active})
-              on conflict (profile_id) do update set subscription_active = ${active}`;
+  // jobsCompleted por default = FREE_JOBS (5) → trial AGOTADO, para que los
+  // tests de rechazo peguen en el gate. Pasar <5 simula un profesional en trial.
+  async function setProviderSub(
+    providerId: string,
+    active: boolean,
+    jobsCompleted = 5,
+  ) {
+    await sql`insert into provider_profiles (profile_id, subscription_active, jobs_completed)
+              values (${providerId}, ${active}, ${jobsCompleted})
+              on conflict (profile_id) do update set
+                subscription_active = ${active}, jobs_completed = ${jobsCompleted}`;
   }
 
   async function seedBroadcastJob(providerId: string): Promise<string> {
@@ -106,7 +113,7 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
   }
 
   // ── Gate: acceptJob (urgente) ──
-  it("acceptJob rechaza al profesional sin suscripción activa", async () => {
+  it("acceptJob rechaza al profesional sin plan y con el trial agotado", async () => {
     const jobId = await seedBroadcastJob(PROVIDER_A);
     await setProviderSub(PROVIDER_A, false);
     currentSession = { user: { id: PROVIDER_A }, role: "provider" };
@@ -133,8 +140,21 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
     expect(job!.provider_id).toBe(PROVIDER_A);
   });
 
+  it("acceptJob acepta a un profesional en el trial de bienvenida (sin plan, < 5 trabajos)", async () => {
+    const jobId = await seedBroadcastJob(PROVIDER_A);
+    await setProviderSub(PROVIDER_A, false, 2); // sin plan, 2 trabajos → sigue en trial
+    currentSession = { user: { id: PROVIDER_A }, role: "provider" };
+
+    const res = await acceptJob(jobId);
+    expect(res.ok).toBe(true);
+
+    const [job] = await sql<{ status: string }[]>`
+      select status from jobs where id = ${jobId}`;
+    expect(job!.status).toBe("accepted");
+  });
+
   // ── Gate: updateJobStatus → accepted (agendado) ──
-  it("updateJobStatus(accepted) rechaza sin suscripción activa", async () => {
+  it("updateJobStatus(accepted) rechaza sin plan y con el trial agotado", async () => {
     const jobId = await seedRequestedJob(PROVIDER_A);
     await setProviderSub(PROVIDER_A, false);
     currentSession = { user: { id: PROVIDER_A }, role: "provider" };

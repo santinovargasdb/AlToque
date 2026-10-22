@@ -20,3 +20,12 @@ export const CLIENT_PRICE = 4500;
  * el cron `expire-grace` corta recién al vencer este plazo.
  */
 export const GRACE_DAYS = 7;
+
+/**
+ * Trabajos completados gratis antes de exigir suscripción al profesional
+ * (trial de bienvenida, decisión 2026-09-28). Mientras `jobs_completed < FREE_JOBS`
+ * el profesional está habilitado aunque no tenga plan: así puede comprobar que
+ * la plataforma le trae trabajo antes de pagar. El gate (PostGIS + server
+ * actions) habilita si `subscription_active` OR `jobs_completed < FREE_JOBS`.
+ */
+export const FREE_JOBS = 5;

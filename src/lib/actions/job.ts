@@ -9,7 +9,7 @@ import { dispatchNewUrgentJob } from "@/lib/notifications/dispatch";
 import { getSession } from "@/lib/auth";
 import {
   hasActiveClientSubscription,
-  hasActiveProviderSubscription,
+  providerCanReceiveJobs,
 } from "@/lib/subscriptions/status";
 import { geocodeAddress } from "@/lib/maps/geocode";
 import { createJobSchema, setFinalPriceSchema } from "@/lib/validations/job";
@@ -188,10 +188,10 @@ export async function updateJobStatus(params: {
     if (!isProvider || job.status !== "requested") {
       return { ok: false, error: "No se puede aceptar este pedido." };
     }
-    // Gate de suscripción: el profesional no puede tomar pedidos nuevos sin
-    // plan activo (spec §3/§7). Las demás transiciones (iniciar / cancelar)
-    // operan sobre trabajos ya aceptados y NO se gatean.
-    if (!(await hasActiveProviderSubscription(uid))) {
+    // Gate: el profesional necesita plan activo (o trial de bienvenida) para
+    // tomar pedidos nuevos (spec §3/§7). Las demás transiciones (iniciar /
+    // cancelar) operan sobre trabajos ya aceptados y NO se gatean.
+    if (!(await providerCanReceiveJobs(uid))) {
       return {
         ok: false,
         error:
