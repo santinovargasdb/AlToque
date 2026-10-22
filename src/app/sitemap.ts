@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
+import { eq } from "drizzle-orm";
 import { OFICIOS } from "@/lib/constants";
+import { db } from "@/lib/db";
+import { providerProfiles } from "@/lib/db/schema";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://altoque.ar";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const marketing: MetadataRoute.Sitemap = [
@@ -41,5 +44,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...marketing, ...categorias];
+  // Perfiles públicos de los profesionales aprobados. Envuelto en try/catch:
+  // si la DB no está disponible durante el build, el sitemap igual sale con
+  // lo estático en vez de romper el build.
+  let profesionales: MetadataRoute.Sitemap = [];
+  try {
+    const approved = await db
+      .select({ id: providerProfiles.profileId })
+      .from(providerProfiles)
+      .where(eq(providerProfiles.verificationStatus, "approved"));
+    profesionales = approved.map((p) => ({
+      url: `${BASE}/profesional/${p.id}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+  } catch {
+    profesionales = [];
+  }
+
+  return [...marketing, ...categorias, ...profesionales];
 }

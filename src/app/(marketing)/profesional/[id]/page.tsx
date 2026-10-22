@@ -1,9 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq, desc } from "drizzle-orm";
 import { z } from "zod";
 import { Briefcase, MessageSquareQuote } from "lucide-react";
-import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
   profiles,
@@ -20,15 +20,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 
-export default async function ProviderPublicProfile({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  await requireRole("client");
-  const { id } = await params;
-  if (!z.string().uuid().safeParse(id).success) notFound();
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://altoque.ar";
 
+/** Nombre del reseñador anonimizado: "Juan Pérez" → "Juan P." (privacidad). */
+function maskReviewer(name: string | null): string {
+  if (!name) return "Cliente";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) return parts[0] ?? "Cliente";
+  return `${parts[0]} ${parts[parts.length - 1]!.charAt(0).toUpperCase()}.`;
+}
+
+/** Solo profesionales `approved` tienen perfil público; el resto es 404. */
+async function getProvider(id: string) {
+  if (!z.string().uuid().safeParse(id).success) return null;
   const [prov] = await db
     .select({
       id: providerProfiles.profileId,
@@ -45,16 +49,60 @@ export default async function ProviderPublicProfile({
     .innerJoin(profiles, eq(profiles.id, providerProfiles.profileId))
     .where(eq(providerProfiles.profileId, id))
     .limit(1);
+  if (!prov || prov.status !== "approved") return null;
+  return prov;
+}
 
-  // Solo profesionales aprobados tienen perfil público.
-  if (!prov || prov.status !== "approved") notFound();
+async function getCategories(id: string) {
+  return db
+    .select({ name: categories.name })
+    .from(providerCategories)
+    .innerJoin(categories, eq(categories.id, providerCategories.categoryId))
+    .where(eq(providerCategories.providerId, id));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const prov = await getProvider(id);
+  if (!prov) return { title: "Profesional no encontrado" };
+
+  const name = prov.fullName ?? "Profesional";
+  const oficios = (await getCategories(id)).map((c) => c.name).join(", ");
+  const title = oficios
+    ? `${name} — ${oficios} verificado`
+    : `${name} — Profesional verificado`;
+  const description =
+    prov.bio?.slice(0, 155) ||
+    `${name}, ${oficios || "profesional de oficio"} verificado con DNI en AlToque. ${prov.jobsCompleted} trabajos completados.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `${APP_URL}/profesional/${id}` },
+    openGraph: {
+      title: `${title} · AlToque`,
+      description,
+      type: "profile",
+      images: prov.avatarUrl ? [prov.avatarUrl] : undefined,
+    },
+  };
+}
+
+export default async function ProviderPublicProfile({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const prov = await getProvider(id);
+  if (!prov) notFound();
 
   const [cats, reviewList, aspectAverages] = await Promise.all([
-    db
-      .select({ name: categories.name })
-      .from(providerCategories)
-      .innerJoin(categories, eq(categories.id, providerCategories.categoryId))
-      .where(eq(providerCategories.providerId, id)),
+    getCategories(id),
     db
       .select({
         id: reviews.id,
@@ -71,10 +119,39 @@ export default async function ProviderPublicProfile({
     getAspectAverages(id),
   ]);
 
-  const initial = (prov.fullName ?? "?").charAt(0).toUpperCase();
+  const name = prov.fullName ?? "Profesional";
+  const initial = name.charAt(0).toUpperCase();
+  const ratingValue = Number(prov.ratingAvg);
+
+  // JSON-LD (Person + aggregateRating) para structured data / rich snippets.
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name,
+    url: `${APP_URL}/profesional/${id}`,
+    ...(prov.avatarUrl ? { image: prov.avatarUrl } : {}),
+    ...(cats.length ? { jobTitle: cats.map((c) => c.name).join(", ") } : {}),
+    ...(prov.bio ? { description: prov.bio } : {}),
+    ...(reviewList.length > 0 && ratingValue > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: ratingValue.toFixed(1),
+            reviewCount: reviewList.length,
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }
+      : {}),
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6 px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Encabezado del perfil */}
       <section className="rounded-xl border border-border bg-card p-5 shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
         <div className="flex gap-4">
@@ -83,7 +160,7 @@ export default async function ProviderPublicProfile({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={prov.avatarUrl}
-                alt={prov.fullName ?? "Profesional"}
+                alt={name}
                 className="size-full object-cover"
               />
             ) : (
@@ -92,15 +169,13 @@ export default async function ProviderPublicProfile({
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-heading text-2xl font-bold">
-                {prov.fullName ?? "Profesional"}
-              </h1>
+              <h1 className="font-heading text-2xl font-bold">{name}</h1>
               <VerifiedBadge label="DNI verificado" />
               {prov.licenseUrl && <VerifiedBadge label="Matrícula verificada" />}
             </div>
             <div className="mt-1">
               <RatingStars
-                rating={Number(prov.ratingAvg)}
+                rating={ratingValue}
                 count={reviewList.length}
                 size="md"
               />
@@ -108,7 +183,10 @@ export default async function ProviderPublicProfile({
             {aspectAverages.length > 0 && (
               <div className="mt-3 rounded-md border border-border/60 bg-background p-3">
                 <AspectBreakdown
-                  items={aspectAverages.map((a) => ({ aspect: a.aspect, value: a.avg }))}
+                  items={aspectAverages.map((a) => ({
+                    aspect: a.aspect,
+                    value: a.avg,
+                  }))}
                 />
               </div>
             )}
@@ -160,9 +238,7 @@ export default async function ProviderPublicProfile({
                 className="rounded-xl border border-border bg-card p-4"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">
-                    {r.authorName ?? "Cliente"}
-                  </span>
+                  <span className="font-medium">{maskReviewer(r.authorName)}</span>
                   <RatingStars rating={Number(r.rating)} showCount={false} />
                 </div>
                 {r.comment && (
