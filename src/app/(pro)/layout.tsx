@@ -30,8 +30,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/pro/mensajes",
+    label: "Mensajes",
+    svg: (
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-5">
+        <path d="M4 4h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7l-4 3V6a2 2 0 0 1 2-2Z" />
+      </svg>
+    ),
+  },
+  {
     href: "/pro/suscripcion",
-    label: "Suscripción",
+    label: "Plan",
     svg: (
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="size-5">
         <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" />
@@ -80,7 +89,7 @@ export default async function ProLayout({
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card">
-        <div className="mx-auto grid max-w-2xl grid-cols-4">
+        <div className="mx-auto grid max-w-2xl grid-cols-5">
           {NAV_ITEMS.map(({ href, label, svg }) => (
             <Link
               key={href}
