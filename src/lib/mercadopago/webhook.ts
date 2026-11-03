@@ -31,7 +31,11 @@ export function isValidWebhookSignature(input: WebhookSignatureInput): boolean {
     });
     return true;
   } catch (e) {
-    if (e instanceof InvalidWebhookSignatureError) return false;
+    if (e instanceof InvalidWebhookSignatureError) {
+      // Solo el motivo (SignatureMismatch, TimestampOutOfTolerance, …), sin valores.
+      console.warn("[mp-webhook] motivo del rechazo:", e.reason);
+      return false;
+    }
     throw e;
   }
 }
