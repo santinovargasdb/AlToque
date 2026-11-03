@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, count, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { subscriptions, providerProfiles } from "@/lib/db/schema";
 import { FREE_JOBS, GRACE_DAYS } from "@/lib/subscriptions/plans";
@@ -99,4 +99,22 @@ export async function getProviderGateState(
     return { kind: "trial", freeJobsLeft: FREE_JOBS - jobsCompleted };
   }
   return { kind: "blocked" };
+}
+
+/**
+ * Cupos de precio fundador ocupados: suscripciones profesionales que llegaron a
+ * autorizar el pago en MP (`active`, `past_due` o `paused`). Una `pending`
+ * abandonada en el checkout NO ocupa cupo; una `cancelled` lo libera.
+ */
+export async function countFoundingSlotsTaken(): Promise<number> {
+  const [row] = await db
+    .select({ n: count() })
+    .from(subscriptions)
+    .where(
+      and(
+        eq(subscriptions.plan, "provider_monthly"),
+        inArray(subscriptions.status, ["active", "past_due", "paused"]),
+      ),
+    );
+  return Number(row?.n ?? 0);
 }

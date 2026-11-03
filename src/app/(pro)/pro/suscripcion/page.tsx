@@ -1,16 +1,19 @@
-import { eq, and, ne, count } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { subscriptions, providerProfiles } from "@/lib/db/schema";
+import {
+  FOUNDING_THRESHOLD,
+  FREE_JOBS,
+  PROVIDER_FOUNDING_PRICE,
+  PROVIDER_REGULAR_PRICE,
+} from "@/lib/subscriptions/plans";
+import { countFoundingSlotsTaken } from "@/lib/subscriptions/status";
 import {
   ProviderSubscribeButton,
   CancelButton,
   ResumeButton,
 } from "./subscribe-button";
-
-const FOUNDING_THRESHOLD = 50;
-const PROVIDER_REGULAR_PRICE = 7000;
-const PROVIDER_FOUNDING_PRICE = 5000;
 
 const BENEFITS = [
   "Pedidos ilimitados de clientes verificados",
@@ -49,7 +52,7 @@ export default async function ProSuscripcionPage() {
   const session = await requireRole("provider");
   const uid = session.user.id;
 
-  const [subRows, ppRows, activeCountRows] = await Promise.all([
+  const [subRows, ppRows, activeCount] = await Promise.all([
     db
       .select({
         status: subscriptions.status,
@@ -71,23 +74,14 @@ export default async function ProSuscripcionPage() {
       .where(eq(providerProfiles.profileId, uid))
       .limit(1),
 
-    db
-      .select({ n: count() })
-      .from(subscriptions)
-      .where(
-        and(
-          eq(subscriptions.plan, "provider_monthly"),
-          ne(subscriptions.status, "cancelled"),
-        ),
-      ),
+    countFoundingSlotsTaken(),
   ]);
 
   const sub = (subRows[0] as SubRecord | undefined) ?? null;
   const jobsDone = ppRows[0]?.jobsCompleted ?? 0;
-  const activeCount = Number(activeCountRows[0]?.n ?? 0);
   const isFounding = activeCount < FOUNDING_THRESHOLD;
   const price = isFounding ? PROVIDER_FOUNDING_PRICE : PROVIDER_REGULAR_PRICE;
-  const freeJobsLeft = Math.max(0, 5 - jobsDone);
+  const freeJobsLeft = Math.max(0, FREE_JOBS - jobsDone);
   const isSubscribed = sub !== null && sub.status !== "cancelled";
 
   return (

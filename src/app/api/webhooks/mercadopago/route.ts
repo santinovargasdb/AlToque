@@ -54,23 +54,33 @@ export async function POST(request: NextRequest) {
 
   const topic = body?.type ?? body?.topic ?? "";
 
-  if (
-    (topic === "subscription_preapproval" || topic === "preapproval") &&
-    dataId
-  ) {
-    // Cambio de estado del preapproval (alta, autorización, pausa, baja).
-    fetchPreApprovalStatus(dataId)
-      .then((mpStatus) => processPreapprovalEvent(dataId, mpStatus))
-      .catch(console.error);
-  } else if (topic === "subscription_authorized_payment" && dataId) {
-    // Cobro recurrente: si salió aprobado, renueva el período de la suscripción.
-    fetchAuthorizedPaymentStatus(dataId)
-      .then(({ preapprovalId, approved }) => {
-        if (preapprovalId && approved) {
-          return processAuthorizedPaymentApproved(preapprovalId);
-        }
-      })
-      .catch(console.error);
+  // Se procesa ANTES de responder: en Vercel el trabajo que queda colgando
+  // después de la respuesta puede cortarse, y el pago quedaría sin registrar.
+  // Si falla se responde 500 para que MP reintente la notificación; ambos
+  // procesos son idempotentes, así que un reintento no duplica nada.
+  try {
+    if (
+      (topic === "subscription_preapproval" || topic === "preapproval") &&
+      dataId
+    ) {
+      // Cambio de estado del preapproval (alta, autorización, pausa, baja).
+      const mpStatus = await fetchPreApprovalStatus(dataId);
+      await processPreapprovalEvent(dataId, mpStatus);
+    } else if (topic === "subscription_authorized_payment" && dataId) {
+      // Cobro recurrente: si salió aprobado, renueva el período de la suscripción.
+      const { preapprovalId, approved } =
+        await fetchAuthorizedPaymentStatus(dataId);
+      if (preapprovalId && approved) {
+        await processAuthorizedPaymentApproved(preapprovalId);
+      }
+    }
+  } catch (error) {
+    console.error("[mp-webhook] fallo al procesar", {
+      topic,
+      dataId,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json({ error: "processing failed" }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

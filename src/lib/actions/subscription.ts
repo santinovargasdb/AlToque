@@ -5,8 +5,6 @@ import {
   eq,
   and,
   or,
-  ne,
-  count,
   lt,
   isNull,
   isNotNull,
@@ -24,25 +22,13 @@ import {
   CLIENT_PRICE,
   GRACE_DAYS,
 } from "@/lib/subscriptions/plans";
+import { countFoundingSlotsTaken } from "@/lib/subscriptions/status";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export type SubActionResult =
   | { ok: true; initPoint: string }
   | { ok: false; error: string };
-
-async function countActiveProviderSubs(): Promise<number> {
-  const [row] = await db
-    .select({ n: count() })
-    .from(subscriptions)
-    .where(
-      and(
-        eq(subscriptions.plan, "provider_monthly"),
-        ne(subscriptions.status, "cancelled"),
-      ),
-    );
-  return Number(row?.n ?? 0);
-}
 
 /** Inicia el flujo de suscripción profesional → devuelve URL de MP. */
 export async function startProviderSubscription(): Promise<SubActionResult> {
@@ -69,7 +55,7 @@ export async function startProviderSubscription(): Promise<SubActionResult> {
     return { ok: false, error: "Ya tenés una suscripción activa." };
   }
 
-  const n = await countActiveProviderSubs();
+  const n = await countFoundingSlotsTaken();
   const amount = n < FOUNDING_THRESHOLD ? PROVIDER_FOUNDING_PRICE : PROVIDER_REGULAR_PRICE;
 
   try {
