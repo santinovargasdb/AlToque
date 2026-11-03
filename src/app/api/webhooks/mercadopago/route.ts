@@ -49,6 +49,13 @@ export async function POST(request: NextRequest) {
       dataId,
     })
   ) {
+    // Diagnóstico sin datos sensibles: solo qué piezas llegaron (sí/no).
+    console.warn("[mp-webhook] firma rechazada", {
+      hasSecret: Boolean(process.env.MP_WEBHOOK_SECRET),
+      hasSignature: Boolean(request.headers.get("x-signature")),
+      hasRequestId: Boolean(request.headers.get("x-request-id")),
+      dataIdFrom: queryDataId ? "query" : dataId ? "body" : "none",
+    });
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
 
