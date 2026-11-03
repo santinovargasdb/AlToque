@@ -22,13 +22,20 @@ export function isValidWebhookSignature(input: WebhookSignatureInput): boolean {
   const secret = process.env.MP_WEBHOOK_SECRET;
   if (!secret) return false;
   try {
+    // El SDK valida el HMAC; la ventana de tiempo (anti-replay) se chequea
+    // aparte porque el SDK asume `ts` en milisegundos y MP puede mandarlo en
+    // segundos (con el SDK eso da una deriva de décadas y rechaza todo).
     WebhookSignatureValidator.validate({
       xSignature: input.xSignature,
       xRequestId: input.xRequestId,
       dataId: input.dataId,
       secret,
-      toleranceSeconds: TOLERANCE_SECONDS,
     });
+    const driftSeconds = signatureDriftSeconds(input.xSignature, Date.now());
+    if (driftSeconds === null || driftSeconds > TOLERANCE_SECONDS) {
+      console.warn("[mp-webhook] ts fuera de ventana, deriva (s):", driftSeconds);
+      return false;
+    }
     return true;
   } catch (e) {
     if (e instanceof InvalidWebhookSignatureError) {
@@ -38,6 +45,22 @@ export function isValidWebhookSignature(input: WebhookSignatureInput): boolean {
     }
     throw e;
   }
+}
+
+/**
+ * Deriva en segundos entre el `ts` de `x-signature` y `nowMs`. Acepta `ts` en
+ * segundos o milisegundos (un epoch en ms tiene 13 dígitos; en s, 10).
+ * Devuelve null si el header no trae un `ts` numérico.
+ */
+export function signatureDriftSeconds(
+  xSignature: string | null,
+  nowMs: number,
+): number | null {
+  const match = xSignature?.match(/(?:^|,)\s*ts=(\d+)/);
+  if (!match) return null;
+  const ts = Number(match[1]);
+  const tsMs = ts < 1e12 ? ts * 1000 : ts;
+  return Math.round(Math.abs(nowMs - tsMs) / 1000);
 }
 
 export type PaymentInfo = {
