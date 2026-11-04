@@ -67,6 +67,19 @@ export async function fetchPreApprovalStatus(
 }
 
 /**
+ * Cambia el estado de un preapproval en MP. `paused` frena los débitos y se
+ * puede revertir con `authorized`; `cancelled` es definitivo (MP no permite
+ * reactivar un preapproval cancelado).
+ */
+export async function setPreApprovalStatus(
+  preapprovalId: string,
+  status: "authorized" | "paused" | "cancelled",
+): Promise<void> {
+  const preApproval = new PreApproval(mpConfig());
+  await preApproval.update({ id: preapprovalId, body: { status } });
+}
+
+/**
  * Consulta un "authorized payment" (cobro recurrente de una suscripción) y
  * devuelve a qué preapproval pertenece y si el cobro quedó aprobado. Lo dispara
  * el webhook con topic `subscription_authorized_payment`.

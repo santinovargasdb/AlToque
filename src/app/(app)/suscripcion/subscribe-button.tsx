@@ -50,7 +50,8 @@ export function ClientCancelButton() {
   function handleCancel() {
     if (!confirm("¿Cancelar la suscripción al vencimiento del período actual?")) return;
     startTransition(async () => {
-      await cancelSubscriptionAtPeriodEnd("client_monthly");
+      const result = await cancelSubscriptionAtPeriodEnd("client_monthly");
+      if (!result.ok && result.error) alert(result.error);
     });
   }
 
@@ -70,7 +71,8 @@ export function ClientResumeButton() {
 
   function handleResume() {
     startTransition(async () => {
-      await resumeSubscription("client_monthly");
+      const result = await resumeSubscription("client_monthly");
+      if (!result.ok && result.error) alert(result.error);
     });
   }
 

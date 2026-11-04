@@ -3,7 +3,8 @@ import { expireGracePeriods } from "@/lib/actions/subscription";
 
 /**
  * Vercel Cron: aplica el período de gracia de las suscripciones (spec §6).
- * Mueve `active` con período vencido → `past_due` (gate abierto) y `past_due`
+ * Cierra las bajas programadas cuyo período venció (y las cancela en MP), mueve
+ * `active` con período vencido → `past_due` (gate abierto) y `past_due`
  * pasados los días de gracia → `cancelled` (gate cerrado). Protegido por
  * CRON_SECRET; schedule en vercel.json.
  */

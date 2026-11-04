@@ -28,6 +28,13 @@ import {
 
 vi.mock("@/lib/auth", () => ({ getSession: vi.fn(async () => null) }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+const { setPreApprovalStatus } = vi.hoisted(() => ({
+  setPreApprovalStatus: vi.fn(async (_id: string, _status: string) => {}),
+}));
+vi.mock("@/lib/mercadopago/subscriptions", () => ({
+  createPreApproval: vi.fn(),
+  setPreApprovalStatus,
+}));
 
 const PROVIDER = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
@@ -52,6 +59,7 @@ describe.skipIf(!hasTestDb)("gracia de suscripción (integración)", () => {
 
   beforeEach(async () => {
     await truncateAll(sql);
+    setPreApprovalStatus.mockClear();
   });
 
   async function setProvider(active: boolean) {
@@ -141,6 +149,59 @@ describe.skipIf(!hasTestDb)("gracia de suscripción (integración)", () => {
 
     expect(await subStatus()).toBe("past_due");
     expect(await providerActive()).toBe(true);
+  });
+
+  it("baja programada con el período vencido → cancelled sin gracia, gate cerrado y cancelada en MP", async () => {
+    await setProvider(true);
+    await sql`insert into subscriptions
+      (profile_id, plan, status, mp_preapproval_id, current_period_end, cancel_at_period_end)
+      values (${PROVIDER}, 'provider_monthly', 'active', 'pre_1', now() - interval '1 hour', true)`;
+
+    const res = await expireGracePeriods();
+    expect(res.ended).toBe(1);
+    expect(res.toPastDue).toBe(0);
+
+    expect(await subStatus()).toBe("cancelled");
+    expect(await providerActive()).toBe(false);
+    expect(setPreApprovalStatus).toHaveBeenCalledWith("pre_1", "cancelled");
+  });
+
+  it("baja programada con el período vigente no se corta", async () => {
+    await setProvider(true);
+    await sql`insert into subscriptions
+      (profile_id, plan, status, mp_preapproval_id, current_period_end, cancel_at_period_end)
+      values (${PROVIDER}, 'provider_monthly', 'active', 'pre_1', now() + interval '10 days', true)`;
+
+    await expireGracePeriods();
+
+    expect(await subStatus()).toBe("active");
+    expect(await providerActive()).toBe(true);
+    expect(setPreApprovalStatus).not.toHaveBeenCalled();
+  });
+
+  it("un fallo de MP al cancelar no revierte la baja local", async () => {
+    setPreApprovalStatus.mockRejectedValueOnce(new Error("MP caído"));
+    await setProvider(true);
+    await sql`insert into subscriptions
+      (profile_id, plan, status, mp_preapproval_id, current_period_end, cancel_at_period_end)
+      values (${PROVIDER}, 'provider_monthly', 'active', 'pre_1', now() - interval '1 hour', true)`;
+
+    await expireGracePeriods();
+
+    expect(await subStatus()).toBe("cancelled");
+  });
+
+  it("un cobro aprobado deja sin efecto una baja programada", async () => {
+    await setProvider(true);
+    await sql`insert into subscriptions
+      (profile_id, plan, status, mp_preapproval_id, current_period_end, cancel_at_period_end)
+      values (${PROVIDER}, 'provider_monthly', 'active', 'pre_1', now() + interval '1 day', true)`;
+
+    await processAuthorizedPaymentApproved("pre_1");
+
+    const [s] = await sql<{ cancel_at_period_end: boolean }[]>`
+      select cancel_at_period_end from subscriptions where mp_preapproval_id = 'pre_1'`;
+    expect(s!.cancel_at_period_end).toBe(false);
   });
 
   it("active con período vigente no cambia", async () => {

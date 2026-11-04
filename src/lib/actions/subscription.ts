@@ -14,7 +14,10 @@ import {
 import { db } from "@/lib/db";
 import { subscriptions, providerProfiles } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
-import { createPreApproval } from "@/lib/mercadopago/subscriptions";
+import {
+  createPreApproval,
+  setPreApprovalStatus,
+} from "@/lib/mercadopago/subscriptions";
 import {
   FOUNDING_THRESHOLD,
   PROVIDER_REGULAR_PRICE,
@@ -147,23 +150,64 @@ export async function startClientSubscription(): Promise<SubActionResult> {
   }
 }
 
-/** Marca la suscripción para no renovar al vencimiento. */
+/** Suscripción `active` del usuario para el plan, con su preapproval de MP. */
+async function findActiveSubscription(
+  profileId: string,
+  plan: "provider_monthly" | "client_monthly",
+) {
+  const [row] = await db
+    .select({
+      id: subscriptions.id,
+      mpPreapprovalId: subscriptions.mpPreapprovalId,
+    })
+    .from(subscriptions)
+    .where(
+      and(
+        eq(subscriptions.profileId, profileId),
+        eq(subscriptions.plan, plan),
+        eq(subscriptions.status, "active"),
+      ),
+    )
+    .limit(1);
+  return row ?? null;
+}
+
+async function setCancelAtPeriodEnd(id: string, value: boolean): Promise<void> {
+  await db
+    .update(subscriptions)
+    .set({ cancelAtPeriodEnd: value, updatedAt: new Date() })
+    .where(eq(subscriptions.id, id));
+}
+
+/**
+ * Baja al vencimiento: el acceso sigue hasta `current_period_end` y MP deja de
+ * debitar. En MP se PAUSA (no se cancela) para que la reactivación siga siendo
+ * posible; la cancelación definitiva la hace el cron al vencer el período.
+ * El flag se marca ANTES de pausar: el webhook `paused` que dispara MP tiene
+ * que encontrarlo para no cortar el acceso ya pagado.
+ */
 export async function cancelSubscriptionAtPeriodEnd(
   plan: "provider_monthly" | "client_monthly",
 ): Promise<{ ok: boolean; error?: string }> {
   const session = await getSession();
   if (!session) return { ok: false, error: "Sesión inválida." };
 
-  await db
-    .update(subscriptions)
-    .set({ cancelAtPeriodEnd: true, updatedAt: new Date() })
-    .where(
-      and(
-        eq(subscriptions.profileId, session.user.id),
-        eq(subscriptions.plan, plan),
-        eq(subscriptions.status, "active"),
-      ),
-    );
+  const sub = await findActiveSubscription(session.user.id, plan);
+  if (!sub) return { ok: false, error: "No tenés una suscripción activa." };
+
+  await setCancelAtPeriodEnd(sub.id, true);
+  if (sub.mpPreapprovalId) {
+    try {
+      await setPreApprovalStatus(sub.mpPreapprovalId, "paused");
+    } catch {
+      // Si MP no frenó los débitos, la baja no se registra: seguiría cobrando.
+      await setCancelAtPeriodEnd(sub.id, false);
+      return {
+        ok: false,
+        error: "No pudimos cancelar en Mercado Pago. Intentá nuevamente.",
+      };
+    }
+  }
 
   revalidatePath(plan === "provider_monthly" ? "/pro/suscripcion" : "/suscripcion");
   return { ok: true };
@@ -176,16 +220,20 @@ export async function resumeSubscription(
   const session = await getSession();
   if (!session) return { ok: false, error: "Sesión inválida." };
 
-  await db
-    .update(subscriptions)
-    .set({ cancelAtPeriodEnd: false, updatedAt: new Date() })
-    .where(
-      and(
-        eq(subscriptions.profileId, session.user.id),
-        eq(subscriptions.plan, plan),
-        eq(subscriptions.status, "active"),
-      ),
-    );
+  const sub = await findActiveSubscription(session.user.id, plan);
+  if (!sub) return { ok: false, error: "No tenés una suscripción activa." };
+
+  if (sub.mpPreapprovalId) {
+    try {
+      await setPreApprovalStatus(sub.mpPreapprovalId, "authorized");
+    } catch {
+      return {
+        ok: false,
+        error: "No pudimos reactivar en Mercado Pago. Intentá nuevamente.",
+      };
+    }
+  }
+  await setCancelAtPeriodEnd(sub.id, false);
 
   revalidatePath(plan === "provider_monthly" ? "/pro/suscripcion" : "/suscripcion");
   return { ok: true };
@@ -214,6 +262,32 @@ export async function processPreapprovalEvent(
   const newStatus = statusMap[mpStatus] ?? "pending";
 
   await db.transaction(async (tx) => {
+    // Baja con el período ya pagado: la pausa que hace cancelSubscriptionAtPeriodEnd,
+    // o una cancelación hecha por el usuario desde la app de MP. El acceso sigue
+    // hasta `current_period_end`; el cron cierra la suscripción al vencer.
+    const [current] = await tx
+      .select({
+        status: subscriptions.status,
+        currentPeriodEnd: subscriptions.currentPeriodEnd,
+        cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
+      })
+      .from(subscriptions)
+      .where(eq(subscriptions.mpPreapprovalId, preapprovalId))
+      .limit(1);
+    const endingPaidPeriod =
+      current?.status === "active" &&
+      current.currentPeriodEnd !== null &&
+      current.currentPeriodEnd > new Date() &&
+      (mpStatus === "cancelled" ||
+        (mpStatus === "paused" && current.cancelAtPeriodEnd));
+    if (endingPaidPeriod) {
+      await tx
+        .update(subscriptions)
+        .set({ cancelAtPeriodEnd: true, updatedAt: new Date() })
+        .where(eq(subscriptions.mpPreapprovalId, preapprovalId));
+      return;
+    }
+
     const [updated] = await tx
       .update(subscriptions)
       .set({
@@ -261,6 +335,9 @@ export async function processAuthorizedPaymentApproved(
       .set({
         status: "active",
         currentPeriodEnd: sql`greatest(${subscriptions.currentPeriodEnd}, now()) + interval '1 month'`,
+        // Un cobro aprobado = el usuario sigue pagando (p. ej. reactivó desde la
+        // app de MP): una baja programada queda sin efecto.
+        cancelAtPeriodEnd: false,
         updatedAt: new Date(),
       })
       .where(
@@ -289,16 +366,64 @@ export async function processAuthorizedPaymentApproved(
 }
 
 /**
- * Cron de la gracia (spec §6). Dos pasos, sin tocar MP (robusto ante webhooks
- * de rechazo perdidos: todo se deriva de `current_period_end`):
+ * Cron de la gracia (spec §6). Todo se deriva de `current_period_end` (robusto
+ * ante webhooks de rechazo perdidos):
+ *  0. `active` con baja programada y el período vencido → `cancelled` (gate
+ *     cerrado, sin gracia: no hubo cobro fallido) y cancelación definitiva en MP.
  *  1. `active` con el período vencido → `past_due` (el gate SIGUE abierto).
  *  2. `past_due` pasados los `GRACE_DAYS` → `cancelled` (gate cerrado).
  * Devuelve cuántas suscripciones movió en cada paso.
  */
 export async function expireGracePeriods(): Promise<{
+  ended: number;
   toPastDue: number;
   cancelled: number;
 }> {
+  // Paso 0: baja programada cumplida.
+  const ended = await db.transaction(async (tx) => {
+    const rows = await tx
+      .update(subscriptions)
+      .set({ status: "cancelled", updatedAt: new Date() })
+      .where(
+        and(
+          eq(subscriptions.status, "active"),
+          eq(subscriptions.cancelAtPeriodEnd, true),
+          isNotNull(subscriptions.currentPeriodEnd),
+          lt(subscriptions.currentPeriodEnd, sql`now()`),
+        ),
+      )
+      .returning({
+        profileId: subscriptions.profileId,
+        plan: subscriptions.plan,
+        mpPreapprovalId: subscriptions.mpPreapprovalId,
+      });
+
+    const providerIds = rows
+      .filter((r) => r.plan === "provider_monthly")
+      .map((r) => r.profileId);
+    if (providerIds.length > 0) {
+      await tx
+        .update(providerProfiles)
+        .set({ subscriptionActive: false })
+        .where(inArray(providerProfiles.profileId, providerIds));
+    }
+    return rows;
+  });
+
+  // El preapproval ya estaba pausado (sin débitos); cancelarlo en MP es
+  // limpieza, best-effort: un fallo no revierte la baja local.
+  for (const row of ended) {
+    if (!row.mpPreapprovalId) continue;
+    try {
+      await setPreApprovalStatus(row.mpPreapprovalId, "cancelled");
+    } catch (error) {
+      console.error("[subscriptions] no se pudo cancelar en MP", {
+        preapprovalId: row.mpPreapprovalId,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
   // Paso 1: período vencido → past_due. `subscription_active` NO cambia (seguía
   // en true desde `active`; durante la gracia el acceso continúa).
   const toPastDue = await db
@@ -345,5 +470,5 @@ export async function expireGracePeriods(): Promise<{
     return rows.length;
   });
 
-  return { toPastDue: toPastDue.length, cancelled };
+  return { ended: ended.length, toPastDue: toPastDue.length, cancelled };
 }

@@ -46,9 +46,13 @@ vi.mock("@/lib/notifications/dispatch", () => ({
 }));
 vi.mock("@/lib/db/queries", () => ({ findNearbyProviders: vi.fn() }));
 vi.mock("@/lib/push/send", () => ({ sendPushToUsers: vi.fn(async () => {}) }));
+const { setPreApprovalStatus } = vi.hoisted(() => ({
+  setPreApprovalStatus: vi.fn(async (_id: string, _status: string) => {}),
+}));
 vi.mock("@/lib/mercadopago/subscriptions", () => ({
   createPreApproval: vi.fn(),
   fetchPreApprovalStatus: vi.fn(),
+  setPreApprovalStatus,
 }));
 
 const CLIENT = "11111111-1111-1111-1111-111111111111";
@@ -60,6 +64,8 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
   let acceptJob: typeof import("@/lib/actions/dispatch").acceptJob;
   let updateJobStatus: typeof import("@/lib/actions/job").updateJobStatus;
   let processPreapprovalEvent: typeof import("@/lib/actions/subscription").processPreapprovalEvent;
+  let cancelSubscriptionAtPeriodEnd: typeof import("@/lib/actions/subscription").cancelSubscriptionAtPeriodEnd;
+  let resumeSubscription: typeof import("@/lib/actions/subscription").resumeSubscription;
 
   beforeAll(async () => {
     sql = rawClient();
@@ -67,7 +73,11 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
     // Import dinámico: solo cuando hay DB (evita cargar @/lib/db sin env).
     ({ acceptJob } = await import("@/lib/actions/dispatch"));
     ({ updateJobStatus } = await import("@/lib/actions/job"));
-    ({ processPreapprovalEvent } = await import("@/lib/actions/subscription"));
+    ({
+      processPreapprovalEvent,
+      cancelSubscriptionAtPeriodEnd,
+      resumeSubscription,
+    } = await import("@/lib/actions/subscription"));
   });
 
   afterAll(async () => {
@@ -77,6 +87,7 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
   beforeEach(async () => {
     await truncateAll(sql);
     currentSession = null;
+    setPreApprovalStatus.mockClear();
   });
 
   // jobsCompleted por default = FREE_JOBS (5) → trial AGOTADO, para que los
@@ -215,7 +226,9 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
       select status from subscriptions where mp_preapproval_id = 'pre_1'`;
     expect(sub!.status).toBe("active");
 
-    // Cancelación corta el gate.
+    // Cancelación con el período vencido corta el gate.
+    await sql`update subscriptions set current_period_end = now() - interval '1 day'
+              where mp_preapproval_id = 'pre_1'`;
     await processPreapprovalEvent("pre_1", "cancelled");
     [sub] = await sql<{ status: string }[]>`
       select status from subscriptions where mp_preapproval_id = 'pre_1'`;
@@ -223,6 +236,69 @@ describe.skipIf(!hasTestDb)("modelo de suscripción (integración)", () => {
       select subscription_active from provider_profiles where profile_id = ${PROVIDER_A}`;
     expect(sub!.status).toBe("cancelled");
     expect(prof!.subscription_active).toBe(false);
+  });
+
+  // ── Baja al vencimiento (no seguir cobrando en MP) ──
+  async function subRow() {
+    const [s] = await sql<{ status: string; cancel_at_period_end: boolean }[]>`
+      select status, cancel_at_period_end from subscriptions where mp_preapproval_id = 'pre_1'`;
+    return s!;
+  }
+
+  async function insertActiveSub(cancelAtPeriodEnd = false) {
+    await setProviderSub(PROVIDER_A, true);
+    await sql`insert into subscriptions
+      (profile_id, plan, status, mp_preapproval_id, current_period_end, cancel_at_period_end)
+      values (${PROVIDER_A}, 'provider_monthly', 'active', 'pre_1',
+              now() + interval '20 days', ${cancelAtPeriodEnd})`;
+  }
+
+  it("cancelSubscriptionAtPeriodEnd pausa en MP y mantiene el acceso hasta el vencimiento", async () => {
+    await insertActiveSub();
+    currentSession = { user: { id: PROVIDER_A }, role: "provider" };
+
+    const res = await cancelSubscriptionAtPeriodEnd("provider_monthly");
+
+    expect(res.ok).toBe(true);
+    expect(setPreApprovalStatus).toHaveBeenCalledWith("pre_1", "paused");
+    expect(await subRow()).toEqual({ status: "active", cancel_at_period_end: true });
+
+    // El webhook `paused` que dispara MP no corta el período ya pagado.
+    await processPreapprovalEvent("pre_1", "paused");
+    expect(await subRow()).toEqual({ status: "active", cancel_at_period_end: true });
+    const [prof] = await sql<{ subscription_active: boolean }[]>`
+      select subscription_active from provider_profiles where profile_id = ${PROVIDER_A}`;
+    expect(prof!.subscription_active).toBe(true);
+  });
+
+  it("cancelSubscriptionAtPeriodEnd no registra la baja si MP falla", async () => {
+    await insertActiveSub();
+    currentSession = { user: { id: PROVIDER_A }, role: "provider" };
+    setPreApprovalStatus.mockRejectedValueOnce(new Error("MP caído"));
+
+    const res = await cancelSubscriptionAtPeriodEnd("provider_monthly");
+
+    expect(res.ok).toBe(false);
+    expect(await subRow()).toEqual({ status: "active", cancel_at_period_end: false });
+  });
+
+  it("resumeSubscription reautoriza en MP y quita la baja programada", async () => {
+    await insertActiveSub(true);
+    currentSession = { user: { id: PROVIDER_A }, role: "provider" };
+
+    const res = await resumeSubscription("provider_monthly");
+
+    expect(res.ok).toBe(true);
+    expect(setPreApprovalStatus).toHaveBeenCalledWith("pre_1", "authorized");
+    expect(await subRow()).toEqual({ status: "active", cancel_at_period_end: false });
+  });
+
+  it("una cancelación desde la app de MP respeta el período ya pagado", async () => {
+    await insertActiveSub();
+
+    await processPreapprovalEvent("pre_1", "cancelled");
+
+    expect(await subRow()).toEqual({ status: "active", cancel_at_period_end: true });
   });
 
   it("processPreapprovalEvent con un preapproval desconocido no lanza", async () => {
