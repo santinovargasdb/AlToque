@@ -102,6 +102,20 @@ export async function getProviderGateState(
 }
 
 /**
+ * ¿Este preapproval de MP es de una suscripción nuestra? El webhook lo usa para
+ * ignorar eventos ajenos (la simulación del panel de MP, otra app de la misma
+ * cuenta) sin consultar a MP ni responder 500.
+ */
+export async function isKnownPreapproval(preapprovalId: string): Promise<boolean> {
+  const [row] = await db
+    .select({ id: subscriptions.id })
+    .from(subscriptions)
+    .where(eq(subscriptions.mpPreapprovalId, preapprovalId))
+    .limit(1);
+  return Boolean(row);
+}
+
+/**
  * Cupos de precio fundador ocupados: suscripciones profesionales que llegaron a
  * autorizar el pago en MP (`active`, `past_due` o `paused`). Una `pending`
  * abandonada en el checkout NO ocupa cupo; una `cancelled` lo libera.

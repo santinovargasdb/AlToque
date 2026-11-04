@@ -8,6 +8,7 @@ import {
   processPreapprovalEvent,
   processAuthorizedPaymentApproved,
 } from "@/lib/actions/subscription";
+import { isKnownPreapproval } from "@/lib/subscriptions/status";
 
 type WebhookBody = {
   type?: string;
@@ -71,6 +72,12 @@ export async function POST(request: NextRequest) {
       dataId
     ) {
       // Cambio de estado del preapproval (alta, autorización, pausa, baja).
+      // Un ID que no es nuestro se ignora con 200: consultarlo en MP daría 404
+      // y un 500 haría que MP reintente para siempre.
+      if (!(await isKnownPreapproval(dataId))) {
+        console.info("[mp-webhook] preapproval desconocido, ignorado", { dataId });
+        return NextResponse.json({ ok: true, ignored: true });
+      }
       const mpStatus = await fetchPreApprovalStatus(dataId);
       await processPreapprovalEvent(dataId, mpStatus);
     } else if (topic === "subscription_authorized_payment" && dataId) {
@@ -85,10 +92,20 @@ export async function POST(request: NextRequest) {
     console.error("[mp-webhook] fallo al procesar", {
       topic,
       dataId,
-      message: error instanceof Error ? error.message : String(error),
+      // El SDK de MP lanza objetos planos ({ message, status, … }), no Error.
+      message: errorMessage(error),
     });
     return NextResponse.json({ error: "processing failed" }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });
+}
+
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === "object") {
+    const { message, status } = error as { message?: unknown; status?: unknown };
+    return [status, message].filter((v) => v != null).join(" ") || "error desconocido";
+  }
+  return String(error);
 }
