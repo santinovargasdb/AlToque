@@ -13,6 +13,7 @@ import {
 } from "@/lib/subscriptions/status";
 import { geocodeAddress } from "@/lib/maps/geocode";
 import { createJobSchema, setFinalPriceSchema } from "@/lib/validations/job";
+import { NOT_COMPLETED_CANCEL_REASON } from "@/lib/validations/report";
 import type { ActionResult } from "./provider";
 
 const URGENT_BROADCAST_LIMIT = 10;
@@ -232,9 +233,12 @@ export async function updateJobStatus(params: {
     if (!["requested", "accepted", "in_progress"].includes(job.status)) {
       return { ok: false, error: "El pedido ya no se puede cancelar." };
     }
+    // Ese motivo habilita la reseña y lo pone solo closeJobAsClient, con su reporte.
+    const reason =
+      params.reason === NOT_COMPLETED_CANCEL_REASON ? null : params.reason;
     changed = await transition({
       status: "cancelled",
-      cancelReason: params.reason ?? null,
+      cancelReason: reason ?? null,
       updatedAt: now,
     });
   }

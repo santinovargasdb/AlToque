@@ -4,10 +4,11 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { Loader2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CloseJobPanel } from "@/components/app/close-job-panel";
 import { updateJobStatus } from "@/lib/actions/job";
 import type { JobStatus } from "@/types";
 
-/** Acciones del cliente sobre su pedido (Step 6: cancelar). */
+/** Acciones del cliente sobre su pedido: cerrarlo o cancelarlo. */
 export function ClientJobActions({
   jobId,
   status,
@@ -32,14 +33,17 @@ export function ClientJobActions({
   }
 
   return (
-    <Button
-      variant="outline"
-      className="w-full text-destructive"
-      onClick={cancel}
-      disabled={pending}
-    >
-      {pending ? <Loader2 className="size-4 animate-spin" /> : <XCircle className="size-4" />}
-      Cancelar pedido
-    </Button>
+    <div className="space-y-3">
+      {status !== "requested" && <CloseJobPanel jobId={jobId} />}
+      <Button
+        variant="outline"
+        className="w-full text-destructive"
+        onClick={cancel}
+        disabled={pending}
+      >
+        {pending ? <Loader2 className="size-4 animate-spin" /> : <XCircle className="size-4" />}
+        Cancelar pedido
+      </Button>
+    </div>
   );
 }

@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { and, avg, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { jobs, reviews, reviewAspects, profiles, providerProfiles } from "@/lib/db/schema";
+import { jobReports, jobs, reviews, reviewAspects, profiles, providerProfiles } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import { reviewSchema } from "@/lib/validations/job";
+import { NOT_COMPLETED_CANCEL_REASON } from "@/lib/validations/report";
 import {
   aspectKeysFor,
   generalFromAspects,
@@ -16,7 +17,9 @@ import type { ActionResult } from "./provider";
 
 /**
  * Reseña bidireccional de un trabajo completado. Una por parte (unique
- * job+author). El cliente puntúa al profesional y viceversa; el set de
+ * job+author). Si el cliente cerró el trabajo como "no se hizo", solo él reseña,
+ * y no puede volver a hacerlo si un admin descartó su reporte.
+ * El cliente puntúa al profesional y viceversa; el set de
  * aspectos depende de la dirección y se valida server-side (no se confía
  * en el cliente). La nota general = promedio de los 4 aspectos. Recalcula
  * el rating agregado del reseñado (pro en provider_profiles, cliente en
@@ -34,18 +37,46 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
   const { jobId, targetId, aspects, comment } = parsed.data;
 
   const [job] = await db
-    .select({ clientId: jobs.clientId, providerId: jobs.providerId, status: jobs.status })
+    .select({
+      clientId: jobs.clientId,
+      providerId: jobs.providerId,
+      status: jobs.status,
+      cancelReason: jobs.cancelReason,
+    })
     .from(jobs)
     .where(eq(jobs.id, jobId))
     .limit(1);
   if (!job) return { ok: false, error: "Pedido no encontrado." };
-  if (job.status !== "completed") {
+  const notCompleted =
+    job.status === "cancelled" &&
+    job.cancelReason === NOT_COMPLETED_CANCEL_REASON;
+  if (job.status !== "completed" && !notCompleted) {
     return { ok: false, error: "Solo se puede reseñar un trabajo completado." };
   }
 
   const isClient = uid === job.clientId;
   const isProvider = uid === job.providerId;
   if (!isClient && !isProvider) return { ok: false, error: "No autorizado." };
+
+  if (notCompleted) {
+    if (!isClient) {
+      return { ok: false, error: "Solo se puede reseñar un trabajo completado." };
+    }
+    const [dismissed] = await db
+      .select({ id: jobReports.id })
+      .from(jobReports)
+      .where(
+        and(
+          eq(jobReports.jobId, jobId),
+          eq(jobReports.reporterId, uid),
+          eq(jobReports.status, "dismissed"),
+        ),
+      )
+      .limit(1);
+    if (dismissed) {
+      return { ok: false, error: "Tu reporte sobre este trabajo fue descartado." };
+    }
+  }
 
   const expectedTarget = isClient ? job.providerId : job.clientId;
   if (!expectedTarget || targetId !== expectedTarget) {
