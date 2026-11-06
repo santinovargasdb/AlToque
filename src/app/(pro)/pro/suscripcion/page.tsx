@@ -20,7 +20,7 @@ const BENEFITS = [
   "Perfil con badge de profesional activo",
   "Agenda digital integrada en la app",
   "Estadísticas de trabajos y calificaciones",
-  "Soporte directo en disputas",
+  "Soporte ante reclamos",
   "Reseñas verificadas y portables",
 ];
 

@@ -15,6 +15,7 @@ import {
 import { relations } from "drizzle-orm";
 import { geographyPoint } from "./geography";
 import { ALL_ASPECT_KEYS } from "@/lib/reviews/aspects";
+import { REPORT_REASONS } from "@/lib/validations/report";
 
 // ── Enums de suscripción ──
 export const subscriptionPlanEnum = pgEnum("subscription_plan", [
@@ -64,6 +65,12 @@ export const dispatchStatusEnum = pgEnum("dispatch_status", [
   "expired",
 ]);
 export const reviewAspectEnum = pgEnum("review_aspect", ALL_ASPECT_KEYS);
+export const reportReasonEnum = pgEnum("report_reason", REPORT_REASONS);
+export const reportStatusEnum = pgEnum("report_status", [
+  "open",
+  "resolved",
+  "dismissed",
+]);
 
 // ── profiles (extiende auth.users 1:1 por id; lo crea un trigger al registrarse) ──
 export const profiles = pgTable("profiles", {
@@ -294,6 +301,38 @@ export const subscriptions = pgTable(
     unique("subscriptions_profile_id_plan_unique").on(t.profileId, t.plan),
     index("idx_subscriptions_mp_preapproval").on(t.mpPreapprovalId),
     index("idx_subscriptions_profile").on(t.profileId),
+  ],
+);
+
+// ── job_reports (reclamos sobre un trabajo; solo se accede desde el servidor) ──
+export const jobReports = pgTable(
+  "job_reports",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    reporterId: uuid("reporter_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    targetId: uuid("target_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    reason: reportReasonEnum("reason").notNull(),
+    description: text("description").notNull(),
+    status: reportStatusEnum("status").notNull().default("open"),
+    adminNote: text("admin_note"),
+    resolvedBy: uuid("resolved_by").references(() => profiles.id, {
+      onDelete: "set null",
+    }),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    unique("job_reports_job_id_reporter_id_unique").on(t.jobId, t.reporterId),
+    index("idx_job_reports_status").on(t.status),
   ],
 );
 

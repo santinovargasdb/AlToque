@@ -43,6 +43,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     .unsafe(
       `
     drop table if exists job_dispatch cascade;
+    drop table if exists job_reports cascade;
     drop table if exists jobs cascade;
     drop table if exists categories cascade;
     drop table if exists messages cascade;
@@ -117,6 +118,21 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       unique (job_id, provider_id)
     );
 
+    create table job_reports (
+      id uuid primary key default gen_random_uuid(),
+      job_id uuid not null references jobs(id) on delete cascade,
+      reporter_id uuid not null,
+      target_id uuid not null,
+      reason text not null,
+      description text not null,
+      status text not null default 'open',
+      admin_note text,
+      resolved_by uuid,
+      resolved_at timestamptz,
+      created_at timestamptz not null default now(),
+      unique (job_id, reporter_id)
+    );
+
     create table notifications (
       id uuid primary key default gen_random_uuid(),
       user_id uuid not null,
@@ -151,6 +167,8 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       profile_id uuid primary key,
       subscription_active boolean not null default false,
       verification_status text not null default 'approved',
+      rejection_reason text,
+      is_online boolean not null default false,
       jobs_completed integer not null default 0,
       rating_avg numeric(2,1) not null default '0.0'
     );
@@ -201,7 +219,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 
 /** Limpia las tablas entre tests. */
 export async function truncateAll(sql: RawClient): Promise<void> {
-  await sql`truncate table job_dispatch, jobs, categories, messages, notifications,
+  await sql`truncate table job_reports, job_dispatch, jobs, categories, messages, notifications,
             push_subscriptions, provider_profiles, subscriptions,
             profiles, reviews, review_aspects
             restart identity cascade`;

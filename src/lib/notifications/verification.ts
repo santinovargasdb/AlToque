@@ -7,6 +7,31 @@ import { sendEmail } from "@/lib/emails/send";
 import { verificationResultEmail } from "@/lib/emails/verification-result";
 import { createServiceClient } from "@/lib/supabase/server";
 
+/** Avisa al profesional que un admin suspendió su cuenta (campanita y push). */
+export async function notifyProviderSuspended(params: {
+  providerId: string;
+  reason: string;
+}): Promise<void> {
+  const title = "Tu cuenta fue suspendida";
+  const body = `Motivo: ${params.reason} Ya no recibís pedidos nuevos. Si creés que es un error, escribinos a altoquecorp@gmail.com.`;
+  const link = "/pro/inicio";
+
+  await db.insert(notifications).values({
+    userId: params.providerId,
+    type: "provider_suspended",
+    title,
+    body,
+    link,
+  });
+
+  await sendPushToUsers([params.providerId], {
+    title,
+    body,
+    url: link,
+    tag: "provider-suspended",
+  });
+}
+
 /**
  * Avisa al profesional el resultado de su verificación por los tres
  * canales: campanita in-app, Web Push y email. El email es best-effort

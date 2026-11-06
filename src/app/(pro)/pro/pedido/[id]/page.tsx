@@ -7,7 +7,10 @@ import {
   getJobReviewByAuthor,
   getClientReputation,
   getAspectAverages,
+  hasReportedJob,
 } from "@/lib/db/queries";
+import { isReportableStatus } from "@/lib/validations/report";
+import { ReportJobForm } from "@/components/shared/report-job-form";
 import { JobDetailView } from "@/components/app/job-detail-view";
 import { ProviderJobActions } from "@/components/pro/provider-job-actions";
 import { ClientReputation } from "@/components/pro/client-reputation";
@@ -30,13 +33,21 @@ export default async function ProviderJobPage({
   if (!job || job.providerId !== user.id) notFound();
 
   const showChat = CHAT_STATUSES.includes(job.status);
-  const [chatMessages, myReview, clientRep, clientAspects] = await Promise.all([
+  const canReport = isReportableStatus(job.status);
+  const [
+    chatMessages,
+    myReview,
+    clientRep,
+    clientAspects,
+    alreadyReported,
+  ] = await Promise.all([
     showChat ? getJobMessages(job.id) : Promise.resolve([]),
     job.status === "completed"
       ? getJobReviewByAuthor(job.id, user.id)
       : Promise.resolve(null),
     getClientReputation(job.clientId),
     getAspectAverages(job.clientId),
+    canReport ? hasReportedJob(job.id, user.id) : Promise.resolve(false),
   ]);
 
   return (
@@ -78,6 +89,10 @@ export default async function ProviderJobPage({
             direction="provider_to_client"
           />
         ))}
+
+      {canReport && (
+        <ReportJobForm jobId={job.id} alreadyReported={alreadyReported} />
+      )}
     </JobDetailView>
   );
 }

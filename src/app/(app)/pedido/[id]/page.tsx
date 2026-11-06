@@ -5,8 +5,15 @@ import {
   getJobDetail,
   getJobMessages,
   getJobReviewByAuthor,
+  hasDismissedReport,
+  hasReportedJob,
 } from "@/lib/db/queries";
 import { expireStaleUrgentJobs } from "@/lib/jobs/expire";
+import {
+  isReportableStatus,
+  NOT_COMPLETED_CANCEL_REASON,
+} from "@/lib/validations/report";
+import { ReportJobForm } from "@/components/shared/report-job-form";
 import { JobDetailView } from "@/components/app/job-detail-view";
 import { ClientJobActions } from "@/components/app/client-job-actions";
 import { JobChat } from "@/components/shared/job-chat";
@@ -30,12 +37,20 @@ export default async function ClientJobPage({
   if (!job || job.clientId !== user.id) notFound();
 
   const showChat = !!job.providerId && CHAT_STATUSES.includes(job.status);
-  const [chatMessages, myReview] = await Promise.all([
-    showChat ? getJobMessages(job.id) : Promise.resolve([]),
-    job.status === "completed"
-      ? getJobReviewByAuthor(job.id, user.id)
-      : Promise.resolve(null),
-  ]);
+  const canReport = !!job.providerId && isReportableStatus(job.status);
+  const notCompleted =
+    job.status === "cancelled" &&
+    job.cancelReason === NOT_COMPLETED_CANCEL_REASON;
+  const [chatMessages, myReview, alreadyReported, reportDismissed] =
+    await Promise.all([
+      showChat ? getJobMessages(job.id) : Promise.resolve([]),
+      job.status === "completed" || notCompleted
+        ? getJobReviewByAuthor(job.id, user.id)
+        : Promise.resolve(null),
+      canReport ? hasReportedJob(job.id, user.id) : Promise.resolve(false),
+      notCompleted ? hasDismissedReport(job.id, user.id) : Promise.resolve(false),
+    ]);
+  const canReview = job.status === "completed" || (notCompleted && !reportDismissed);
 
   return (
     <JobDetailView
@@ -63,7 +78,7 @@ export default async function ClientJobPage({
         <PushSubscribe />
       )}
 
-      {job.status === "completed" &&
+      {canReview &&
         job.providerId &&
         (myReview ? (
           <ReviewSummary
@@ -79,6 +94,10 @@ export default async function ClientJobPage({
             direction="client_to_provider"
           />
         ))}
+
+      {canReport && (
+        <ReportJobForm jobId={job.id} alreadyReported={alreadyReported} />
+      )}
     </JobDetailView>
   );
 }

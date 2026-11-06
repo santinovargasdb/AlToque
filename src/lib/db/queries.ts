@@ -9,6 +9,7 @@ import {
   reviewAspects,
   messages,
   jobs,
+  jobReports,
 } from "./schema";
 import type { JobStatus, JobType, PaymentMethod } from "@/types";
 
@@ -231,6 +232,38 @@ export async function getJobDetail(jobId: string): Promise<JobDetail | null> {
     providerAvatar: provider?.avatar ?? null,
     providerRating,
   };
+}
+
+/** ¿`reporterId` ya reportó este trabajo? */
+export async function hasReportedJob(
+  jobId: string,
+  reporterId: string,
+): Promise<boolean> {
+  const [row] = await db
+    .select({ id: jobReports.id })
+    .from(jobReports)
+    .where(and(eq(jobReports.jobId, jobId), eq(jobReports.reporterId, reporterId)))
+    .limit(1);
+  return Boolean(row);
+}
+
+/** ¿Un admin descartó el reporte de `reporterId` sobre este trabajo? */
+export async function hasDismissedReport(
+  jobId: string,
+  reporterId: string,
+): Promise<boolean> {
+  const [row] = await db
+    .select({ id: jobReports.id })
+    .from(jobReports)
+    .where(
+      and(
+        eq(jobReports.jobId, jobId),
+        eq(jobReports.reporterId, reporterId),
+        eq(jobReports.status, "dismissed"),
+      ),
+    )
+    .limit(1);
+  return Boolean(row);
 }
 
 /** Reseña que dejó `authorId` sobre un trabajo (con su desglose), o null. */

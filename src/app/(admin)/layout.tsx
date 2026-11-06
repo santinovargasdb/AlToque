@@ -8,6 +8,7 @@ const NAV = [
   { href: "/admin/profesionales", label: "Profesionales" },
   { href: "/admin/trabajos", label: "Trabajos" },
   { href: "/admin/suscripciones", label: "Suscripciones" },
+  { href: "/admin/reportes", label: "Reportes" },
 ];
 
 export const metadata: Metadata = {

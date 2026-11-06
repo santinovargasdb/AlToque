@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { jobs, providerProfiles } from "@/lib/db/schema";
+import { jobReports, jobs, providerProfiles } from "@/lib/db/schema";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 import { Stagger, StaggerItem } from "@/components/shared/reveal";
 import { formatARS } from "@/lib/utils";
@@ -9,7 +9,7 @@ import { formatARS } from "@/lib/utils";
 export default async function AdminPage() {
   await requireRole("admin");
 
-  const [[providersRow], [jobsRow]] = await Promise.all([
+  const [[providersRow], [jobsRow], [reportsRow]] = await Promise.all([
     db
       .select({ verified: sql<number>`count(*)::int` })
       .from(providerProfiles)
@@ -20,6 +20,10 @@ export default async function AdminPage() {
         gmv: sql<string>`coalesce(sum(${jobs.finalPrice}) filter (where ${jobs.status} = 'completed'), 0)`,
       })
       .from(jobs),
+    db
+      .select({ open: sql<number>`count(*)::int` })
+      .from(jobReports)
+      .where(eq(jobReports.status, "open")),
   ]);
 
   const KPIS = [
@@ -29,6 +33,7 @@ export default async function AdminPage() {
     },
     { label: "Pedidos completados", value: String(jobsRow?.completed ?? 0) },
     { label: "GMV (volumen)", value: formatARS(Number(jobsRow?.gmv ?? 0)) },
+    { label: "Reportes abiertos", value: String(reportsRow?.open ?? 0) },
   ];
 
   return (
