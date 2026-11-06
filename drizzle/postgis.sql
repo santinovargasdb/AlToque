@@ -117,22 +117,9 @@ alter table push_subscriptions  enable row level security;
 alter table notifications       enable row level security;
 alter table subscriptions       enable row level security;
 
--- profiles: cada uno lee/edita el suyo; los perfiles son visibles para mostrar.
-drop policy if exists profiles_self_rw on profiles;
-create policy profiles_self_rw on profiles
-  for all using (auth.uid() = id) with check (auth.uid() = id);
-drop policy if exists profiles_public_read on profiles;
-create policy profiles_public_read on profiles
-  for select using (true);
-
--- provider_profiles: el profesional edita el suyo; lectura pública (solo se
--- muestran en búsquedas los 'approved', filtrado por la función/queries).
-drop policy if exists provider_self_rw on provider_profiles;
-create policy provider_self_rw on provider_profiles
-  for all using (auth.uid() = profile_id) with check (auth.uid() = profile_id);
-drop policy if exists provider_public_read on provider_profiles;
-create policy provider_public_read on provider_profiles
-  for select using (true);
+-- Las policies de las demás tablas están en drizzle/rls-hardening.sql.
+-- Correrlo después de este archivo: sin él, esas tablas quedan cerradas
+-- también para lectura y Realtime no entrega nada.
 
 -- categories: lectura pública; escritura solo admin.
 drop policy if exists categories_read on categories;
@@ -141,68 +128,6 @@ drop policy if exists categories_admin_write on categories;
 create policy categories_admin_write on categories
   for all using (is_admin()) with check (is_admin());
 
--- provider_categories: el profesional gestiona las suyas; lectura pública.
-drop policy if exists provcat_self_rw on provider_categories;
-create policy provcat_self_rw on provider_categories
-  for all using (auth.uid() = provider_id) with check (auth.uid() = provider_id);
-drop policy if exists provcat_read on provider_categories;
-create policy provcat_read on provider_categories for select using (true);
-
--- jobs: el cliente gestiona los suyos; el profesional asignado o en broadcast lee.
-drop policy if exists jobs_client_rw on jobs;
-create policy jobs_client_rw on jobs
-  for all using (auth.uid() = client_id) with check (auth.uid() = client_id);
-drop policy if exists jobs_provider_read on jobs;
-create policy jobs_provider_read on jobs
-  for select using (
-    auth.uid() = provider_id
-    or (status = 'broadcasting' and exists (
-      select 1 from job_dispatch d
-      where d.job_id = jobs.id and d.provider_id = auth.uid()
-    ))
-  );
--- El profesional puede aceptar/actualizar el job que le corresponde.
-drop policy if exists jobs_provider_update on jobs;
-create policy jobs_provider_update on jobs
-  for update using (
-    auth.uid() = provider_id
-    or (status = 'broadcasting' and exists (
-      select 1 from job_dispatch d
-      where d.job_id = jobs.id and d.provider_id = auth.uid()
-    ))
-  );
-drop policy if exists jobs_admin_all on jobs;
-create policy jobs_admin_all on jobs
-  for all using (is_admin()) with check (is_admin());
-
--- job_dispatch: el profesional ve/actualiza sus propias filas; el cliente del job lee.
-drop policy if exists dispatch_provider_rw on job_dispatch;
-create policy dispatch_provider_rw on job_dispatch
-  for all using (auth.uid() = provider_id) with check (auth.uid() = provider_id);
-drop policy if exists dispatch_client_read on job_dispatch;
-create policy dispatch_client_read on job_dispatch
-  for select using (
-    exists (select 1 from jobs j where j.id = job_dispatch.job_id and j.client_id = auth.uid())
-  );
-
--- reviews: lectura pública; el autor crea la suya.
-drop policy if exists reviews_read on reviews;
-create policy reviews_read on reviews for select using (true);
-drop policy if exists reviews_author_write on reviews;
-create policy reviews_author_write on reviews
-  for insert with check (auth.uid() = author_id);
-
--- messages: solo las partes del job (cliente o profesional asignado).
-drop policy if exists messages_parties_rw on messages;
-create policy messages_parties_rw on messages
-  for all using (
-    exists (
-      select 1 from jobs j
-      where j.id = messages.job_id
-        and (j.client_id = auth.uid() or j.provider_id = auth.uid())
-    )
-  ) with check (auth.uid() = sender_id);
-
 -- push_subscriptions / notifications: cada usuario las suyas.
 drop policy if exists push_self_rw on push_subscriptions;
 create policy push_self_rw on push_subscriptions
@@ -210,14 +135,6 @@ create policy push_self_rw on push_subscriptions
 drop policy if exists notif_self_rw on notifications;
 create policy notif_self_rw on notifications
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-
--- subscriptions: cada uno LEE la suya. Sin policies de escritura a propósito:
--- el browser (anon/authenticated) no puede insertar/editar/borrar suscripciones;
--- las mutaciones van server-side por Drizzle (rol owner, que bypassa RLS) tras
--- validar rol en las Server Actions. Cierra el hueco de la tabla sin RLS.
-drop policy if exists subscriptions_self_read on subscriptions;
-create policy subscriptions_self_read on subscriptions
-  for select using (auth.uid() = profile_id);
 
 -- ════════════════════════════════════════════════════════════
 -- Realtime: publicar cambios de jobs, job_dispatch y messages
@@ -246,18 +163,10 @@ alter table job_dispatch replica identity full;
 alter table notifications replica identity full;
 
 -- REQUIERE migración 0005 aplicada previamente (tabla review_aspects debe existir).
--- review_aspects: puntaje 1–5 y RLS (lectura pública, escritura del autor de la reseña)
+-- review_aspects: puntaje 1–5 y RLS (policies en rls-hardening.sql)
 alter table review_aspects drop constraint if exists review_aspects_score_chk;
 alter table review_aspects add constraint review_aspects_score_chk check (score between 1 and 5);
 alter table review_aspects enable row level security;
-drop policy if exists "review_aspects_read" on review_aspects;
-create policy "review_aspects_read" on review_aspects
-  for select using (true);
-drop policy if exists "review_aspects_insert" on review_aspects;
-create policy "review_aspects_insert" on review_aspects
-  for insert with check (
-    exists (select 1 from reviews r where r.id = review_id and r.author_id = auth.uid())
-  );
 
 -- reviews.rating pasa a soportar 1 decimal; consolida el check previo (entero) en este
 alter table reviews drop constraint if exists reviews_rating_chk;

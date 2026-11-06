@@ -8,23 +8,30 @@
 
 -- 1) Crear profiles automáticamente cuando se registra un usuario.
 --    El rol y nombre se pasan en raw_user_meta_data al hacer signUp.
+--    Los metadatos los controla quien se registra: solo pueden elegir
+--    'provider' o 'client'. Un admin se promueve a mano, nunca por acá.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer set search_path = public
 as $$
+declare
+  v_role public.role := case
+    when new.raw_user_meta_data ->> 'role' = 'provider' then 'provider'::public.role
+    else 'client'::public.role
+  end;
 begin
   insert into public.profiles (id, role, full_name, phone)
   values (
     new.id,
-    coalesce((new.raw_user_meta_data ->> 'role')::public.role, 'client'),
+    v_role,
     new.raw_user_meta_data ->> 'full_name',
     new.raw_user_meta_data ->> 'phone'
   )
   on conflict (id) do nothing;
 
   -- Si es profesional, crear su provider_profiles (status pending).
-  if coalesce(new.raw_user_meta_data ->> 'role', 'client') = 'provider' then
+  if v_role = 'provider' then
     insert into public.provider_profiles (profile_id)
     values (new.id)
     on conflict (profile_id) do nothing;

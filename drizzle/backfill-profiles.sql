@@ -11,7 +11,8 @@
 
 insert into public.profiles (id, role, full_name, phone)
 select u.id,
-       coalesce((u.raw_user_meta_data ->> 'role')::public.role, 'client'),
+       case when u.raw_user_meta_data ->> 'role' = 'provider'
+            then 'provider'::public.role else 'client'::public.role end,
        u.raw_user_meta_data ->> 'full_name',
        u.raw_user_meta_data ->> 'phone'
 from auth.users u

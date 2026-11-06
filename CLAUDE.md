@@ -17,7 +17,7 @@ Marketplace web/PWA que conecta usuarios con profesionales de oficios verificado
 > - En una base **nueva**, habilitar PostGIS **antes** de migrar (`drizzle/00-pre-migrate.sql`): la migración 0000 crea columnas `geography` y sin la extensión falla con `type "geography" does not exist`.
 > - Migrar por el **Session pooler (puerto 5432)** seteando `MIGRATION_DATABASE_URL` solo para ese comando; el runtime de la app usa el **Transaction pooler (6543)** en `DATABASE_URL` (drizzle-kit no funciona por el 6543: corre DDL transaccional que pgBouncer en modo transacción rompe).
 > - **`pnpm db:push` está PROHIBIDO contra prod**: borraría los objetos que viven fuera de `schema.ts` (PostGIS, policies RLS, `find_nearby_providers`). Solo `db:migrate`.
-> - Tras migrar, correr `drizzle/postgis.sql` en Supabase (índices GIST, función `find_nearby_providers`, RLS, Realtime).
+> - Tras migrar, correr `drizzle/postgis.sql` en Supabase (índices GIST, función `find_nearby_providers`, RLS, Realtime) y después `drizzle/rls-hardening.sql` (policies: el navegador solo lee).
 
 ## Tech Stack
 
@@ -127,3 +127,5 @@ Primary `#2563EB` · Accent `#F97316` · Background `#F8FAFC` · Surface `#FFFFF
 
 ### Nota importante sobre RLS
 Las queries server-side usan Drizzle conectado por `DATABASE_URL` (rol owner del pooler) que **bypassa RLS**. RLS protege el camino del cliente (supabase-js en el browser) y es defensa en profundidad. Por eso toda Server Action server-side debe validar el rol explícitamente (`getSession`/`requireRole`) antes de mutar.
+
+El navegador tiene la clave pública y puede llamar a la API de Supabase sin pasar por las Server Actions, así que **no se le dan policies de escritura** sobre tablas de negocio (`drizzle/rls-hardening.sql`): solo lectura para Realtime. Para una escritura nueva, usar una Server Action. Los ataques están en `tests/integration/rls-hardening.test.ts`.
