@@ -28,7 +28,8 @@ export async function hasActiveClientSubscription(
 }
 
 /**
- * ¿El profesional puede recibir y aceptar pedidos nuevos? Está habilitado si:
+ * ¿El profesional puede recibir y aceptar pedidos nuevos? Tiene que estar
+ * `approved` y además habilitado por una de estas dos vías:
  *  - tiene suscripción activa (`subscription_active`, incluye la gracia
  *    `past_due`, lo mantiene el webhook de MP), O
  *  - todavía está en el trial de bienvenida (`jobs_completed < FREE_JOBS`).
@@ -42,11 +43,12 @@ export async function providerCanReceiveJobs(
     .select({
       active: providerProfiles.subscriptionActive,
       jobsCompleted: providerProfiles.jobsCompleted,
+      verificationStatus: providerProfiles.verificationStatus,
     })
     .from(providerProfiles)
     .where(eq(providerProfiles.profileId, profileId))
     .limit(1);
-  if (!row) return false;
+  if (!row || row.verificationStatus !== "approved") return false;
   return row.active || row.jobsCompleted < FREE_JOBS;
 }
 

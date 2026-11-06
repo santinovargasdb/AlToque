@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { useRealtimeChannel } from "@/hooks/use-realtime-channel";
 import { ease } from "@/lib/motion";
 import { cancelBroadcastJob } from "@/lib/actions/dispatch";
-
-const TIMEOUT_MS = 10 * 60 * 1000;
+import { URGENT_JOB_TTL_MS } from "@/lib/jobs/urgent";
 
 type InitialJob = {
   title: string;
   categoryName: string;
   addressText: string | null;
+  createdAt: Date;
 };
 
 export function EsperandoView({
@@ -30,10 +30,16 @@ export function EsperandoView({
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
 
+  // Desde la creación del pedido: recargar la página no reinicia la espera.
+  const expiresAt =
+    new Date(initialJob.createdAt).getTime() + URGENT_JOB_TTL_MS;
   useEffect(() => {
-    const timer = setTimeout(() => setTimedOut(true), TIMEOUT_MS);
+    const timer = setTimeout(
+      () => setTimedOut(true),
+      Math.max(0, expiresAt - Date.now()),
+    );
     return () => clearTimeout(timer);
-  }, []);
+  }, [expiresAt]);
 
   const postgresChanges = useMemo(
     () => ({

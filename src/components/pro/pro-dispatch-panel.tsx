@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
@@ -23,6 +23,9 @@ export function ProDispatchPanel({
   initialOnline: boolean;
 }) {
   const qc = useQueryClient();
+  const refreshIncoming = useCallback(() => {
+    void qc.invalidateQueries({ queryKey: ["incoming-jobs"] });
+  }, [qc]);
   const reduce = useReducedMotion();
   const [online, setOnline] = useState(initialOnline);
   const [pending, startTransition] = useTransition();
@@ -174,9 +177,7 @@ export function ProDispatchPanel({
               <IncomingJobCard
                 key={job.id}
                 job={job}
-                onResolved={() =>
-                  qc.invalidateQueries({ queryKey: ["incoming-jobs"] })
-                }
+                onResolved={refreshIncoming}
               />
             ))}
           </div>

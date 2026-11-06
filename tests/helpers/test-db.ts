@@ -44,6 +44,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       `
     drop table if exists job_dispatch cascade;
     drop table if exists jobs cascade;
+    drop table if exists categories cascade;
     drop table if exists messages cascade;
     drop table if exists notifications cascade;
     drop table if exists push_subscriptions cascade;
@@ -77,6 +78,11 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
       returns text language sql immutable as 'select ''POINT('' || $1 || '' '' || $2 || '')''';
     create or replace function st_setsrid(text, integer)
       returns text language sql immutable as 'select $1';
+
+    create table categories (
+      id uuid primary key default gen_random_uuid(),
+      name text not null
+    );
 
     create table jobs (
       id uuid primary key default gen_random_uuid(),
@@ -144,6 +150,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     create table provider_profiles (
       profile_id uuid primary key,
       subscription_active boolean not null default false,
+      verification_status text not null default 'approved',
       jobs_completed integer not null default 0,
       rating_avg numeric(2,1) not null default '0.0'
     );
@@ -194,7 +201,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 
 /** Limpia las tablas entre tests. */
 export async function truncateAll(sql: RawClient): Promise<void> {
-  await sql`truncate table job_dispatch, jobs, messages, notifications,
+  await sql`truncate table job_dispatch, jobs, categories, messages, notifications,
             push_subscriptions, provider_profiles, subscriptions,
             profiles, reviews, review_aspects
             restart identity cascade`;

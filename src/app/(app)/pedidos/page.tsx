@@ -4,6 +4,7 @@ import { ClipboardList, ChevronRight } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { jobs, profiles, categories } from "@/lib/db/schema";
+import { expireStaleUrgentJobs } from "@/lib/jobs/expire";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/utils";
@@ -22,6 +23,7 @@ const STATUS: Record<JobStatus, { label: string; variant: BadgeProps["variant"] 
 export default async function ClientPedidosPage() {
   const { user } = await requireRole("client");
 
+  await expireStaleUrgentJobs(user.id);
   const list = await db
     .select({
       id: jobs.id,

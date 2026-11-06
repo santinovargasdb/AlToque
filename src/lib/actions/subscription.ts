@@ -16,6 +16,7 @@ import { subscriptions, providerProfiles } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import {
   createPreApproval,
+  fetchPreApproval,
   setPreApprovalStatus,
 } from "@/lib/mercadopago/subscriptions";
 import {
@@ -33,6 +34,26 @@ export type SubActionResult =
   | { ok: true; initPoint: string }
   | { ok: false; error: string };
 
+/**
+ * Retoma una suscripción `pending` sin crear otro preapproval: crear uno pisaría
+ * el ID guardado y el webhook ignoraría un pago hecho sobre el anterior.
+ * Devuelve a dónde ir (`returnPath` si ya estaba autorizada y se activó, o el
+ * link de pago de MP), o `null` si no hay nada para retomar y corresponde crearla.
+ */
+async function resumePendingPreapproval(
+  preapprovalId: string,
+  returnPath: string,
+): Promise<string | null> {
+  const preapproval = await fetchPreApproval(preapprovalId);
+  if (preapproval?.status === "authorized") {
+    await processPreapprovalEvent(preapprovalId, "authorized");
+    revalidatePath(returnPath);
+    return returnPath;
+  }
+  if (preapproval?.status === "pending") return preapproval.initPoint;
+  return null;
+}
+
 /** Inicia el flujo de suscripción profesional → devuelve URL de MP. */
 export async function startProviderSubscription(): Promise<SubActionResult> {
   const session = await getSession();
@@ -44,7 +65,10 @@ export async function startProviderSubscription(): Promise<SubActionResult> {
   const userEmail = session.user.email ?? "";
 
   const [existing] = await db
-    .select({ status: subscriptions.status })
+    .select({
+      status: subscriptions.status,
+      mpPreapprovalId: subscriptions.mpPreapprovalId,
+    })
     .from(subscriptions)
     .where(
       and(
@@ -62,6 +86,14 @@ export async function startProviderSubscription(): Promise<SubActionResult> {
   const amount = n < FOUNDING_THRESHOLD ? PROVIDER_FOUNDING_PRICE : PROVIDER_REGULAR_PRICE;
 
   try {
+    if (existing?.status === "pending" && existing.mpPreapprovalId) {
+      const resumeUrl = await resumePendingPreapproval(
+        existing.mpPreapprovalId,
+        "/pro/suscripcion",
+      );
+      if (resumeUrl) return { ok: true, initPoint: resumeUrl };
+    }
+
     const { preapprovalId, initPoint } = await createPreApproval({
       payerEmail: userEmail,
       plan: "provider_monthly",
@@ -104,7 +136,10 @@ export async function startClientSubscription(): Promise<SubActionResult> {
   const userEmail = session.user.email ?? "";
 
   const [existing] = await db
-    .select({ status: subscriptions.status })
+    .select({
+      status: subscriptions.status,
+      mpPreapprovalId: subscriptions.mpPreapprovalId,
+    })
     .from(subscriptions)
     .where(
       and(
@@ -119,6 +154,14 @@ export async function startClientSubscription(): Promise<SubActionResult> {
   }
 
   try {
+    if (existing?.status === "pending" && existing.mpPreapprovalId) {
+      const resumeUrl = await resumePendingPreapproval(
+        existing.mpPreapprovalId,
+        "/suscripcion",
+      );
+      if (resumeUrl) return { ok: true, initPoint: resumeUrl };
+    }
+
     const { preapprovalId, initPoint } = await createPreApproval({
       payerEmail: userEmail,
       plan: "client_monthly",

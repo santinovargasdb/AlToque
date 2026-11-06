@@ -8,7 +8,12 @@ import {
   resumeSubscription,
 } from "@/lib/actions/subscription";
 
-export function ClientSubscribeButton() {
+export function ClientSubscribeButton({
+  resume = false,
+}: {
+  /** Suscripción `pending`: retoma la que ya existe en vez de empezar una. */
+  resume?: boolean;
+}) {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -35,8 +40,10 @@ export function ClientSubscribeButton() {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          Redirigiendo a Mercado Pago…
+          {resume ? "Consultando Mercado Pago…" : "Redirigiendo a Mercado Pago…"}
         </span>
+      ) : resume ? (
+        "Continuar suscripción"
       ) : (
         "Activar AlToque Premium"
       )}

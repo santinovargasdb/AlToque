@@ -6,6 +6,7 @@ import {
   getJobMessages,
   getJobReviewByAuthor,
 } from "@/lib/db/queries";
+import { expireStaleUrgentJobs } from "@/lib/jobs/expire";
 import { JobDetailView } from "@/components/app/job-detail-view";
 import { ClientJobActions } from "@/components/app/client-job-actions";
 import { JobChat } from "@/components/shared/job-chat";
@@ -24,6 +25,7 @@ export default async function ClientJobPage({
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) notFound();
 
+  await expireStaleUrgentJobs(user.id);
   const job = await getJobDetail(id);
   if (!job || job.clientId !== user.id) notFound();
 

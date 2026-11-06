@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { sql, eq, and, desc } from "drizzle-orm";
+import { sql, eq, and, desc, gt } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   jobs,
@@ -13,6 +13,7 @@ import {
 import { getSession } from "@/lib/auth";
 import { providerCanReceiveJobs } from "@/lib/subscriptions/status";
 import { sendPushToUsers } from "@/lib/push/send";
+import { URGENT_JOB_TTL_MINUTES } from "@/lib/jobs/urgent";
 import type { ActionResult } from "./provider";
 
 /** El profesional se pone online/offline para recibir urgencias. */
@@ -60,6 +61,10 @@ export async function getIncomingJobs(): Promise<IncomingJob[]> {
         eq(jobDispatch.providerId, session.user.id),
         eq(jobDispatch.status, "notified"),
         eq(jobs.status, "broadcasting"),
+        gt(
+          jobs.createdAt,
+          sql`now() - make_interval(mins => ${URGENT_JOB_TTL_MINUTES}::int)`,
+        ),
       ),
     )
     .orderBy(desc(jobs.createdAt));
@@ -98,6 +103,7 @@ export async function acceptJob(jobId: string): Promise<ActionResult> {
             accepted_at = now(), updated_at = now()
         where id = ${jobId}
           and status = 'broadcasting'
+          and created_at > now() - make_interval(mins => ${URGENT_JOB_TTL_MINUTES}::int)
           and exists (
             select 1 from job_dispatch
             where job_id = ${jobId}
@@ -108,7 +114,7 @@ export async function acceptJob(jobId: string): Promise<ActionResult> {
   )) as unknown as { id: string; client_id: string }[];
 
   if (updated.length === 0) {
-    return { ok: false, error: "Otro profesional ya tomó este pedido." };
+    return { ok: false, error: "Este pedido ya no está disponible." };
   }
   const clientId = updated[0]!.client_id;
 
@@ -161,17 +167,21 @@ export async function cancelBroadcastJob(
   }
   const uid = session.user.id;
 
-  await db.execute(
+  const cancelled = (await db.execute(
     sql`update jobs
         set status = 'cancelled', cancel_reason = 'client_cancelled',
             updated_at = now()
-        where id = ${jobId} and client_id = ${uid} and status = 'broadcasting'`,
-  );
-  await db.execute(
-    sql`update job_dispatch
-        set status = 'expired', responded_at = now()
-        where job_id = ${jobId} and status = 'notified'`,
-  );
+        where id = ${jobId} and client_id = ${uid} and status = 'broadcasting'
+        returning id`,
+  )) as unknown as { id: string }[];
+  // Solo si el pedido era suyo: el UPDATE de arriba es el que lo comprueba.
+  if (cancelled.length > 0) {
+    await db.execute(
+      sql`update job_dispatch
+          set status = 'expired', responded_at = now()
+          where job_id = ${jobId} and status = 'notified'`,
+    );
+  }
 
   revalidatePath(`/pedido/${jobId}`);
   return { ok: true };

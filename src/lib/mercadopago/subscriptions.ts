@@ -67,6 +67,28 @@ export async function fetchPreApprovalStatus(
 }
 
 /**
+ * Estado y link de pago de un preapproval, o `null` si MP no lo encuentra.
+ * Cualquier otro error se propaga: no saber el estado no es lo mismo que no
+ * existir, y crear otro preapproval podría dejar un pago sin registrar.
+ */
+export async function fetchPreApproval(
+  preapprovalId: string,
+): Promise<{ status: string | null; initPoint: string | null } | null> {
+  const preApproval = new PreApproval(mpConfig());
+  try {
+    const result = await preApproval.get({ id: preapprovalId });
+    return {
+      status: result.status ?? null,
+      initPoint: result.init_point ?? null,
+    };
+  } catch (error) {
+    // El SDK de MP lanza objetos planos ({ message, status, … }), no Error.
+    if ((error as { status?: unknown } | null)?.status === 404) return null;
+    throw error;
+  }
+}
+
+/**
  * Cambia el estado de un preapproval en MP. `paused` frena los débitos y se
  * puede revertir con `authorized`; `cancelled` es definitivo (MP no permite
  * reactivar un preapproval cancelado).

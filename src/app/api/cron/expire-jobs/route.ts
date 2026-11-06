@@ -1,33 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { sql } from "drizzle-orm";
-import { db } from "@/lib/db";
+import { expireStaleUrgentJobs } from "@/lib/jobs/expire";
 
 /**
  * Vercel Cron: expira pedidos urgentes en broadcast que nadie aceptó.
  * Protegido por CRON_SECRET. Schedule en vercel.json.
  */
-const TTL_MINUTES = 20;
-
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const expired = (await db.execute(
-    sql`update jobs set status = 'expired', updated_at = now()
-        where created_at < now() - interval '${sql.raw(String(TTL_MINUTES))} minutes'
-          and status = 'broadcasting'
-        returning id`,
-  )) as unknown as { id: string }[];
+  const expired = await expireStaleUrgentJobs();
 
-  if (expired.length > 0) {
-    await db.execute(
-      sql`update job_dispatch set status = 'expired', responded_at = now()
-          where status = 'notified'
-            and job_id in (select id from jobs where status = 'expired')`,
-    );
-  }
-
-  return NextResponse.json({ expired: expired.length });
+  return NextResponse.json({ expired });
 }

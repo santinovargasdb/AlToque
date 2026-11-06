@@ -36,7 +36,6 @@ function requiredRole(pathname: string): Role | null {
   const clientPrefixes = [
     "/inicio",
     "/buscar",
-    "/profesional",
     "/pedido",
     "/pedidos",
     "/mensajes",

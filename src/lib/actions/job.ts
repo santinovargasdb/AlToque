@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { jobs, jobDispatch, providerProfiles } from "@/lib/db/schema";
 import { findNearbyProviders } from "@/lib/db/queries";
@@ -123,6 +123,18 @@ export async function createJob(input: unknown): Promise<CreateJobResult> {
     });
   } else {
     // ── Flujo agendado / directo a un proveedor ──
+    // Solo profesionales aprobados reciben pedidos, aunque el ID venga armado a mano.
+    if (data.providerId) {
+      const [provider] = await db
+        .select({ status: providerProfiles.verificationStatus })
+        .from(providerProfiles)
+        .where(eq(providerProfiles.profileId, data.providerId))
+        .limit(1);
+      if (provider?.status !== "approved") {
+        return { ok: false, error: "Ese profesional no está disponible." };
+      }
+    }
+
     jobId = await db.transaction(async (tx) => {
       const [row] = await tx
         .insert(jobs)
@@ -183,6 +195,14 @@ export async function updateJobStatus(params: {
   }
 
   const now = new Date();
+  // Race-safe: solo escribe si el estado sigue siendo el que se validó arriba.
+  const transition = (values: Partial<typeof jobs.$inferInsert>) =>
+    db
+      .update(jobs)
+      .set(values)
+      .where(and(eq(jobs.id, params.jobId), eq(jobs.status, job.status)))
+      .returning({ id: jobs.id });
+  let changed: { id: string }[] = [];
 
   if (params.status === "accepted") {
     if (!isProvider || job.status !== "requested") {
@@ -198,30 +218,29 @@ export async function updateJobStatus(params: {
           "Necesitás una suscripción activa para tomar nuevos pedidos. Reactivá tu plan en Suscripción.",
       };
     }
-    await db
-      .update(jobs)
-      .set({ status: "accepted", acceptedAt: now, updatedAt: now })
-      .where(eq(jobs.id, params.jobId));
+    changed = await transition({
+      status: "accepted",
+      acceptedAt: now,
+      updatedAt: now,
+    });
   } else if (params.status === "in_progress") {
     if (!isProvider || job.status !== "accepted") {
       return { ok: false, error: "El pedido debe estar aceptado." };
     }
-    await db
-      .update(jobs)
-      .set({ status: "in_progress", updatedAt: now })
-      .where(eq(jobs.id, params.jobId));
+    changed = await transition({ status: "in_progress", updatedAt: now });
   } else if (params.status === "cancelled") {
     if (!["requested", "accepted", "in_progress"].includes(job.status)) {
       return { ok: false, error: "El pedido ya no se puede cancelar." };
     }
-    await db
-      .update(jobs)
-      .set({
-        status: "cancelled",
-        cancelReason: params.reason ?? null,
-        updatedAt: now,
-      })
-      .where(eq(jobs.id, params.jobId));
+    changed = await transition({
+      status: "cancelled",
+      cancelReason: params.reason ?? null,
+      updatedAt: now,
+    });
+  }
+
+  if (changed.length === 0) {
+    return { ok: false, error: "El pedido cambió de estado. Recargá la página." };
   }
 
   revalidatePath(`/pedido/${params.jobId}`);
@@ -269,8 +288,9 @@ export async function completeJob(input: unknown): Promise<ActionResult> {
   const now = new Date();
   const providerId = job.providerId;
 
-  await db.transaction(async (tx) => {
-    await tx
+  const completed = await db.transaction(async (tx) => {
+    // Race-safe: un doble envío no suma dos veces `jobs_completed`.
+    const changed = await tx
       .update(jobs)
       .set({
         finalPrice: finalPrice.toFixed(2),
@@ -278,13 +298,19 @@ export async function completeJob(input: unknown): Promise<ActionResult> {
         completedAt: now,
         updatedAt: now,
       })
-      .where(eq(jobs.id, jobId));
+      .where(and(eq(jobs.id, jobId), eq(jobs.status, "in_progress")))
+      .returning({ id: jobs.id });
+    if (changed.length === 0) return false;
 
     await tx
       .update(providerProfiles)
       .set({ jobsCompleted: sql`${providerProfiles.jobsCompleted} + 1` })
       .where(eq(providerProfiles.profileId, providerId));
+    return true;
   });
+  if (!completed) {
+    return { ok: false, error: "El pedido cambió de estado. Recargá la página." };
+  }
 
   revalidatePath(`/pedido/${jobId}`);
   revalidatePath(`/pro/pedido/${jobId}`);

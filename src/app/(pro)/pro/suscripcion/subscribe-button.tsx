@@ -8,7 +8,14 @@ import {
   resumeSubscription,
 } from "@/lib/actions/subscription";
 
-export function ProviderSubscribeButton({ isFounding }: { isFounding: boolean }) {
+export function ProviderSubscribeButton({
+  isFounding = false,
+  resume = false,
+}: {
+  isFounding?: boolean;
+  /** Suscripción `pending`: retoma la que ya existe en vez de empezar una. */
+  resume?: boolean;
+}) {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -35,11 +42,11 @@ export function ProviderSubscribeButton({ isFounding }: { isFounding: boolean })
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          Redirigiendo a Mercado Pago…
+          {resume ? "Consultando Mercado Pago…" : "Redirigiendo a Mercado Pago…"}
         </span>
       ) : (
         <>
-          Suscribirme con Mercado Pago
+          {resume ? "Continuar suscripción" : "Suscribirme con Mercado Pago"}
           {isFounding && (
             <span className="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs">
               Precio fundador

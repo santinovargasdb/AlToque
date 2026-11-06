@@ -28,6 +28,15 @@ export const ACCEPTED_DOC_TYPES = [
   "application/pdf",
 ];
 export const MAX_DOC_BYTES = 6 * 1024 * 1024; // 6 MB
+/** Suma de los archivos de un envío: Vercel corta el cuerpo a 4,5 MB. */
+export const MAX_VERIFICATION_UPLOAD_BYTES = 4 * 1024 * 1024;
+
+/** Valida el peso total ya comprimido. Devuelve el mensaje de error o `null`. */
+export function verificationUploadError(sizes: number[]): string | null {
+  const total = sizes.reduce((sum, size) => sum + size, 0);
+  if (total <= MAX_VERIFICATION_UPLOAD_BYTES) return null;
+  return "Los archivos pesan demasiado: entre todos no pueden superar 4 MB. Si subiste un PDF, probá con una foto, que la comprimimos automáticamente.";
+}
 
 /** Oficios que exigen matrícula habilitante para trabajar. */
 export const REGULATED_TRADE_SLUGS = ["gasista", "electricista"] as const;

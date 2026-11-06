@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { requireRole } from "@/lib/auth";
 import { getJobDetail } from "@/lib/db/queries";
+import { expireStaleUrgentJobs } from "@/lib/jobs/expire";
 import { EsperandoView } from "@/components/app/esperando-view";
 
 export default async function EsperandoPage({
@@ -14,6 +15,7 @@ export default async function EsperandoPage({
 
   if (!z.string().uuid().safeParse(id).success) notFound();
 
+  await expireStaleUrgentJobs(user.id);
   const job = await getJobDetail(id);
   if (!job || job.clientId !== user.id) notFound();
 
@@ -28,6 +30,7 @@ export default async function EsperandoPage({
         title: job.title,
         categoryName: job.categoryName,
         addressText: job.addressText,
+        createdAt: job.createdAt,
       }}
     />
   );

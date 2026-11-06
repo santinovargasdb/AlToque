@@ -10,8 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn, formatDistance } from "@/lib/utils";
 import { spring } from "@/lib/motion";
 import { acceptJob, declineJob, type IncomingJob } from "@/lib/actions/dispatch";
-
-const TTL_MS = 10 * 60 * 1000;
+import { URGENT_JOB_TTL_MS } from "@/lib/jobs/urgent";
 
 export function IncomingJobCard({
   job,
@@ -28,11 +27,18 @@ export function IncomingJobCard({
   // Cuenta regresiva (cliente) desde la creación del pedido.
   useEffect(() => {
     const created = new Date(job.createdAt).getTime();
-    const tick = () => setRemaining(Math.max(0, created + TTL_MS - Date.now()));
+    const tick = () =>
+      setRemaining(Math.max(0, created + URGENT_JOB_TTL_MS - Date.now()));
     tick();
     const i = setInterval(tick, 1000);
     return () => clearInterval(i);
   }, [job.createdAt]);
+
+  // Vencido: se vuelve a pedir la lista, que ya no lo trae.
+  const expired = remaining === 0;
+  useEffect(() => {
+    if (expired) onResolved();
+  }, [expired, onResolved]);
 
   const mmss =
     remaining == null
@@ -106,7 +112,7 @@ export function IncomingJobCard({
           variant="success"
           className="flex-1"
           onClick={accept}
-          disabled={pending}
+          disabled={pending || expired}
         >
           {pending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
           Aceptar
