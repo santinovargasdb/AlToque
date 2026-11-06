@@ -7,7 +7,13 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
 import { getSession, homeForRole, isProfileComplete } from "@/lib/auth";
-import { allow, clientIp, loginLimiter, sensitiveLimiter } from "@/lib/ratelimit";
+import {
+  allowAttempt,
+  clientIp,
+  loginLimiter,
+  sensitiveLimiter,
+} from "@/lib/ratelimit";
+import { afterResponse } from "@/lib/after-response";
 import { getRequestOrigin } from "@/lib/url";
 import { logAuthError } from "@/lib/auth-log";
 import { logSecurityEvent, isNewLoginContext } from "@/lib/audit";
@@ -67,7 +73,7 @@ export async function signUpWithPassword(
   const data = parsed.data;
 
   const ip = await clientIp();
-  if (!(await allow(sensitiveLimiter, `signup:${ip}:${data.email}`))) {
+  if (!(await allowAttempt("signup", sensitiveLimiter, ip, data.email))) {
     return {
       ok: false,
       error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
@@ -105,7 +111,7 @@ export async function signUpWithPassword(
   }
 
   // Audit trail (fire-and-forget: jamás bloquea el registro).
-  void logSecurityEvent("signup", {
+  logSecurityEvent("signup", {
     userId: res.user?.id,
     metadata: { method: "password", role: data.role },
   });
@@ -127,7 +133,7 @@ export async function signInWithPassword(
   }
 
   const ip = await clientIp();
-  if (!(await allow(loginLimiter, `login:${ip}:${parsed.data.email}`))) {
+  if (!(await allowAttempt("login", loginLimiter, ip, parsed.data.email))) {
     return {
       ok: false,
       error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
@@ -138,7 +144,7 @@ export async function signInWithPassword(
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
     // Audit del intento fallido (email enmascarado: sin datos sensibles).
-    void logSecurityEvent("failed_login", {
+    logSecurityEvent("failed_login", {
       metadata: { method: "password", email: maskEmail(parsed.data.email) },
     });
     return { ok: false, error: translateAuthError(error.message) };
@@ -148,13 +154,13 @@ export async function signInWithPassword(
   // (si no, el evento recién insertado siempre "matchearía" consigo mismo).
   const user = data.user;
   const newContext = await isNewLoginContext(user.id);
-  void logSecurityEvent("login", {
+  logSecurityEvent("login", {
     userId: user.id,
     metadata: { method: "password" },
   });
   if (newContext && user.email) {
     const metadataName = user.user_metadata?.full_name;
-    void sendSecurityAlert({
+    sendSecurityAlert({
       to: user.email,
       name: typeof metadataName === "string" ? metadataName : "",
       eventLabel: "un inicio de sesión desde un dispositivo nuevo",
@@ -180,7 +186,7 @@ export async function requestPasswordReset(
   }
 
   const ip = await clientIp();
-  if (!(await allow(sensitiveLimiter, `reset:${ip}:${parsed.data.email}`))) {
+  if (!(await allowAttempt("reset", sensitiveLimiter, ip, parsed.data.email))) {
     return {
       ok: false,
       error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
@@ -195,7 +201,7 @@ export async function requestPasswordReset(
   );
   if (error) return { ok: false, error: translateAuthError(error.message) };
 
-  void logSecurityEvent("password_reset_request", {
+  logSecurityEvent("password_reset_request", {
     metadata: { email: maskEmail(parsed.data.email) },
   });
   return { ok: true };
@@ -230,10 +236,10 @@ export async function updatePassword(
   if (error) return { ok: false, error: translateAuthError(error.message) };
 
   // Audit + alerta: un cambio de contraseña siempre merece aviso.
-  void logSecurityEvent("password_change", { userId: user.id });
+  logSecurityEvent("password_change", { userId: user.id });
   if (user.email) {
     const metadataName = user.user_metadata?.full_name;
-    void sendSecurityAlert({
+    sendSecurityAlert({
       to: user.email,
       name: typeof metadataName === "string" ? metadataName : "",
       eventLabel: "un cambio de contraseña",
@@ -299,7 +305,7 @@ export async function completeProfile(
     return { ok: false, error: "No pudimos guardar tus datos. Probá de nuevo." };
   }
 
-  void logSecurityEvent("profile_update", {
+  logSecurityEvent("profile_update", {
     userId: session.user.id,
     metadata: { fields: "fullName,phone", onboarding: wasIncomplete },
   });
@@ -311,7 +317,8 @@ export async function completeProfile(
       role: session.role,
       appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
     });
-    void sendEmail({ to: session.user.email, subject, html });
+    const to = session.user.email;
+    afterResponse(() => sendEmail({ to, subject, html }));
   }
 
   revalidatePath("/perfil");
@@ -326,7 +333,7 @@ export async function signOut() {
     data: { user },
   } = await supabase.auth.getUser();
   await supabase.auth.signOut();
-  if (user) void logSecurityEvent("logout", { userId: user.id });
+  if (user) logSecurityEvent("logout", { userId: user.id });
   redirect("/");
 }
 
@@ -349,7 +356,7 @@ export async function signOutEverywhere(): Promise<AuthActionResult> {
       error: "No pudimos cerrar las sesiones. Probá de nuevo.",
     };
   }
-  if (user) void logSecurityEvent("logout_all", { userId: user.id });
+  if (user) logSecurityEvent("logout_all", { userId: user.id });
   redirect(
     `/ingresar?notice=${encodeURIComponent("Cerraste sesión en todos los dispositivos.")}`,
   );

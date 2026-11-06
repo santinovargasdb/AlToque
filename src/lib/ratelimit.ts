@@ -23,6 +23,14 @@ export const loginLimiter: RateConfig = { limit: 10, windowMinutes: 15 };
 /** Registro y reset de contraseña: 5 / 15 min por (ip+email). Más ajustado. */
 export const sensitiveLimiter: RateConfig = { limit: 5, windowMinutes: 15 };
 
+/**
+ * Cuánto más tolerantes son los contadores por email y por IP que el de la
+ * combinación. El de email no puede ser muy bajo: cualquiera podría trabar el
+ * login de otra persona a propósito. El de IP tiene margen para redes compartidas.
+ */
+const EMAIL_LIMIT_FACTOR = 2;
+const IP_LIMIT_FACTOR = 5;
+
 /** IP del cliente detrás del proxy de Vercel (primer valor de x-forwarded-for). */
 export async function clientIp(): Promise<string> {
   const h = await headers();
@@ -50,5 +58,40 @@ export async function allow(cfg: RateConfig, key: string): Promise<boolean> {
     return count <= cfg.limit;
   } catch {
     return true; // fail-open (tabla inexistente o error de DB)
+  }
+}
+
+/**
+ * Controla un intento de auth con tres contadores: IP+email frena los reintentos
+ * comunes, email frena a quien rota de IP e IP frena a quien prueba muchos emails.
+ * Todos cuentan siempre, aunque otro ya haya cortado.
+ */
+export async function allowAttempt(
+  action: string,
+  cfg: RateConfig,
+  ip: string,
+  email: string,
+): Promise<boolean> {
+  const normalizedEmail = email.toLowerCase();
+  const results = await Promise.all([
+    allow(cfg, `${action}:${ip}:${normalizedEmail}`),
+    allow(
+      { ...cfg, limit: cfg.limit * EMAIL_LIMIT_FACTOR },
+      `${action}:email:${normalizedEmail}`,
+    ),
+    allow({ ...cfg, limit: cfg.limit * IP_LIMIT_FACTOR }, `${action}:ip:${ip}`),
+  ]);
+  return results.every(Boolean);
+}
+
+/** Borra los contadores vencidos. Devuelve cuántos borró; 0 si la query falla. */
+export async function purgeExpiredRateLimits(): Promise<number> {
+  try {
+    const rows = (await db.execute(
+      sql`delete from rate_limits where expires_at < now() returning id`,
+    )) as unknown as Array<{ id: string }>;
+    return rows.length;
+  } catch {
+    return 0; // la limpieza nunca hace fallar el cron que la llama
   }
 }

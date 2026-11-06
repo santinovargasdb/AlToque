@@ -22,12 +22,14 @@ const csp = [
   "object-src 'none'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.googleusercontent.com",
+  // Orígenes de Google: lista oficial de la Maps JavaScript API
+  // (developers.google.com/maps/documentation/javascript/content-security-policy).
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://*.gstatic.com *.google.com https://*.ggpht.com *.googleusercontent.com blob:",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data: blob: https://*.supabase.co *.google.com https://lh3.googleusercontent.com https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.googleusercontent.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://maps.googleapis.com https://*.googleapis.com",
-  "frame-src 'self'",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.googleapis.com *.google.com https://*.gstatic.com data: blob:",
+  "frame-src 'self' *.google.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   // Al pasar a enforced (Content-Security-Policy) se puede agregar

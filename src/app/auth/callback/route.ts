@@ -113,12 +113,12 @@ async function auditPkceSuccess(
     const name = typeof metadataName === "string" ? metadataName : "";
 
     if (flow === "link") {
-      void logSecurityEvent("identity_link", {
+      logSecurityEvent("identity_link", {
         userId: user.id,
         metadata: { provider: "google" },
       });
       if (user.email) {
-        void sendSecurityAlert({
+        sendSecurityAlert({
           to: user.email,
           name,
           eventLabel: "la vinculación de una cuenta de Google",
@@ -128,12 +128,12 @@ async function auditPkceSuccess(
     }
 
     const newContext = await isNewLoginContext(user.id);
-    void logSecurityEvent("login", {
+    logSecurityEvent("login", {
       userId: user.id,
       metadata: { method: "oauth" },
     });
     if (newContext && user.email) {
-      void sendSecurityAlert({
+      sendSecurityAlert({
         to: user.email,
         name,
         eventLabel: "un inicio de sesión desde un dispositivo nuevo",
@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
     logAuthError("callback:provider-error", providerError, {
       description: searchParams.get("error_description"),
     });
-    void logSecurityEvent("failed_login", {
+    logSecurityEvent("failed_login", {
       metadata: { method: "oauth", reason: providerError },
     });
     const friendly =
@@ -205,7 +205,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${base}${next}`);
       }
       logAuthError("callback:exchange", error, { flow: "pkce" });
-      void logSecurityEvent("failed_login", {
+      logSecurityEvent("failed_login", {
         metadata: { method: "oauth", reason: "exchange_failed" },
       });
     } else if (tokenHash && type) {
@@ -217,7 +217,7 @@ export async function GET(request: NextRequest) {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        void logSecurityEvent("login", {
+        logSecurityEvent("login", {
           userId: user?.id,
           metadata: { method: `otp:${type}` },
         });
@@ -226,7 +226,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${base}${dest}`);
       }
       logAuthError("callback:verify-otp", error, { flow: type });
-      void logSecurityEvent("failed_login", {
+      logSecurityEvent("failed_login", {
         metadata: { method: `otp:${type}` },
       });
     }

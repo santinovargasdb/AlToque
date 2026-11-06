@@ -1,8 +1,12 @@
 import "server-only";
-import { and, count, eq, inArray } from "drizzle-orm";
+import { and, count, eq, gt, inArray, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { subscriptions, providerProfiles } from "@/lib/db/schema";
-import { FREE_JOBS, GRACE_DAYS } from "@/lib/subscriptions/plans";
+import {
+  FOUNDING_PENDING_HOLD_HOURS,
+  FREE_JOBS,
+  GRACE_DAYS,
+} from "@/lib/subscriptions/plans";
 
 /**
  * ¿El cliente tiene una suscripción Premium (`client_monthly`) habilitada?
@@ -119,8 +123,10 @@ export async function isKnownPreapproval(preapprovalId: string): Promise<boolean
 
 /**
  * Cupos de precio fundador ocupados: suscripciones profesionales que llegaron a
- * autorizar el pago en MP (`active`, `past_due` o `paused`). Una `pending`
- * abandonada en el checkout NO ocupa cupo; una `cancelled` lo libera.
+ * autorizar el pago en MP (`active`, `past_due` o `paused`), más las `pending`
+ * recientes: ya tienen el precio fundador fijado en MP y pueden autorizarlo en
+ * cualquier momento. Una `pending` abandonada libera el cupo pasado
+ * `FOUNDING_PENDING_HOLD_HOURS`; una `cancelled` lo libera enseguida.
  */
 export async function countFoundingSlotsTaken(): Promise<number> {
   const [row] = await db
@@ -129,7 +135,16 @@ export async function countFoundingSlotsTaken(): Promise<number> {
     .where(
       and(
         eq(subscriptions.plan, "provider_monthly"),
-        inArray(subscriptions.status, ["active", "past_due", "paused"]),
+        or(
+          inArray(subscriptions.status, ["active", "past_due", "paused"]),
+          and(
+            eq(subscriptions.status, "pending"),
+            gt(
+              subscriptions.updatedAt,
+              sql`now() - make_interval(hours => ${FOUNDING_PENDING_HOLD_HOURS}::int)`,
+            ),
+          ),
+        ),
       ),
     );
   return Number(row?.n ?? 0);

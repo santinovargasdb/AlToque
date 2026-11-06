@@ -18,12 +18,12 @@ export async function recordUnlinkAudit(): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { ok: false, error: "No autorizado." };
 
-  void logSecurityEvent("identity_unlink", {
+  logSecurityEvent("identity_unlink", {
     userId: session.user.id,
     metadata: { provider: "google" },
   });
   if (session.user.email) {
-    void sendSecurityAlert({
+    sendSecurityAlert({
       to: session.user.email,
       name: session.profile?.fullName ?? "",
       eventLabel: "la desvinculación de tu cuenta de Google",

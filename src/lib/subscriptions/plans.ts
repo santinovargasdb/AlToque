@@ -10,6 +10,8 @@
  * los fundadores.
  */
 export const FOUNDING_THRESHOLD = 50;
+/** Cuánto retiene un cupo fundador una suscripción que todavía no se autorizó. */
+export const FOUNDING_PENDING_HOLD_HOURS = 24;
 export const PROVIDER_REGULAR_PRICE = 7000;
 export const PROVIDER_FOUNDING_PRICE = 5000;
 export const CLIENT_PRICE = 4500;

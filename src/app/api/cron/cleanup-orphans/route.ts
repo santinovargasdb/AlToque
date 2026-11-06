@@ -3,6 +3,7 @@ import {
   purgeOrphanProfiles,
   ORPHAN_GRACE_HOURS,
 } from "@/lib/db/maintenance";
+import { purgeExpiredRateLimits } from "@/lib/ratelimit";
 
 /**
  * Vercel Cron: mantenimiento de cuentas huérfanas (registros OAuth que
@@ -12,6 +13,8 @@ import {
  * respuesta/logs). El borrado real requiere opt-in explícito:
  *  - env `ORPHAN_PURGE_ENABLED="true"` (para el cron agendado), o
  *  - query `?purge=1` (para una corrida manual puntual con el secret).
+ *
+ * También borra los contadores vencidos del límite de intentos.
  *
  * Protegido por CRON_SECRET. Schedule en vercel.json (diario).
  */
@@ -36,5 +39,7 @@ export async function GET(request: NextRequest) {
       `${result.skipped.length} salteados`,
   );
 
-  return NextResponse.json(result);
+  const rateLimitsPurged = await purgeExpiredRateLimits();
+
+  return NextResponse.json({ ...result, rateLimitsPurged });
 }

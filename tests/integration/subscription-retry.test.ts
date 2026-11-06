@@ -145,6 +145,16 @@ describe.skipIf(!hasTestDb)("retomar suscripción pendiente (integración)", () 
     expect((await subscription()).mp_preapproval_id).toBe("mp-viejo");
   });
 
+  it("una suscripción pendiente reciente ocupa cupo fundador y una vieja no", async () => {
+    const { countFoundingSlotsTaken } = await import("@/lib/subscriptions/status");
+
+    expect(await countFoundingSlotsTaken()).toBe(1);
+
+    await sql`update subscriptions set updated_at = now() - interval '25 hours'`;
+
+    expect(await countFoundingSlotsTaken()).toBe(0);
+  });
+
   it("el plan Premium del cliente sigue la misma regla", async () => {
     currentSession = {
       user: { id: CLIENT, email: "cli@altoque.test" },

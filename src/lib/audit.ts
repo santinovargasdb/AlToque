@@ -1,6 +1,7 @@
 import "server-only";
 import { and, desc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
+import { afterResponse } from "@/lib/after-response";
 import { db } from "@/lib/db";
 import { auditLogs } from "@/lib/db/schema";
 import { parseUserAgent } from "@/lib/security-utils";
@@ -9,9 +10,9 @@ import { parseUserAgent } from "@/lib/security-utils";
  * Registro de auditoría de seguridad (audit trail).
  *
  * Principios:
- *  - **Nunca bloquea ni rompe** el flujo principal: todo error se traga y
- *    se reporta a la consola. Llamar con `void logSecurityEvent(...)` para
- *    no esperar el INSERT (fire-and-forget).
+ *  - **Nunca bloquea ni rompe** el flujo principal: el INSERT se agenda para
+ *    después de la respuesta (`afterResponse`), y todo error se traga y se
+ *    reporta a la consola.
  *  - **Sin datos sensibles**: la metadata se redacta con la misma regla del
  *    logger de auth (claves token/code/password/etc.) y los emails se
  *    enmascaran con `maskEmail`.
@@ -59,30 +60,38 @@ export async function getRequestContext(): Promise<{
 }
 
 /**
- * Registra un evento de seguridad. Seguro por diseño: valida nada contra el
- * usuario (es un log), jamás lanza y no bloquea si se invoca con `void`.
+ * Registra un evento de seguridad al terminar la respuesta. Seguro por diseño:
+ * valida nada contra el usuario (es un log), jamás lanza y no bloquea.
  *
  * @param action Acción crítica (ver SecurityAction).
  * @param params.userId Uid del afectado (null en eventos pre-login).
  * @param params.metadata Datos extra NO sensibles (se redacta igual).
  */
-export async function logSecurityEvent(
+export function logSecurityEvent(
   action: SecurityAction,
   params: { userId?: string | null; metadata?: AuditMeta } = {},
-): Promise<void> {
-  try {
-    const { ipAddress, userAgent } = await getRequestContext();
-    await db.insert(auditLogs).values({
-      userId: params.userId ?? null,
-      action,
-      ipAddress,
-      userAgent,
-      metadata: params.metadata ? sanitizeMeta(params.metadata) : null,
-    });
-  } catch (err) {
-    // El audit trail nunca tira abajo la operación del usuario.
-    console.error("[audit] no se pudo registrar el evento", action, err);
-  }
+): void {
+  // Se lee ahora, mientras la request está disponible. Sin contexto, el evento
+  // se registra igual: importa más que quede el rastro.
+  const context = getRequestContext().catch(() => ({
+    ipAddress: null,
+    userAgent: null,
+  }));
+  afterResponse(async () => {
+    try {
+      const { ipAddress, userAgent } = await context;
+      await db.insert(auditLogs).values({
+        userId: params.userId ?? null,
+        action,
+        ipAddress,
+        userAgent,
+        metadata: params.metadata ? sanitizeMeta(params.metadata) : null,
+      });
+    } catch (err) {
+      // El audit trail nunca tira abajo la operación del usuario.
+      console.error("[audit] no se pudo registrar el evento", action, err);
+    }
+  });
 }
 
 export type SecurityActivityRow = {

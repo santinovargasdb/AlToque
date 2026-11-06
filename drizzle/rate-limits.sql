@@ -21,6 +21,4 @@ create index if not exists idx_rate_limits_expires
 -- ni escribir esta tabla.
 alter table rate_limits enable row level security;
 
--- Opcional (higiene): borrar filas vencidas cada tanto. Se puede automatizar
--- con pg_cron en Supabase, o correrlo a mano de vez en cuando:
---   delete from rate_limits where expires_at < now();
+-- Las filas vencidas las borra el cron diario /api/cron/cleanup-orphans.
