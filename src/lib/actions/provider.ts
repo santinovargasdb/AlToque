@@ -141,6 +141,13 @@ export async function uploadVerification(
       .from(BUCKETS.verification)
       .upload(fullPath, u.file, { contentType: u.file.type, upsert: true });
     if (error) {
+      // Sin esto el motivo real (bucket, clave, tipo de archivo) se pierde.
+      console.error("[verificacion] Storage rechazó la subida", {
+        name: error.name,
+        message: error.message,
+        contentType: u.file.type,
+        size: u.file.size,
+      });
       return { ok: false, error: "No se pudieron subir los archivos." };
     }
     paths.push(fullPath);
