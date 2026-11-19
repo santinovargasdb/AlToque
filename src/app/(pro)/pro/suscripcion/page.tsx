@@ -69,7 +69,10 @@ export default async function ProSuscripcionPage() {
       .limit(1),
 
     db
-      .select({ jobsCompleted: providerProfiles.jobsCompleted })
+      .select({
+        jobsCompleted: providerProfiles.jobsCompleted,
+        subscriptionActive: providerProfiles.subscriptionActive,
+      })
       .from(providerProfiles)
       .where(eq(providerProfiles.profileId, uid))
       .limit(1),
@@ -122,7 +125,7 @@ export default async function ProSuscripcionPage() {
             </div>
           )}
 
-          {jobsDone >= 5 && (
+          {jobsDone >= 5 && !ppRows[0]?.subscriptionActive && (
             <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
               <p className="text-sm font-semibold text-accent">
                 Completaste tus 5 trabajos de bienvenida

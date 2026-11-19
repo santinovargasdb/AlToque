@@ -74,7 +74,10 @@ export async function getProviderGateState(
   profileId: string,
 ): Promise<ProviderGateState> {
   const [pp] = await db
-    .select({ jobsCompleted: providerProfiles.jobsCompleted })
+    .select({
+      jobsCompleted: providerProfiles.jobsCompleted,
+      subscriptionActive: providerProfiles.subscriptionActive,
+    })
     .from(providerProfiles)
     .where(eq(providerProfiles.profileId, profileId))
     .limit(1);
@@ -101,6 +104,9 @@ export async function getProviderGateState(
       : null;
     return { kind: "grace", until };
   }
+  // Habilitado a mano (sin fila en `subscriptions`): el gate real mira este
+  // flag, así que el aviso no puede decir que está bloqueado.
+  if (pp?.subscriptionActive) return { kind: "active" };
   if (jobsCompleted < FREE_JOBS) {
     return { kind: "trial", freeJobsLeft: FREE_JOBS - jobsCompleted };
   }
