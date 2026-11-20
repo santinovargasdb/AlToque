@@ -83,6 +83,7 @@ Primary `#2563EB` · Accent `#F97316` · Background `#F8FAFC` · Surface `#FFFFF
 | `RESEND_API_KEY` | Email |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Web Push |
 | `CRON_SECRET` / `NEXT_PUBLIC_APP_URL` | Cron, URL |
+| `ANDROID_PACKAGE_NAME` / `ANDROID_SHA256_FINGERPRINTS` | App Android (TWA): alimentan `/.well-known/assetlinks.json`; opcionales |
 
 ## Reglas No Negociables
 
@@ -127,6 +128,8 @@ Primary `#2563EB` · Accent `#F97316` · Background `#F8FAFC` · Surface `#FFFFF
 - **Vencimiento de urgencias (2026-11-06):** el plazo es uno solo, `URGENT_JOB_TTL_MINUTES` (10, en `lib/jobs/urgent.ts`). `acceptJob` y `getIncomingJobs` lo filtran directamente; `expireStaleUrgentJobs` (`lib/jobs/expire.ts`) cierra los vencidos desde el cron, que corre una vez por día, y al leer los pedidos del cliente.
 
 - **Reportes y cierre por el cliente (2026-11-06, spec `docs/superpowers/specs/2026-11-06-reportes-y-cierre-design.md`):** tabla `job_reports` (migración `0006`, RLS sin policies). `createJobReport`, `resolveReport` y `suspendReportedProvider` en `lib/actions/report.ts`; `closeJobAsClient` en `lib/actions/job-close.ts`; panel `/admin/reportes`. La suspensión reutiliza `rejected`. `cancel_reason = 'not_completed'` habilita la reseña del cliente y solo lo escribe `closeJobAsClient`.
+
+- **Baja de cuenta y app Android (2026-11-20, runbook `docs/publicar-google-play.md`):** `deleteAccount` (`lib/actions/account.ts`) + `DeleteAccount` (`components/shared/`) en `/perfil` y `/pro/perfil`; página pública `/eliminar-cuenta`. Se frena con trabajos `accepted`/`in_progress`; cancela la suscripción en MP antes de tocar datos (si falla con una activa, aborta); sin historial borra el perfil, con historial lo anonimiza (`Usuario eliminado`, profesional → `rejected` y fuera de búsquedas) porque `jobs`/`reviews`/`messages` referencian `profiles` sin cascade. `/.well-known/assetlinks.json` y el manifest (`start_url: /inicio`) quedan listos para publicar como TWA. Tests: `tests/integration/delete-account.test.ts`, `tests/asset-links.test.ts`.
 
 ### Nota importante sobre RLS
 Las queries server-side usan Drizzle conectado por `DATABASE_URL` (rol owner del pooler) que **bypassa RLS**. RLS protege el camino del cliente (supabase-js en el browser) y es defensa en profundidad. Por eso toda Server Action server-side debe validar el rol explícitamente (`getSession`/`requireRole`) antes de mutar.

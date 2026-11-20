@@ -185,6 +185,11 @@ export default function PrivacidadPage() {
           plazos que fija la Ley 25.326.
         </p>
         <p>
+          Podés eliminar tu cuenta vos mismo desde tu perfil. Los pasos y qué
+          datos se borran o se conservan están en{" "}
+          <a href="/eliminar-cuenta">Eliminar tu cuenta</a>.
+        </p>
+        <p>
           Tenés además el derecho a presentar un reclamo ante la{" "}
           <strong>Agencia de Acceso a la Información Pública (AAIP)</strong>,
           autoridad de aplicación de la ley:{" "}

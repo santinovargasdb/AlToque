@@ -45,11 +45,7 @@ const SUPABASE_STUBS = `
 
   drop type if exists role cascade;
   create type role as enum ('client', 'provider', 'admin');
-  alter table profiles add column role role not null default 'client',
-    add column full_name text, add column phone text,
-    add column updated_at timestamptz not null default now();
-  alter table provider_profiles add column id_document_url text;
-  create table if not exists provider_categories (provider_id uuid, category_id uuid);
+  alter table profiles add column role role not null default 'client';
 
   create or replace function auth_role() returns text as $f$
     select coalesce(

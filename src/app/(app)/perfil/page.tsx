@@ -5,6 +5,7 @@ import { GoogleAccountLink } from "@/components/auth/google-account-link";
 import { SetPasswordButton } from "@/components/auth/set-password-button";
 import { GlobalSignOutButton } from "@/components/auth/global-sign-out-button";
 import { AvatarUploader } from "@/components/shared/avatar-uploader";
+import { DeleteAccount } from "@/components/shared/delete-account";
 import { SecurityActivity } from "@/components/shared/security-activity";
 import { SignOutButton } from "@/components/shared/sign-out-button";
 
@@ -54,6 +55,8 @@ export default async function PerfilClientePage() {
       </section>
 
       <SecurityActivity userId={user.id} />
+
+      <DeleteAccount />
     </div>
   );
 }

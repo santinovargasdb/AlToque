@@ -55,6 +55,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
     drop type if exists dispatch_status cascade;
     drop table if exists subscriptions cascade;
     drop table if exists provider_profiles cascade;
+    drop table if exists provider_categories cascade;
     drop type if exists subscription_plan cascade;
     drop type if exists subscription_status cascade;
     drop table if exists review_aspects cascade;
@@ -165,12 +166,24 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 
     create table provider_profiles (
       profile_id uuid primary key,
+      bio text,
+      id_document_url text,
+      id_document_back_url text,
+      selfie_url text,
+      license_url text,
+      base_location text,
       subscription_active boolean not null default false,
       verification_status text not null default 'approved',
       rejection_reason text,
       is_online boolean not null default false,
       jobs_completed integer not null default 0,
       rating_avg numeric(2,1) not null default '0.0'
+    );
+
+    create table provider_categories (
+      provider_id uuid not null,
+      category_id uuid not null,
+      primary key (provider_id, category_id)
     );
 
     create table subscriptions (
@@ -190,8 +203,12 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 
     create table profiles (
       id uuid primary key,
+      full_name text,
+      phone text,
+      avatar_url text,
       rating_avg numeric(2,1) not null default '0.0',
-      rating_count integer not null default 0
+      rating_count integer not null default 0,
+      updated_at timestamptz not null default now()
     );
 
     create table reviews (
@@ -220,7 +237,7 @@ export async function setupTestSchema(sql: RawClient): Promise<void> {
 /** Limpia las tablas entre tests. */
 export async function truncateAll(sql: RawClient): Promise<void> {
   await sql`truncate table job_reports, job_dispatch, jobs, categories, messages, notifications,
-            push_subscriptions, provider_profiles, subscriptions,
+            push_subscriptions, provider_profiles, provider_categories, subscriptions,
             profiles, reviews, review_aspects
             restart identity cascade`;
 }

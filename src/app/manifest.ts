@@ -6,11 +6,15 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "AlToque",
     description:
       "Profesionales de oficios verificados cerca tuyo. Urgencias y trabajos agendados.",
-    start_url: "/",
+    id: "/",
+    // /inicio manda a cada uno a su home según el rol (o a /ingresar sin
+    // sesión): la app instalada no abre en la landing.
+    start_url: "/inicio",
+    scope: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#F7FAF8",
-    theme_color: "#4E9B75",
+    background_color: "#F8FAFC",
+    theme_color: "#2563EB",
     lang: "es-AR",
     categories: ["business", "utilities", "lifestyle"],
     icons: [

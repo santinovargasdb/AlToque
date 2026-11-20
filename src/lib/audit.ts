@@ -31,7 +31,8 @@ export type SecurityAction =
   | "password_reset_request"
   | "identity_link"
   | "identity_unlink"
-  | "profile_update";
+  | "profile_update"
+  | "account_delete";
 
 type AuditMeta = Record<string, string | number | boolean | null | undefined>;
 
